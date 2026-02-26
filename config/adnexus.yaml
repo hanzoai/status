@@ -9,12 +9,12 @@ ui:
   title: "Ad Nexus Status"
   description: "Real-time service health and performance"
   header: "Status"
-  logo: "/brands/nexus/logo.svg"
+  logo: "/brands/adnexus/logo.svg"
   link: "https://ad.nexus"
   favicon:
-    default: "/brands/nexus/favicon-32.png"
-    size16x16: "/brands/nexus/favicon-16.png"
-    size32x32: "/brands/nexus/favicon-32.png"
+    default: "/brands/adnexus/favicon-32.png"
+    size16x16: "/brands/adnexus/favicon-16.png"
+    size32x32: "/brands/adnexus/favicon-32.png"
   dark-mode: true
   buttons:
     - name: "Docs"
