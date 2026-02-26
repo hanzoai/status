@@ -19,18 +19,18 @@
                 target="_blank"
                 :class="['flex items-center gap-3', link && 'hover:opacity-80 transition-opacity']"
               >
-                <div class="h-8 flex items-center justify-center">
+                <div class="flex items-center justify-center">
                   <img
                     v-if="logo"
                     :src="logo"
                     alt=""
-                    class="h-full object-contain dark:invert"
+                    class="h-8 max-w-[160px] object-contain dark:invert"
                   />
                   <img
                     v-else
                     src="./assets/logo.svg"
                     alt=""
-                    class="w-full h-full object-contain dark:invert"
+                    class="h-8 w-8 object-contain dark:invert"
                   />
                 </div>
                 <h1 class="text-lg font-semibold tracking-tight">Status</h1>
