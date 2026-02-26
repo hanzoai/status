@@ -181,6 +181,60 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   # ═══════════════════════════════════════════════
+  # BOOTNODE CLOUD
+  # ═══════════════════════════════════════════════
+
+  - name: "bootno.de"
+    group: "Bootnode Cloud"
+    url: "https://bootno.de"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "API"
+    group: "Bootnode Cloud"
+    url: "https://api.bootno.de/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 2000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "WebSocket"
+    group: "Bootnode Cloud"
+    url: "wss://ws.bootno.de"
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: "web3.hanzo.ai"
+    group: "Bootnode Cloud"
+    url: "https://web3.hanzo.ai"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "web3 API"
+    group: "Bootnode Cloud"
+    url: "https://api.web3.hanzo.ai/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 2000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "web3 WebSocket"
+    group: "Bootnode Cloud"
+    url: "wss://ws.web3.hanzo.ai"
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+
+  # ═══════════════════════════════════════════════
   # COMMERCE
   # ═══════════════════════════════════════════════
 
