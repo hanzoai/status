@@ -24,13 +24,13 @@
                     v-if="logo"
                     :src="logo"
                     alt=""
-                    class="w-full h-full object-contain"
+                    class="w-full h-full object-contain dark:invert"
                   />
                   <img
                     v-else
                     src="./assets/logo.svg"
                     alt=""
-                    class="w-full h-full object-contain"
+                    class="w-full h-full object-contain dark:invert"
                   />
                 </div>
                 <h1 class="text-lg font-semibold tracking-tight">Status</h1>
