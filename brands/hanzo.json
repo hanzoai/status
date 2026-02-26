@@ -1,0 +1,18 @@
+{
+  "name": "Hanzo",
+  "title": "Hanzo Status",
+  "description": "Real-time infrastructure health and performance",
+  "domain": "status.hanzo.ai",
+  "logo": "/logo.svg",
+  "favicon": "/favicon.svg",
+  "url": "https://hanzo.ai",
+  "github": "https://github.com/hanzoai",
+  "docs": "https://docs.hanzo.ai",
+  "accent": "#ffffff",
+  "accentRgb": "255, 255, 255",
+  "links": [
+    { "label": "Hanzo AI", "url": "https://hanzo.ai" },
+    { "label": "Docs", "url": "https://docs.hanzo.ai" },
+    { "label": "GitHub", "url": "https://github.com/hanzoai" }
+  ]
+}
