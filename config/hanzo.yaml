@@ -229,6 +229,15 @@ endpoints:
       - "[RESPONSE_TIME] < 2000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
+  - name: "Models"
+    group: "Commerce"
+    url: "https://models.hanzo.ai/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 2000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
   # ═══════════════════════════════════════════════
   # BOT
   # ═══════════════════════════════════════════════
