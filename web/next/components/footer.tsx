@@ -1,27 +1,24 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getLink, getBrandName, getConfig } from '@/lib/config'
+import { getLink, getConfig } from '@/lib/config'
 import type { UIButton } from '@/lib/types'
 
 export function Footer() {
   const [link, setLink] = useState<string | null>(null)
-  const [brand, setBrand] = useState('')
+  const [orgName, setOrgName] = useState('')
   const [buttons, setButtons] = useState<UIButton[]>([])
 
   useEffect(() => {
-    const l = getLink()
-    setLink(l)
-    setBrand(getBrandName(l))
-    setButtons(getConfig().buttons ?? [])
+    const cfg = getConfig()
+    setLink(getLink())
+    setButtons(cfg.buttons ?? [])
+    // Derive org name from page title (set by Go template as "Hanzo Status", "Ad Nexus Status", etc.)
+    const pageTitle = document.title || ''
+    setOrgName(pageTitle.replace(/\s*Status\s*$/i, '').trim() || 'Status')
   }, [])
 
   const year = new Date().getFullYear()
-
-  // Derive org name from brand hostname
-  const orgName = brand
-    ? brand.split('.')[0].charAt(0).toUpperCase() + brand.split('.')[0].slice(1)
-    : 'Status'
 
   // Find governance link (HIPs, LIPs, PIPs, ZIPs) from buttons
   const governanceBtn = buttons.find(
