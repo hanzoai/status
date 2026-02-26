@@ -1,0 +1,128 @@
+web:
+  port: 8080
+
+storage:
+  type: sqlite
+  path: /data/status.db
+
+ui:
+  title: "Lux Status"
+  description: "Real-time network health and performance"
+  header: "Lux Status"
+  logo: "https://lux.network/favicon.ico"
+  link: "https://lux.network"
+  buttons:
+    - name: "Lux Network"
+      link: "https://lux.network"
+    - name: "Docs"
+      link: "https://docs.lux.network"
+    - name: "GitHub"
+      link: "https://github.com/luxfi"
+
+endpoints:
+
+  # ═══════════════════════════════════════════════
+  # MAINNET
+  # ═══════════════════════════════════════════════
+
+  - name: "API Gateway"
+    group: "Mainnet"
+    url: "https://api.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 404)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Explorer"
+    group: "Mainnet"
+    url: "https://explore.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Explorer API"
+    group: "Mainnet"
+    url: "https://api-explore.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302, 404)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  # ═══════════════════════════════════════════════
+  # TESTNET
+  # ═══════════════════════════════════════════════
+
+  - name: "API Gateway"
+    group: "Testnet"
+    url: "https://api.testnet.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 404)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Explorer"
+    group: "Testnet"
+    url: "https://explore-test.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Explorer API"
+    group: "Testnet"
+    url: "https://api-explore-test.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302, 404)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  # ═══════════════════════════════════════════════
+  # DEVNET
+  # ═══════════════════════════════════════════════
+
+  - name: "API Gateway"
+    group: "Devnet"
+    url: "https://api.devnet.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 404)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Explorer"
+    group: "Devnet"
+    url: "https://explore-dev.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Explorer API"
+    group: "Devnet"
+    url: "https://api-explore-dev.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302, 404)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  # ═══════════════════════════════════════════════
+  # SERVICES
+  # ═══════════════════════════════════════════════
+
+  - name: "Bridge"
+    group: "Services"
+    url: "https://bridge.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"

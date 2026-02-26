@@ -1,0 +1,18 @@
+{
+  "name": "Zoo",
+  "title": "Zoo Status",
+  "description": "Real-time research infrastructure health",
+  "domain": "status.zoo.ngo",
+  "logo": "/logo.svg",
+  "favicon": "/favicon.svg",
+  "url": "https://zoo.ngo",
+  "github": "https://github.com/zoolabs",
+  "docs": "https://docs.zoo.ngo",
+  "accent": "#ffffff",
+  "accentRgb": "255, 255, 255",
+  "links": [
+    { "label": "Zoo Labs", "url": "https://zoo.ngo" },
+    { "label": "ZIPs", "url": "https://zips.zoo.ngo" },
+    { "label": "GitHub", "url": "https://github.com/zoolabs" }
+  ]
+}
