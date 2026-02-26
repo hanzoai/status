@@ -152,14 +152,34 @@ endpoints:
       - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
+  # ═══════════════════════════════════════════════
+  # CLOUD
+  # ═══════════════════════════════════════════════
+
   - name: "Cloud"
-    group: "Services"
+    group: "Cloud"
     url: "https://cloud.lux.network"
     interval: 60s
     conditions:
       - "[STATUS] == any(200, 302)"
       - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Cloud API"
+    group: "Cloud"
+    url: "https://api.cloud.lux.network/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 2000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Cloud WebSocket"
+    group: "Cloud"
+    url: "wss://ws.cloud.lux.network"
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
 
   - name: "lux.network"
     group: "Web"
