@@ -58,10 +58,10 @@ export function SearchBar({ onSearch, onFilterChange, onSortChange }: SearchBarP
   )
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3 sm:p-4 lg:flex-row lg:gap-4">
+    <div className="flex flex-col gap-3 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3 sm:p-4 lg:flex-row lg:gap-4">
       <div className="flex-1">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[hsl(var(--muted-foreground))]" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[hsl(var(--muted-foreground)/.5)]" />
           <input
             type="text"
             placeholder="Search endpoints..."
@@ -70,19 +70,19 @@ export function SearchBar({ onSearch, onFilterChange, onSortChange }: SearchBarP
               setQuery(e.target.value)
               onSearch(e.target.value)
             }}
-            className="w-full rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--background))] py-2 pl-10 pr-3 text-sm placeholder:text-[hsl(var(--muted-foreground))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))]"
+            className="w-full rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] py-2 pl-10 pr-3 text-sm placeholder:text-[hsl(var(--muted-foreground)/.5)] focus:border-[hsl(var(--brand)/.5)] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--brand)/.3)]"
           />
         </div>
       </div>
-      <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:gap-3">
         <div className="flex flex-1 items-center gap-2 sm:flex-initial">
-          <label className="whitespace-nowrap text-xs font-medium text-[hsl(var(--muted-foreground))] sm:text-sm">
-            Filter by:
+          <label className="whitespace-nowrap text-xs font-medium text-[hsl(var(--muted-foreground)/.7)]">
+            Filter
           </label>
           <select
             value={filter}
             onChange={(e) => handleFilterChange(e.target.value)}
-            className="flex-1 rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] sm:w-[140px]"
+            className="flex-1 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-3 py-1.5 text-sm focus:border-[hsl(var(--brand)/.5)] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--brand)/.3)] sm:w-[120px]"
           >
             {filterOptions.map((o) => (
               <option key={o.value} value={o.value}>
@@ -92,13 +92,13 @@ export function SearchBar({ onSearch, onFilterChange, onSortChange }: SearchBarP
           </select>
         </div>
         <div className="flex flex-1 items-center gap-2 sm:flex-initial">
-          <label className="whitespace-nowrap text-xs font-medium text-[hsl(var(--muted-foreground))] sm:text-sm">
-            Sort by:
+          <label className="whitespace-nowrap text-xs font-medium text-[hsl(var(--muted-foreground)/.7)]">
+            Sort
           </label>
           <select
             value={sort}
             onChange={(e) => handleSortChange(e.target.value)}
-            className="flex-1 rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] sm:w-[100px]"
+            className="flex-1 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-3 py-1.5 text-sm focus:border-[hsl(var(--brand)/.5)] focus:outline-none focus:ring-1 focus:ring-[hsl(var(--brand)/.3)] sm:w-[100px]"
           >
             {sortOptions.map((o) => (
               <option key={o.value} value={o.value}>

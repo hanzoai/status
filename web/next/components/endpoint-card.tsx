@@ -50,27 +50,27 @@ export function EndpointCard({
   }, [results, showAverageResponseTime])
 
   return (
-    <div className="flex h-full flex-col rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] transition hover:scale-[1.01] hover:shadow-lg dark:hover:border-gray-700">
+    <div className="group flex h-full flex-col rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] transition-all duration-200 hover:border-[hsl(var(--border))]/80 hover:bg-[hsl(var(--accent)/.3)]">
       {/* Header */}
-      <div className="space-y-0 px-3 pb-2 pt-3 sm:px-6 sm:pt-6">
-        <div className="flex items-start justify-between gap-2 sm:gap-3">
+      <div className="space-y-0 px-4 pb-2 pt-4">
+        <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1 overflow-hidden">
             <button
               onClick={() => onNavigate(endpoint.key)}
-              className="block truncate text-left text-sm font-semibold hover:text-[hsl(var(--primary))] hover:underline sm:text-base"
+              className="block truncate text-left text-sm font-medium text-[hsl(var(--foreground))] transition-colors hover:text-[hsl(var(--brand))] sm:text-[15px]"
               title={endpoint.name}
             >
               {endpoint.name}
             </button>
-            <div className="flex min-h-[1.25rem] items-center gap-2 text-xs text-[hsl(var(--muted-foreground))] sm:text-sm">
+            <div className="flex min-h-[1.25rem] items-center gap-1.5 text-xs text-[hsl(var(--muted-foreground))]">
               {endpoint.group && (
                 <span className="truncate" title={endpoint.group}>
                   {endpoint.group}
                 </span>
               )}
-              {endpoint.group && hostname && <span>{'\u2022'}</span>}
+              {endpoint.group && hostname && <span className="opacity-40">{'\u2022'}</span>}
               {hostname && (
-                <span className="truncate" title={hostname}>
+                <span className="truncate font-mono text-[11px] opacity-70" title={hostname}>
                   {hostname}
                 </span>
               )}
@@ -82,12 +82,12 @@ export function EndpointCard({
         </div>
       </div>
       {/* Content */}
-      <div className="flex-1 px-3 pb-3 pt-2 sm:px-6 sm:pb-4">
+      <div className="flex-1 px-4 pb-4 pt-2">
         <div className="space-y-2">
           <div className="mb-1 flex items-center justify-between">
             <div className="flex-1" />
             <p
-              className="text-xs text-[hsl(var(--muted-foreground))]"
+              className="font-mono text-[11px] text-[hsl(var(--muted-foreground))]"
               title={showAverageResponseTime ? 'Average response time' : 'Min-max response time'}
             >
               {responseTimeText}

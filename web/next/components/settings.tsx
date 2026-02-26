@@ -85,26 +85,26 @@ export function Settings({ onRefresh }: SettingsProps) {
 
   return (
     <div ref={settingsRef} className="fixed bottom-4 left-4 z-50">
-      <div className="flex items-center gap-1 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--background)/.95)] p-1 shadow-md backdrop-blur-sm">
+      <div className="flex items-center gap-0.5 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card)/.95)] p-1 shadow-lg backdrop-blur-sm">
         {/* Refresh interval button */}
         <button
           onClick={() => setShowMenu(!showMenu)}
-          className="relative flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-colors hover:bg-[hsl(var(--accent))]"
+          className="relative flex items-center gap-1.5 rounded-full px-2.5 py-1.5 transition-colors hover:bg-[hsl(var(--accent))]"
         >
-          <RefreshCw className="h-3.5 w-3.5 text-[hsl(var(--muted-foreground))]" />
-          <span className="text-xs font-medium">{formatLabel(interval)}</span>
+          <RefreshCw className="h-3 w-3 text-[hsl(var(--muted-foreground))]" />
+          <span className="font-mono text-[11px] font-medium text-[hsl(var(--muted-foreground))]">{formatLabel(interval)}</span>
 
           {showMenu && (
             <div
-              className="absolute bottom-full left-0 mb-2 overflow-hidden rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--popover))] shadow-lg"
+              className="absolute bottom-full left-0 mb-2 overflow-hidden rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--popover))] shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
               {INTERVALS.map((i) => (
                 <button
                   key={i.value}
                   onClick={() => selectInterval(i.value)}
-                  className={`block w-full px-4 py-2 text-left text-xs transition-colors hover:bg-[hsl(var(--accent))] ${
-                    interval === i.value ? 'bg-[hsl(var(--accent))]' : ''
+                  className={`block w-full px-4 py-2 text-left font-mono text-[11px] transition-colors hover:bg-[hsl(var(--accent))] ${
+                    interval === i.value ? 'bg-[hsl(var(--accent))] text-[hsl(var(--foreground))]' : 'text-[hsl(var(--muted-foreground))]'
                   }`}
                 >
                   {i.label}
@@ -115,7 +115,7 @@ export function Settings({ onRefresh }: SettingsProps) {
         </button>
 
         {/* Divider */}
-        <div className="h-5 w-px bg-[hsl(var(--border)/.5)]" />
+        <div className="h-4 w-px bg-[hsl(var(--border))]" />
 
         {/* Theme toggle */}
         {mounted && (
@@ -125,9 +125,9 @@ export function Settings({ onRefresh }: SettingsProps) {
             className="rounded-full p-1.5 transition-colors hover:bg-[hsl(var(--accent))]"
           >
             {isDark ? (
-              <Sun className="h-3.5 w-3.5" />
+              <Sun className="h-3 w-3 text-[hsl(var(--muted-foreground))]" />
             ) : (
-              <Moon className="h-3.5 w-3.5" />
+              <Moon className="h-3 w-3 text-[hsl(var(--muted-foreground))]" />
             )}
           </button>
         )}
