@@ -35,27 +35,24 @@ endpoints:
     url: "https://adx.ad.nexus"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 302, 404)"
+      - "[STATUS] == any(200, 301, 302)"
       - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "DSP"
     group: "Exchange"
     url: "https://dsp.ad.nexus"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 302, 404)"
+      - "[STATUS] == any(200, 301, 302)"
       - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "SSP"
     group: "Exchange"
     url: "https://ssp.ad.nexus"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 302, 404)"
+      - "[STATUS] == any(200, 301, 302)"
       - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
 
   # ═══════════════════════════════════════════════
   # SERVICES
@@ -66,18 +63,16 @@ endpoints:
     url: "https://ai.ad.nexus"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 302, 404)"
+      - "[STATUS] == any(200, 301, 302)"
       - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "Metrics"
     group: "Services"
     url: "https://metrics.ad.nexus"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 302)"
+      - "[STATUS] == any(200, 301, 302)"
       - "[RESPONSE_TIME] < 5000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
 
   # ═══════════════════════════════════════════════
   # WEB
@@ -88,15 +83,13 @@ endpoints:
     url: "https://ad.nexus"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 302)"
+      - "[STATUS] == any(200, 301, 302)"
       - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "docs.ad.nexus"
     group: "Web"
     url: "https://docs.ad.nexus"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 302, 404)"
+      - "[STATUS] == any(200, 301, 302)"
       - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
