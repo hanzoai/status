@@ -17,6 +17,8 @@ ui:
     size16x16: "/brands/pars/favicon-16.png"
     size32x32: "/brands/pars/favicon-32.png"
   buttons:
+    - name: "PIPs"
+      link: "https://github.com/parsnet/pips"
     - name: "Docs"
       link: "https://docs.pars.network"
     - name: "GitHub"

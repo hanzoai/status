@@ -17,6 +17,8 @@ ui:
     size16x16: "/brands/lux/favicon-16.png"
     size32x32: "/brands/lux/favicon-32.png"
   buttons:
+    - name: "LIPs"
+      link: "https://github.com/luxfi/lips"
     - name: "Docs"
       link: "https://docs.lux.network"
     - name: "GitHub"
