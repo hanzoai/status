@@ -15,9 +15,14 @@ ui:
     default: "/brands/nexus/favicon-32.png"
     size16x16: "/brands/nexus/favicon-16.png"
     size32x32: "/brands/nexus/favicon-32.png"
+  dark-mode: true
   buttons:
-    - name: "Ad Nexus"
-      link: "https://ad.nexus"
+    - name: "Docs"
+      link: "https://docs.ad.nexus"
+    - name: "GitHub"
+      link: "https://github.com/adnexus"
+    - name: "Support"
+      link: "https://ad.nexus/support"
 
 endpoints:
 

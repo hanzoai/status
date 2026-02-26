@@ -15,13 +15,14 @@ ui:
     default: "/brands/zoo/favicon.svg"
     size16x16: "/brands/zoo/favicon-16.png"
     size32x32: "/brands/zoo/favicon-32.png"
+  dark-mode: true
   buttons:
-    - name: "Zoo Labs"
-      link: "https://zoo.ngo"
     - name: "ZIPs"
       link: "https://zips.zoo.ngo"
     - name: "GitHub"
       link: "https://github.com/zoolabs"
+    - name: "Support"
+      link: "https://zoo.ngo/support"
 
 endpoints:
 

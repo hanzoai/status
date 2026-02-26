@@ -15,13 +15,14 @@ ui:
     default: "/brands/pars/favicon.svg"
     size16x16: "/brands/pars/favicon-16.png"
     size32x32: "/brands/pars/favicon-32.png"
+  dark-mode: true
   buttons:
-    - name: "Pars Network"
-      link: "https://pars.network"
     - name: "Docs"
       link: "https://docs.pars.network"
     - name: "GitHub"
       link: "https://github.com/parsnet"
+    - name: "Support"
+      link: "https://pars.network/support"
 
 endpoints:
 
