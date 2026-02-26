@@ -19,6 +19,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="{{ .UI.Favicon.Default }}" />
     <link rel="icon" type="image/png" sizes="32x32" href="{{ .UI.Favicon.Size32x32 }}" />
     <link rel="icon" type="image/png" sizes="16x16" href="{{ .UI.Favicon.Size16x16 }}" />
     <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
@@ -28,7 +29,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="{{ .UI.Title }}" />
     <meta name="application-name" content="{{ .UI.Title }}" />
-    <meta name="theme-color" content="#f7f9fb" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
   </head>
   <body>
     <noscript><strong>Enable JavaScript to view this page.</strong></noscript>

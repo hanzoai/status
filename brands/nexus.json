@@ -1,0 +1,16 @@
+{
+  "name": "Ad Nexus",
+  "title": "Ad Nexus Status",
+  "description": "Real-time service health and performance",
+  "domain": "status.ad.nexus",
+  "logo": "/brands/nexus/logo.svg",
+  "favicon": "/brands/nexus/favicon-32.png",
+  "url": "https://ad.nexus",
+  "github": "",
+  "docs": "",
+  "accent": "#ffffff",
+  "accentRgb": "255, 255, 255",
+  "links": [
+    { "label": "Ad Nexus", "url": "https://ad.nexus" }
+  ]
+}

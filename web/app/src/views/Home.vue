@@ -2,25 +2,19 @@
   <div class="dashboard-container bg-background">
     <div class="container mx-auto px-4 py-8 max-w-7xl">
       <div class="mb-6">
-        <div class="flex items-center justify-between mb-6">
-          <div>
-            <h1 class="text-4xl font-bold tracking-tight">{{ dashboardHeading }}</h1>
-            <p class="text-muted-foreground mt-2">{{ dashboardSubheading }}</p>
-          </div>
-          <div class="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              @click="toggleShowAverageResponseTime" 
-              :title="showAverageResponseTime ? 'Show min-max response time' : 'Show average response time'"
-            >
-              <Activity v-if="showAverageResponseTime" class="h-5 w-5" />
-              <Timer v-else class="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" @click="refreshData" title="Refresh data">
-              <RefreshCw class="h-5 w-5" />
-            </Button>
-          </div>
+        <div class="flex items-center justify-end mb-4 gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            @click="toggleShowAverageResponseTime"
+            :title="showAverageResponseTime ? 'Show min-max response time' : 'Show average response time'"
+          >
+            <Activity v-if="showAverageResponseTime" class="h-5 w-5" />
+            <Timer v-else class="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" @click="refreshData" title="Refresh data">
+            <RefreshCw class="h-5 w-5" />
+          </Button>
         </div>
         <!-- Announcement Banner (Active Announcements) -->
         <AnnouncementBanner :announcements="activeAnnouncements" />
@@ -531,14 +525,6 @@ const initializeCollapsedGroups = () => {
     // On error, uncollapsedGroups stays empty (all collapsed by default)
   }
 }
-
-const dashboardHeading = computed(() => {
-  return window.config && window.config.dashboardHeading && window.config.dashboardHeading !== '{{ .UI.DashboardHeading }}' ? window.config.dashboardHeading : "Health Dashboard"
-})
-
-const dashboardSubheading = computed(() => {
-  return window.config && window.config.dashboardSubheading && window.config.dashboardSubheading !== '{{ .UI.DashboardSubheading }}' ? window.config.dashboardSubheading : "Monitor the health of your endpoints in real-time"
-})
 
 onMounted(() => {
   fetchData()
