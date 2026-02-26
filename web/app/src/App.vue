@@ -19,12 +19,12 @@
                 target="_blank"
                 :class="['flex items-center gap-3', link && 'hover:opacity-80 transition-opacity']"
               >
-                <div class="w-8 h-8 flex items-center justify-center">
+                <div class="h-8 flex items-center justify-center">
                   <img
                     v-if="logo"
                     :src="logo"
                     alt=""
-                    :class="['w-full h-full object-contain', logoIsSvg && 'dark:invert']"
+                    class="h-full object-contain dark:invert"
                   />
                   <img
                     v-else
@@ -174,10 +174,6 @@ const link = computed(() => {
 
 const buttons = computed(() => {
   return window.config && window.config.buttons ? window.config.buttons : []
-})
-
-const logoIsSvg = computed(() => {
-  return logo.value && logo.value.endsWith('.svg')
 })
 
 const brandName = computed(() => {
