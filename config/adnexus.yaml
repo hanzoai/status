@@ -9,10 +9,10 @@ ui:
   title: "Ad Nexus Status"
   description: "Real-time service health and performance"
   header: "Status"
-  logo: "/brands/adnexus/favicon.png"
+  logo: "/brands/adnexus/logo.png"
   link: "https://ad.nexus"
   favicon:
-    default: "/brands/adnexus/favicon-32.png"
+    default: "/brands/adnexus/favicon.svg"
     size16x16: "/brands/adnexus/favicon-16.png"
     size32x32: "/brands/adnexus/favicon-32.png"
   dark-mode: true
@@ -26,15 +26,77 @@ ui:
 
 endpoints:
 
-  # ===============================================
-  # CORE
-  # ===============================================
+  # ═══════════════════════════════════════════════
+  # EXCHANGE
+  # ═══════════════════════════════════════════════
 
-  - name: "Website"
-    group: "Core"
+  - name: "Ad Exchange"
+    group: "Exchange"
+    url: "https://adx.ad.nexus"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302, 404)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "DSP"
+    group: "Exchange"
+    url: "https://dsp.ad.nexus"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302, 404)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "SSP"
+    group: "Exchange"
+    url: "https://ssp.ad.nexus"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302, 404)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  # ═══════════════════════════════════════════════
+  # SERVICES
+  # ═══════════════════════════════════════════════
+
+  - name: "AI"
+    group: "Services"
+    url: "https://ai.ad.nexus"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302, 404)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Metrics"
+    group: "Services"
+    url: "https://metrics.ad.nexus"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  # ═══════════════════════════════════════════════
+  # WEB
+  # ═══════════════════════════════════════════════
+
+  - name: "ad.nexus"
+    group: "Web"
     url: "https://ad.nexus"
     interval: 60s
     conditions:
       - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "docs.ad.nexus"
+    group: "Web"
+    url: "https://docs.ad.nexus"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302, 404)"
       - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
