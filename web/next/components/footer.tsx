@@ -13,9 +13,9 @@ export function Footer() {
     const cfg = getConfig()
     setLink(getLink())
     setButtons(cfg.buttons ?? [])
-    // Derive org name from page title (set by Go template as "Hanzo Status", "Ad Nexus Status", etc.)
-    const pageTitle = document.title || ''
-    setOrgName(pageTitle.replace(/\s*Status\s*$/i, '').trim() || 'Status')
+    // Derive org name from config title (e.g. "Hanzo Status" → "Hanzo", "Ad Nexus Status" → "Ad Nexus")
+    const title = cfg.title || ''
+    setOrgName(title.replace(/\s*Status\s*$/i, '').trim() || 'Status')
   }, [])
 
   const year = new Date().getFullYear()
