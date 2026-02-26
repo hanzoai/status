@@ -92,9 +92,8 @@
 
       <!-- Footer -->
       <footer class="border-t mt-auto">
-        <div class="container mx-auto px-4 py-3 max-w-7xl flex items-center justify-between text-xs text-muted-foreground">
-          <span>Powered by <a :href="link || '#'" class="hover:text-foreground transition-colors">{{ brandName }}</a></span>
-          <a v-if="supportUrl" :href="supportUrl" target="_blank" class="hover:text-foreground transition-colors">Support</a>
+        <div class="container mx-auto px-4 py-3 max-w-7xl text-center text-xs text-muted-foreground">
+          <a v-if="link" :href="link" target="_blank" class="hover:text-foreground transition-colors">{{ brandName }}</a>
         </div>
       </footer>
     </div>
@@ -178,19 +177,12 @@ const buttons = computed(() => {
 })
 
 const brandName = computed(() => {
-  // Derive brand name from the header config (e.g. "Status" doesn't reveal brand, use link domain)
   if (link.value) {
     try {
       return new URL(link.value).hostname.replace('www.', '')
     } catch { return '' }
   }
   return ''
-})
-
-const supportUrl = computed(() => {
-  return window.config && window.config.buttons
-    ? (window.config.buttons.find(b => b.name === 'Support') || {}).link
-    : null
 })
 
 // Methods
