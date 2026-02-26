@@ -52,6 +52,7 @@ export interface UIButton {
 }
 
 export interface WindowConfig {
+  title: string
   logo: string
   header: string
   dashboardHeading: string

@@ -3,6 +3,7 @@ import type { WindowConfig } from './types'
 export function getConfig(): WindowConfig {
   if (typeof window === 'undefined') {
     return {
+      title: 'Status',
       logo: '',
       header: 'Status',
       dashboardHeading: '',
@@ -16,6 +17,7 @@ export function getConfig(): WindowConfig {
   }
   return (
     window.config ?? {
+      title: 'Status',
       logo: '',
       header: 'Status',
       dashboardHeading: '',
