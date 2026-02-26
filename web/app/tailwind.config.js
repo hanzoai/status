@@ -6,8 +6,8 @@ module.exports = {
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     fontFamily: {
-      'mono': ['Consolas', 'Monaco', '"Courier New"', 'monospace'],
-      'sans': ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+      'mono': ['Geist Mono', 'Consolas', 'Monaco', '"Courier New"', 'monospace'],
+      'sans': ['Geist', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
     },
     extend: {
       colors: {

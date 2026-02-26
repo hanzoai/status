@@ -8,16 +8,21 @@ storage:
 ui:
   title: "Lux Status"
   description: "Real-time network health and performance"
-  header: "Lux Status"
-  logo: "https://lux.network/favicon.ico"
+  header: "Status"
+  logo: "/brands/lux/logo.svg"
   link: "https://lux.network"
+  dark-mode: true
+  favicon:
+    default: "/brands/lux/favicon.svg"
+    size16x16: "/brands/lux/favicon-16.png"
+    size32x32: "/brands/lux/favicon-32.png"
   buttons:
-    - name: "Lux Network"
-      link: "https://lux.network"
     - name: "Docs"
       link: "https://docs.lux.network"
     - name: "GitHub"
       link: "https://github.com/luxfi"
+    - name: "Support"
+      link: "https://tawk.to/chat/hanzoai"
 
 endpoints:
 

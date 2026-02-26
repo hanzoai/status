@@ -1,0 +1,18 @@
+{
+  "name": "Pars",
+  "title": "Pars Status",
+  "description": "Real-time network health and performance",
+  "domain": "status.pars.network",
+  "logo": "/brands/pars/logo.svg",
+  "favicon": "/brands/pars/favicon.svg",
+  "url": "https://pars.network",
+  "github": "https://github.com/parsnet",
+  "docs": "https://docs.pars.network",
+  "accent": "#caa24a",
+  "accentRgb": "202, 162, 74",
+  "links": [
+    { "label": "Pars Network", "url": "https://pars.network" },
+    { "label": "Docs", "url": "https://docs.pars.network" },
+    { "label": "GitHub", "url": "https://github.com/parsnet" }
+  ]
+}

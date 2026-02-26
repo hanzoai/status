@@ -13,32 +13,27 @@
           <div class="flex items-center justify-between">
             <!-- Logo and Title -->
             <div class="flex items-center gap-4">
-              <component 
-                :is="link ? 'a' : 'div'" 
-                :href="link" 
+              <component
+                :is="link ? 'a' : 'div'"
+                :href="link"
                 target="_blank"
                 :class="['flex items-center gap-3', link && 'hover:opacity-80 transition-opacity']"
               >
-                <div class="w-12 h-12 flex items-center justify-center">
+                <div class="w-8 h-8 flex items-center justify-center">
                   <img
                     v-if="logo"
                     :src="logo"
-                    alt="Status"
+                    alt=""
                     class="w-full h-full object-contain"
                   />
                   <img
                     v-else
                     src="./assets/logo.svg"
-                    alt="Status"
+                    alt=""
                     class="w-full h-full object-contain"
                   />
                 </div>
-                <div>
-                  <h1 class="text-2xl font-bold tracking-tight">{{ header }}</h1>
-                  <p v-if="buttons && buttons.length" class="text-sm text-muted-foreground">
-                    System Monitoring Dashboard
-                  </p>
-                </div>
+                <h1 class="text-lg font-semibold tracking-tight">Status</h1>
               </component>
             </div>
 
@@ -97,7 +92,9 @@
 
       <!-- Footer -->
       <footer class="border-t mt-auto">
-        <div class="container mx-auto px-4 py-4 max-w-7xl">
+        <div class="container mx-auto px-4 py-3 max-w-7xl flex items-center justify-between text-xs text-muted-foreground">
+          <span>Powered by <a :href="link || '#'" class="hover:text-foreground transition-colors">{{ brandName }}</a></span>
+          <a v-if="supportUrl" :href="supportUrl" target="_blank" class="hover:text-foreground transition-colors">Support</a>
         </div>
       </footer>
     </div>
@@ -111,8 +108,8 @@
             alt="Status"
             class="w-20 h-20 mx-auto mb-4"
           />
-          <CardTitle class="text-3xl">{{ header }}</CardTitle>
-          <p class="text-muted-foreground mt-2">System Monitoring Dashboard</p>
+          <CardTitle class="text-3xl">Status</CardTitle>
+          <p class="text-muted-foreground mt-2">Sign in to continue</p>
         </CardHeader>
         <CardContent>
           <div v-if="route && route.query.error" class="mb-6">
@@ -172,16 +169,28 @@ const logo = computed(() => {
   return window.config && window.config.logo && window.config.logo !== '{{ .UI.Logo }}' ? window.config.logo : ""
 })
 
-const header = computed(() => {
-  return window.config && window.config.header && window.config.header !== '{{ .UI.Header }}' ? window.config.header : "Status"
-})
-
 const link = computed(() => {
   return window.config && window.config.link && window.config.link !== '{{ .UI.Link }}' ? window.config.link : null
 })
 
 const buttons = computed(() => {
   return window.config && window.config.buttons ? window.config.buttons : []
+})
+
+const brandName = computed(() => {
+  // Derive brand name from the header config (e.g. "Status" doesn't reveal brand, use link domain)
+  if (link.value) {
+    try {
+      return new URL(link.value).hostname.replace('www.', '')
+    } catch { return '' }
+  }
+  return ''
+})
+
+const supportUrl = computed(() => {
+  return window.config && window.config.buttons
+    ? (window.config.buttons.find(b => b.name === 'Support') || {}).link
+    : null
 })
 
 // Methods
