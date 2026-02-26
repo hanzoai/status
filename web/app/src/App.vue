@@ -24,7 +24,7 @@
                     v-if="logo"
                     :src="logo"
                     alt=""
-                    class="w-full h-full object-contain dark:invert"
+                    :class="['w-full h-full object-contain', logoIsSvg && 'dark:invert']"
                   />
                   <img
                     v-else
@@ -174,6 +174,10 @@ const link = computed(() => {
 
 const buttons = computed(() => {
   return window.config && window.config.buttons ? window.config.buttons : []
+})
+
+const logoIsSvg = computed(() => {
+  return logo.value && logo.value.endsWith('.svg')
 })
 
 const brandName = computed(() => {
