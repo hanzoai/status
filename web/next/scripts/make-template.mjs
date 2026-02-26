@@ -22,13 +22,23 @@ const headScriptMatches = [...outHtml.matchAll(/<script\s[^>]*><\/script>/g)]
 const headLinks = headLinkMatches.map(m => m[0]).join('\n')
 const headScripts = headScriptMatches.map(m => m[0]).join('\n')
 
+// Collect src attributes already included in head scripts to avoid duplicates
+const headSrcs = new Set(
+  [...headScripts.matchAll(/src="([^"]+)"/g)].map(m => m[1])
+)
+
 // Extract all <script> tags from <body> (inline and external)
 const bodyMatch = outHtml.match(/<body[^>]*>([\s\S]*)<\/body>/)
 const bodyContent = bodyMatch ? bodyMatch[1] : ''
 
-// Extract inline scripts (the RSC payload and theme script)
+// Extract body scripts, filtering out any whose src already appears in head
 const inlineScripts = [...bodyContent.matchAll(/<script[^>]*>[\s\S]*?<\/script>/g)]
   .map(m => m[0])
+  .filter(tag => {
+    const srcMatch = tag.match(/src="([^"]+)"/)
+    if (!srcMatch) return true // keep inline scripts (no src)
+    return !headSrcs.has(srcMatch[1]) // skip if already in head
+  })
   .join('\n')
 
 // Extract the body class
