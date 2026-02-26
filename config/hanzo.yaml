@@ -27,11 +27,11 @@ ui:
 endpoints:
 
   # ═══════════════════════════════════════════════
-  # CORE PLATFORM
+  # PLATFORM
   # ═══════════════════════════════════════════════
 
   - name: "Identity"
-    group: "Core Platform"
+    group: "Platform"
     url: "https://hanzo.id"
     interval: 60s
     conditions:
@@ -39,17 +39,8 @@ endpoints:
       - "[RESPONSE_TIME] < 2000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "IAM"
-    group: "Core Platform"
-    url: "https://iam.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
   - name: "Console"
-    group: "Core Platform"
+    group: "Platform"
     url: "https://console.hanzo.ai"
     interval: 60s
     conditions:
@@ -58,7 +49,7 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "Cloud"
-    group: "Core Platform"
+    group: "Platform"
     url: "https://cloud.hanzo.ai"
     interval: 60s
     conditions:
@@ -67,7 +58,7 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "Cloud API"
-    group: "Core Platform"
+    group: "Platform"
     url: "https://cloud-api.hanzo.ai/health"
     interval: 60s
     conditions:
@@ -76,7 +67,7 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "KMS"
-    group: "Core Platform"
+    group: "Platform"
     url: "https://kms.hanzo.ai/api/status"
     interval: 60s
     conditions:
@@ -84,8 +75,8 @@ endpoints:
       - "[RESPONSE_TIME] < 2000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Platform"
-    group: "Core Platform"
+  - name: "PaaS"
+    group: "Platform"
     url: "https://platform.hanzo.ai"
     interval: 60s
     conditions:
@@ -93,8 +84,8 @@ endpoints:
       - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Container Registry"
-    group: "Core Platform"
+  - name: "Registry"
+    group: "Platform"
     url: "https://registry.hanzo.ai/v2/"
     interval: 60s
     conditions:
@@ -103,11 +94,11 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   # ═══════════════════════════════════════════════
-  # AI SERVICES
+  # AI
   # ═══════════════════════════════════════════════
 
   - name: "API Gateway"
-    group: "AI Services"
+    group: "AI"
     url: "https://api.hanzo.ai/health"
     interval: 60s
     conditions:
@@ -116,7 +107,7 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "Chat"
-    group: "AI Services"
+    group: "AI"
     url: "https://chat.hanzo.ai"
     interval: 60s
     conditions:
@@ -125,7 +116,7 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "Studio"
-    group: "AI Services"
+    group: "AI"
     url: "https://studio.hanzo.ai"
     interval: 60s
     conditions:
@@ -134,7 +125,7 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "Flow"
-    group: "AI Services"
+    group: "AI"
     url: "https://flow.hanzo.ai"
     interval: 60s
     conditions:
@@ -143,7 +134,7 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "Flow App"
-    group: "AI Services"
+    group: "AI"
     url: "https://app.flow.hanzo.ai"
     interval: 60s
     conditions:
@@ -151,8 +142,8 @@ endpoints:
       - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Zen LM"
-    group: "AI Services"
+  - name: "Zen"
+    group: "AI"
     url: "https://zen.hanzo.ai"
     interval: 60s
     conditions:
@@ -161,7 +152,7 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "Zen API"
-    group: "AI Services"
+    group: "AI"
     url: "https://api.zen.hanzo.ai/health"
     interval: 60s
     conditions:
@@ -170,7 +161,7 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "Visor"
-    group: "AI Services"
+    group: "AI"
     url: "https://vm.hanzo.ai"
     interval: 60s
     conditions:
@@ -179,7 +170,7 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "MPC"
-    group: "AI Services"
+    group: "AI"
     url: "https://mpc.hanzo.ai"
     interval: 60s
     conditions:
@@ -188,10 +179,10 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   # ═══════════════════════════════════════════════
-  # COMMERCE & BILLING
+  # COMMERCE
   # ═══════════════════════════════════════════════
 
-  - name: "Commerce API"
+  - name: "API"
     group: "Commerce"
     url: "https://commerce.hanzo.ai/api/v1/ping"
     interval: 60s
@@ -200,7 +191,7 @@ endpoints:
       - "[RESPONSE_TIME] < 2000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Commerce Admin"
+  - name: "Admin"
     group: "Commerce"
     url: "https://admin.commerce.hanzo.ai"
     interval: 60s
@@ -209,7 +200,7 @@ endpoints:
       - "[RESPONSE_TIME] < 2000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Commerce Store"
+  - name: "Store"
     group: "Commerce"
     url: "https://store.commerce.hanzo.ai"
     interval: 60s
@@ -237,11 +228,11 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   # ═══════════════════════════════════════════════
-  # BOT PLATFORM
+  # BOT
   # ═══════════════════════════════════════════════
 
-  - name: "Bot Site"
-    group: "Bot Platform"
+  - name: "Site"
+    group: "Bot"
     url: "https://hanzo.bot"
     interval: 60s
     conditions:
@@ -249,8 +240,8 @@ endpoints:
       - "[RESPONSE_TIME] < 2000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Bot Gateway"
-    group: "Bot Platform"
+  - name: "Gateway"
+    group: "Bot"
     url: "https://bot.hanzo.ai"
     interval: 60s
     conditions:
@@ -258,8 +249,8 @@ endpoints:
       - "[RESPONSE_TIME] < 2000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Bot Hub"
-    group: "Bot Platform"
+  - name: "Hub"
+    group: "Bot"
     url: "https://hub.hanzo.bot"
     interval: 60s
     conditions:
@@ -267,8 +258,8 @@ endpoints:
       - "[RESPONSE_TIME] < 2000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Bot Playground"
-    group: "Bot Platform"
+  - name: "Playground"
+    group: "Bot"
     url: "https://app.hanzo.bot"
     interval: 60s
     conditions:
@@ -276,8 +267,8 @@ endpoints:
       - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Bot Skills"
-    group: "Bot Platform"
+  - name: "Skills"
+    group: "Bot"
     url: "https://skills.hanzo.bot"
     interval: 60s
     conditions:
@@ -285,8 +276,8 @@ endpoints:
       - "[RESPONSE_TIME] < 2000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Bot Docs"
-    group: "Bot Platform"
+  - name: "Docs"
+    group: "Bot"
     url: "https://docs.hanzo.bot"
     interval: 60s
     conditions:
@@ -294,8 +285,8 @@ endpoints:
       - "[RESPONSE_TIME] < 2000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Bot Market"
-    group: "Bot Platform"
+  - name: "Market"
+    group: "Bot"
     url: "https://market.hanzo.bot"
     interval: 60s
     conditions:
@@ -303,21 +294,21 @@ endpoints:
       - "[RESPONSE_TIME] < 2000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Bot WS Gateway"
-    group: "Bot Platform"
-    url: "https://gw.hanzo.bot"
+  # ═══════════════════════════════════════════════
+  # WEB
+  # ═══════════════════════════════════════════════
+
+  - name: "hanzo.ai"
+    group: "Web"
+    url: "https://hanzo.ai"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 404)"
-      - "[RESPONSE_TIME] < 2000"
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  # ═══════════════════════════════════════════════
-  # WEB PROPERTIES
-  # ═══════════════════════════════════════════════
-
-  - name: "Hanzo App"
-    group: "Web Properties"
+  - name: "hanzo.app"
+    group: "Web"
     url: "https://hanzo.app"
     interval: 60s
     conditions:
@@ -325,8 +316,8 @@ endpoints:
       - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Hanzo Team"
-    group: "Web Properties"
+  - name: "hanzo.team"
+    group: "Web"
     url: "https://hanzo.team"
     interval: 60s
     conditions:
@@ -334,17 +325,8 @@ endpoints:
       - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Team App"
-    group: "Web Properties"
-    url: "https://app.hanzo.team"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "S3 / Object Storage"
-    group: "Web Properties"
+  - name: "hanzo.space"
+    group: "Web"
     url: "https://hanzo.space"
     interval: 60s
     conditions:
@@ -352,22 +334,13 @@ endpoints:
       - "[RESPONSE_TIME] < 2000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "ZeroTrust Console"
-    group: "Web Properties"
-    url: "https://zt.hanzo.ai"
+  - name: "docs.hanzo.ai"
+    group: "Web"
+    url: "https://docs.hanzo.ai"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 302)"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "ORM Docs"
-    group: "Web Properties"
-    url: "https://orm.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 301)"
-      - "[RESPONSE_TIME] < 2000"
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   # ═══════════════════════════════════════════════
@@ -399,35 +372,4 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 5000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  # ═══════════════════════════════════════════════
-  # IDENTITY PROVIDERS
-  # ═══════════════════════════════════════════════
-
-  - name: "lux.id"
-    group: "Identity"
-    url: "https://lux.id"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 302)"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "pars.id"
-    group: "Identity"
-    url: "https://pars.id"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 302)"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "id.bootno.de"
-    group: "Identity"
-    url: "https://id.bootno.de"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
       - "[CERTIFICATE_EXPIRATION] > 720h"

@@ -11,11 +11,11 @@ ui:
   header: "Status"
   logo: "/brands/pars/logo.svg"
   link: "https://pars.network"
+  dark-mode: true
   favicon:
     default: "/brands/pars/favicon.svg"
     size16x16: "/brands/pars/favicon-16.png"
     size32x32: "/brands/pars/favicon-32.png"
-  dark-mode: true
   buttons:
     - name: "Docs"
       link: "https://docs.pars.network"
@@ -26,12 +26,8 @@ ui:
 
 endpoints:
 
-  # ===============================================
-  # CORE
-  # ===============================================
-
-  - name: "Website"
-    group: "Core"
+  - name: "pars.network"
+    group: "Web"
     url: "https://pars.network"
     interval: 60s
     conditions:
@@ -40,7 +36,7 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "Identity"
-    group: "Core"
+    group: "Services"
     url: "https://pars.id"
     interval: 60s
     conditions:
