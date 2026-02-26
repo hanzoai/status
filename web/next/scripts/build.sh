@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 
 # Build the Next.js static export and post-process for Go template embedding.
 #
@@ -15,7 +15,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-STATIC_DIR="$(cd "$PROJECT_DIR/../static" && pwd)"
+STATIC_DIR="$PROJECT_DIR/../static"
 
 echo "[build] Building Next.js static export..."
 cd "$PROJECT_DIR"
