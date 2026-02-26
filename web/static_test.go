@@ -23,26 +23,6 @@ func TestEmbed(t *testing.T) {
 			expectedContainString: "", // not checking because it's an image
 		},
 		{
-			path:                  "img/logo.svg",
-			shouldExist:           true,
-			expectedContainString: "</svg>",
-		},
-		{
-			path:                  "css/app.css",
-			shouldExist:           true,
-			expectedContainString: "background-color",
-		},
-		{
-			path:                  "js/app.js",
-			shouldExist:           true,
-			expectedContainString: "function",
-		},
-		{
-			path:                  "js/chunk-vendors.js",
-			shouldExist:           true,
-			expectedContainString: "function",
-		},
-		{
 			path:        "file-that-does-not-exist.html",
 			shouldExist: false,
 		},
@@ -65,10 +45,44 @@ func TestEmbed(t *testing.T) {
 				if len(content) == 0 {
 					t.Errorf("%s should have existed in the static FileSystem, but was empty", scenario.path)
 				}
-				if !strings.Contains(string(content), scenario.expectedContainString) {
+				if len(scenario.expectedContainString) > 0 && !strings.Contains(string(content), scenario.expectedContainString) {
 					t.Errorf("%s should have contained %s, but did not", scenario.path, scenario.expectedContainString)
 				}
 			}
 		})
 	}
+
+	// Verify Next.js static assets directory exists
+	t.Run("_next/static/chunks", func(t *testing.T) {
+		entries, err := fs.ReadDir(staticFileSystem, "_next/static/chunks")
+		if err != nil {
+			t.Errorf("_next/static/chunks directory should exist, got error: %s", err.Error())
+			return
+		}
+		if len(entries) == 0 {
+			t.Error("_next/static/chunks directory should not be empty")
+		}
+		// Verify at least one JS file exists
+		hasJS := false
+		for _, entry := range entries {
+			if strings.HasSuffix(entry.Name(), ".js") {
+				hasJS = true
+				break
+			}
+		}
+		if !hasJS {
+			t.Error("_next/static/chunks should contain at least one .js file")
+		}
+	})
+
+	t.Run("_next/static/css", func(t *testing.T) {
+		entries, err := fs.ReadDir(staticFileSystem, "_next/static/css")
+		if err != nil {
+			t.Errorf("_next/static/css directory should exist, got error: %s", err.Error())
+			return
+		}
+		if len(entries) == 0 {
+			t.Error("_next/static/css directory should not be empty")
+		}
+	})
 }

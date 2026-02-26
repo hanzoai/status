@@ -1,11 +1,11 @@
-# Stage 1: Build Vue frontend
+# Stage 1: Build Next.js frontend (static export)
 FROM node:20-alpine AS frontend
 WORKDIR /app
-COPY web/app/package*.json web/app/
-COPY web/app/ web/app/
-COPY web/app/vue.config.js web/app/
-RUN cd web/app && npm ci && npm run build
-# Output lands in web/static/ per vue.config.js outputDir
+COPY web/next/package*.json web/next/
+RUN cd web/next && npm ci
+COPY web/next/ web/next/
+COPY web/static/brands/ web/static/brands/
+RUN cd web/next && bash scripts/build.sh
 
 # Stage 2: Build Go binary (pure Go, no CGO needed — modernc.org/sqlite)
 FROM golang:1.25-alpine AS backend
