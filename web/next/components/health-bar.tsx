@@ -42,7 +42,6 @@ export function HealthBar({ results, maxResults = 50, onTooltip }: HealthBarProp
   const handleClick = useCallback(
     (r: EndpointResult | null, i: number) => {
       if (!r || !onTooltip) return
-      // Clear other selections via custom event
       window.dispatchEvent(new CustomEvent('clear-data-point-selection'))
       if (selectedIndex === i) {
         setSelectedIndex(null)
@@ -59,28 +58,23 @@ export function HealthBar({ results, maxResults = 50, onTooltip }: HealthBarProp
   const clearRef = useRef<(() => void) | null>(null)
   clearRef.current = () => setSelectedIndex(null)
 
-  // Register listener once
-  if (typeof window !== 'undefined') {
-    // Use useEffect-style cleanup via a stable ref
-  }
-
   return (
     <div>
-      <div className="flex gap-0.5" data-health-bar>
+      <div className="flex gap-[3px]" data-health-bar>
         {display.map((r, i) => (
           <div
             key={i}
             ref={(el) => { barRefs.current[i] = el }}
-            className={`flex-1 h-6 sm:h-8 rounded-sm transition-all ${
+            className={`flex-1 h-7 rounded-[3px] transition-all duration-150 ${
               r
                 ? r.success
                   ? selectedIndex === i
-                    ? 'bg-green-700 cursor-pointer'
-                    : 'bg-green-500 hover:bg-green-700 cursor-pointer'
+                    ? 'bg-emerald-600 cursor-pointer'
+                    : 'bg-emerald-500/80 hover:bg-emerald-500 cursor-pointer'
                   : selectedIndex === i
-                    ? 'bg-red-700 cursor-pointer'
-                    : 'bg-red-500 hover:bg-red-700 cursor-pointer'
-                : 'bg-gray-200 dark:bg-gray-700'
+                    ? 'bg-red-600 cursor-pointer'
+                    : 'bg-red-500/80 hover:bg-red-500 cursor-pointer'
+                : 'bg-[hsl(var(--muted))]'
             }`}
             onMouseEnter={() => handleMouseEnter(r, i)}
             onMouseLeave={handleMouseLeave}
@@ -91,7 +85,7 @@ export function HealthBar({ results, maxResults = 50, onTooltip }: HealthBarProp
           />
         ))}
       </div>
-      <div className="mt-1 flex items-center justify-between text-xs text-[hsl(var(--muted-foreground))]">
+      <div className="mt-1.5 flex items-center justify-between font-mono text-[10px] text-[hsl(var(--muted-foreground)/.6)]">
         <span>{oldestTime}</span>
         <span>{newestTime}</span>
       </div>

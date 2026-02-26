@@ -242,25 +242,25 @@ export function Dashboard({ announcements, navigate }: DashboardProps) {
     ss.filter((s) => s.results?.length && !s.results[s.results.length - 1].success).length
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative flex min-h-screen flex-col">
       <Header />
-      <main className="relative">
-        <div className="container mx-auto max-w-7xl px-4 py-8">
+      <main className="relative flex-1">
+        <div className="container mx-auto max-w-7xl px-4 py-6">
           <div className="mb-6">
-            <div className="mb-4 flex items-center justify-end gap-2">
+            <div className="mb-3 flex items-center justify-end gap-1">
               <button
                 onClick={toggleResponseTimeDisplay}
                 title={showAvgResponseTime ? 'Show min-max response time' : 'Show average response time'}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-[hsl(var(--accent))] transition-colors"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--foreground))] transition-colors"
               >
-                {showAvgResponseTime ? <Activity className="h-5 w-5" /> : <Timer className="h-5 w-5" />}
+                {showAvgResponseTime ? <Activity className="h-4 w-4" /> : <Timer className="h-4 w-4" />}
               </button>
               <button
                 onClick={refreshData}
                 title="Refresh data"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-[hsl(var(--accent))] transition-colors"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--foreground))] transition-colors"
               >
-                <RefreshCw className="h-5 w-5" />
+                <RefreshCw className="h-4 w-4" />
               </button>
             </div>
 
@@ -289,28 +289,28 @@ export function Dashboard({ announcements, navigate }: DashboardProps) {
           {!loading && (filteredEndpoints.length > 0 || filteredSuites.length > 0) && (
             <>
               {isGrouped && combinedGroups ? (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {combinedGroups.map(([group, items]) => (
-                    <div key={group} className="overflow-hidden rounded-lg border border-[hsl(var(--border))]">
+                    <div key={group} className="overflow-hidden rounded-xl border border-[hsl(var(--border))]">
                       <button
                         onClick={() => toggleGroup(group)}
-                        className="flex w-full items-center justify-between border-b border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 transition-colors hover:bg-[hsl(var(--accent)/.5)]"
+                        className="flex w-full items-center justify-between border-b border-[hsl(var(--border))] bg-[hsl(var(--card))] px-5 py-3.5 transition-colors hover:bg-[hsl(var(--accent)/.3)]"
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2.5">
                           {uncollapsedGroups.has(group) ? (
-                            <ChevronDown className="h-5 w-5 text-[hsl(var(--muted-foreground))]" />
+                            <ChevronDown className="h-4 w-4 text-[hsl(var(--muted-foreground))]" />
                           ) : (
-                            <ChevronUp className="h-5 w-5 text-[hsl(var(--muted-foreground))]" />
+                            <ChevronUp className="h-4 w-4 text-[hsl(var(--muted-foreground))]" />
                           )}
-                          <h2 className="text-xl font-semibold">{group}</h2>
+                          <h2 className="text-[15px] font-semibold">{group}</h2>
                         </div>
                         <div className="flex items-center gap-2">
                           {unhealthyCount(items.endpoints) + failingSuitesCount(items.suites) > 0 ? (
-                            <span className="rounded-full bg-red-600 px-2 py-1 text-sm font-medium text-white">
+                            <span className="rounded-full bg-red-500/90 px-2 py-0.5 text-xs font-medium text-white">
                               {unhealthyCount(items.endpoints) + failingSuitesCount(items.suites)}
                             </span>
                           ) : (
-                            <CheckCircle className="h-6 w-6 text-green-600" />
+                            <CheckCircle className="h-5 w-5 text-emerald-500" />
                           )}
                         </div>
                       </button>
@@ -319,7 +319,7 @@ export function Dashboard({ announcements, navigate }: DashboardProps) {
                         <div className="p-4">
                           {items.suites.length > 0 && (
                             <div className="mb-4">
-                              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[hsl(var(--muted-foreground))]">Suites</h3>
+                              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[hsl(var(--muted-foreground)/.7)]">Suites</h3>
                               <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                                 {items.suites.map((s) => (
                                   <SuiteCard key={s.key} suite={s} maxResults={RESULT_PAGE_SIZE} onNavigate={(k) => navigate(`/suites/${k}`)} onTooltip={handleTooltip} />
@@ -330,7 +330,7 @@ export function Dashboard({ announcements, navigate }: DashboardProps) {
                           {items.endpoints.length > 0 && (
                             <div>
                               {items.suites.length > 0 && (
-                                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[hsl(var(--muted-foreground))]">Endpoints</h3>
+                                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[hsl(var(--muted-foreground)/.7)]">Endpoints</h3>
                               )}
                               <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                                 {items.endpoints.map((ep) => (
