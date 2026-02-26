@@ -110,6 +110,20 @@ func (a *API) createRouter(cfg *config.Config) *fiber.App {
 	if err != nil {
 		panic(err)
 	}
+	app.Use("/", func(c *fiber.Ctx) error {
+		// Static assets have no filename hashing, so ensure browsers revalidate
+		path := c.Path()
+		if len(path) > 3 {
+			switch path[len(path)-3:] {
+			case ".js":
+				c.Set("Cache-Control", "no-cache")
+			}
+		}
+		if len(path) > 4 && path[len(path)-4:] == ".css" {
+			c.Set("Cache-Control", "no-cache")
+		}
+		return c.Next()
+	})
 	app.Use("/", fiberfs.New(fiberfs.Config{
 		Root:   http.FS(staticFileSystem),
 		Index:  "index.html",
