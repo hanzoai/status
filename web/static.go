@@ -3,7 +3,7 @@ package static
 import "embed"
 
 var (
-	//go:embed static
+	//go:embed all:static
 	FileSystem embed.FS
 )
 
