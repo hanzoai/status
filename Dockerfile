@@ -5,7 +5,7 @@ COPY web/next/package*.json web/next/
 RUN cd web/next && npm ci
 COPY web/next/ web/next/
 COPY web/static/brands/ web/static/brands/
-RUN cd web/next && bash scripts/build.sh
+RUN cd web/next && sh scripts/build.sh
 
 # Stage 2: Build Go binary (pure Go, no CGO needed — modernc.org/sqlite)
 FROM golang:1.25-alpine AS backend
