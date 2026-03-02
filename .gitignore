@@ -19,3 +19,9 @@ node_modules
 gatus
 config/config.yml
 config.yaml
+
+# AI docs
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+QWEN.md
