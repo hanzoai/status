@@ -7,13 +7,13 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
-  ingressClassName: nginx
+  ingressClassName: ingress
   tls:
     - hosts:
-        - luxstat.us
-      secretName: luxstat-us-tls
+        - status.lux.network
+      secretName: status-lux-network-tls
   rules:
-    - host: luxstat.us
+    - host: status.lux.network
       http:
         paths:
           - path: /

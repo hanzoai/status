@@ -110,6 +110,15 @@ endpoints:
 
   - name: "Chat"
     group: "AI"
+    url: "https://hanzo.chat"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Chat (alt)"
+    group: "AI"
     url: "https://chat.hanzo.ai"
     interval: 60s
     conditions:

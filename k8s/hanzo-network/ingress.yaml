@@ -1,17 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: status
+  name: status-network
   labels:
-    app: status
+    app: status-network
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: ingress
   tls:
     - hosts:
-        - status.hanzo.ai
-      secretName: status-hanzo-ai-tls
+        - status.hanzo.network
+      secretName: status-hanzo-network-tls
   rules:
-    - host: status.hanzo.ai
+    - host: status.hanzo.network
       http:
         paths:
           - path: /

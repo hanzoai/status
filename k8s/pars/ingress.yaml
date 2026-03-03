@@ -4,14 +4,16 @@ metadata:
   name: status
   labels:
     app: status
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: ingress
   tls:
     - hosts:
-        - status.hanzo.ai
-      secretName: status-hanzo-ai-tls
+        - status.pars.network
+      secretName: status-pars-network-tls
   rules:
-    - host: status.hanzo.ai
+    - host: status.pars.network
       http:
         paths:
           - path: /
