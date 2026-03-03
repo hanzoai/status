@@ -399,9 +399,9 @@ endpoints:
       - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "hanzo.space"
+  - name: "s3.hanzo.ai"
     group: "Web"
-    url: "https://hanzo.space"
+    url: "https://s3.hanzo.ai"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
