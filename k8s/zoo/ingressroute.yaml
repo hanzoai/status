@@ -1,0 +1,16 @@
+apiVersion: hanzo.ai/v1alpha1
+kind: IngressRoute
+metadata:
+  name: status
+  namespace: zoo-system
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`status.zoo.network`)
+      kind: Rule
+      services:
+        - name: status
+          port: 80
+  tls:
+    certResolver: letsencrypt

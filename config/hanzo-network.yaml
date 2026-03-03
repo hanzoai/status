@@ -6,23 +6,23 @@ storage:
   path: /data/status.db
 
 ui:
-  title: "Zoo Status"
-  description: "Real-time research infrastructure health"
+  title: "Hanzo Network Status"
+  description: "Real-time blockchain and web3 infrastructure health"
   header: "Status"
-  logo: "/brands/zoo/logo.svg"
-  link: "https://zoo.network"
+  logo: "/brands/hanzo/logo.svg"
+  link: "https://hanzo.network"
   dark-mode: true
   favicon:
-    default: "/brands/zoo/favicon.svg"
-    size16x16: "/brands/zoo/favicon-16.png"
-    size32x32: "/brands/zoo/favicon-32.png"
+    default: "/brands/hanzo/favicon.svg"
+    size16x16: "/brands/hanzo/favicon-16.png"
+    size32x32: "/brands/hanzo/favicon-32.png"
   buttons:
-    - name: "ZIPs"
-      link: "https://zips.zoo.ngo"
+    - name: "Explorer"
+      link: "https://explore-hanzo.lux.network"
+    - name: "Docs"
+      link: "https://docs.hanzo.ai"
     - name: "GitHub"
-      link: "https://github.com/zoolabs"
-    - name: "Support"
-      link: "https://zoo.network/support"
+      link: "https://github.com/hanzoai"
 
 endpoints:
 
@@ -32,16 +32,33 @@ endpoints:
 
   - name: "Explorer"
     group: "Mainnet"
-    url: "https://explore-zoo.lux.network"
+    url: "https://explore-hanzo.lux.network"
     interval: 60s
     conditions:
       - "[STATUS] == any(200, 302)"
       - "[RESPONSE_TIME] < 5000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "RPC (Zoo Chain)"
+  - name: "RPC (Hanzo Chain)"
     group: "Mainnet"
-    url: "https://api.lux.network/mainnet/ext/bc/2Y625Kvdd4wZ5LKx9kLSf1jGALyARmXVN1YsTb4F3Hzv4bPDbp/rpc"
+    url: "https://api.lux.network/mainnet/ext/bc/2GiQb73CeJESjc4omFv2YtQHZrRgJf25NXPzAr5J6UNHRcDV2F/rpc"
+    method: POST
+    body: '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+    headers:
+      Content-Type: application/json
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+      - "[BODY].result != null"
+
+  # ═══════════════════════════════════════════════
+  # TESTNET
+  # ═══════════════════════════════════════════════
+
+  - name: "RPC (Hanzo Testnet)"
+    group: "Testnet"
+    url: "https://api.lux.network/testnet/ext/bc/2wbYEFh7ELuovqXhyYeCLvweZrcEgNUoZVJUAtw145qTVAUJxE/rpc"
     method: POST
     body: '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
     headers:
@@ -74,62 +91,33 @@ endpoints:
       - "[RESPONSE_TIME] < 5000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  # ═══════════════════════════════════════════════
-  # CLOUD
-  # ═══════════════════════════════════════════════
-
-  - name: "Cloud"
-    group: "Cloud"
-    url: "https://cloud.zoo.network"
+  - name: "MPC"
+    group: "Services"
+    url: "https://mpc.lux.network"
     interval: 60s
     conditions:
       - "[STATUS] == any(200, 302)"
       - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Cloud API"
-    group: "Cloud"
-    url: "https://api.cloud.zoo.network/health"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Cloud WebSocket"
-    group: "Cloud"
-    url: "wss://ws.cloud.zoo.network"
-    interval: 60s
-    conditions:
-      - "[CONNECTED] == true"
 
   # ═══════════════════════════════════════════════
   # WEB
   # ═══════════════════════════════════════════════
 
-  - name: "zoo.network"
+  - name: "hanzo.ai"
     group: "Web"
-    url: "https://zoo.network"
+    url: "https://hanzo.ai"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 302)"
+      - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "zoo.ngo"
+  - name: "docs.hanzo.ai"
     group: "Web"
-    url: "https://zoo.ngo"
+    url: "https://docs.hanzo.ai"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 302)"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "ZIPs"
-    group: "Web"
-    url: "https://zips.zoo.ngo"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 302)"
+      - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"

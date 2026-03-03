@@ -1,0 +1,16 @@
+apiVersion: hanzo.ai/v1alpha1
+kind: IngressRoute
+metadata:
+  name: status
+  namespace: pars-system
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`status.pars.network`)
+      kind: Rule
+      services:
+        - name: status
+          port: 80
+  tls:
+    certResolver: letsencrypt

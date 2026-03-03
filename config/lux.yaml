@@ -41,9 +41,45 @@ endpoints:
       - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Explorer"
+  - name: "Explorer (C-Chain)"
     group: "Mainnet"
     url: "https://explore.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Explorer Hanzo"
+    group: "Mainnet"
+    url: "https://explore-hanzo.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Explorer SPC"
+    group: "Mainnet"
+    url: "https://explore-spc.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Explorer Zoo"
+    group: "Mainnet"
+    url: "https://explore-zoo.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Explorer Pars"
+    group: "Mainnet"
+    url: "https://explore-pars.lux.network"
     interval: 60s
     conditions:
       - "[STATUS] == any(200, 302)"
@@ -53,68 +89,6 @@ endpoints:
   - name: "Explorer API"
     group: "Mainnet"
     url: "https://api-explore.lux.network"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 302, 404)"
-      - "[RESPONSE_TIME] < 5000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  # ═══════════════════════════════════════════════
-  # TESTNET
-  # ═══════════════════════════════════════════════
-
-  - name: "API Gateway"
-    group: "Testnet"
-    url: "https://api.testnet.lux.network"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 404)"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Explorer"
-    group: "Testnet"
-    url: "https://explore-test.lux.network"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 302)"
-      - "[RESPONSE_TIME] < 5000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Explorer API"
-    group: "Testnet"
-    url: "https://api-explore-test.lux.network"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 302, 404)"
-      - "[RESPONSE_TIME] < 5000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  # ═══════════════════════════════════════════════
-  # DEVNET
-  # ═══════════════════════════════════════════════
-
-  - name: "API Gateway"
-    group: "Devnet"
-    url: "https://api.devnet.lux.network"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 404)"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Explorer"
-    group: "Devnet"
-    url: "https://explore-dev.lux.network"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 302)"
-      - "[RESPONSE_TIME] < 5000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Explorer API"
-    group: "Devnet"
-    url: "https://api-explore-dev.lux.network"
     interval: 60s
     conditions:
       - "[STATUS] == any(200, 302, 404)"
@@ -134,13 +108,22 @@ endpoints:
       - "[RESPONSE_TIME] < 5000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Identity"
+  - name: "Exchange"
     group: "Services"
-    url: "https://lux.id"
+    url: "https://lux.exchange"
     interval: 60s
     conditions:
       - "[STATUS] == any(200, 302)"
-      - "[RESPONSE_TIME] < 2000"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "MPC Wallet"
+    group: "Services"
+    url: "https://mpc.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "Markets"
@@ -180,6 +163,10 @@ endpoints:
     interval: 60s
     conditions:
       - "[CONNECTED] == true"
+
+  # ═══════════════════════════════════════════════
+  # WEB
+  # ═══════════════════════════════════════════════
 
   - name: "lux.network"
     group: "Web"

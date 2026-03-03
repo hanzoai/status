@@ -28,6 +28,36 @@ ui:
 
 endpoints:
 
+  # ═══════════════════════════════════════════════
+  # MAINNET
+  # ═══════════════════════════════════════════════
+
+  - name: "Explorer"
+    group: "Mainnet"
+    url: "https://explore-pars.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "RPC (Pars Chain)"
+    group: "Mainnet"
+    url: "https://api.lux.network/mainnet/ext/bc/2pUskxqaL5Bpx7uRUGG1fDjPckjxQ4UKX4sLKeaS1NdSVBJd3F/rpc"
+    method: POST
+    body: '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+    headers:
+      Content-Type: application/json
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+      - "[BODY].result != null"
+
+  # ═══════════════════════════════════════════════
+  # WEB
+  # ═══════════════════════════════════════════════
+
   - name: "pars.network"
     group: "Web"
     url: "https://pars.network"

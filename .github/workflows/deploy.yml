@@ -40,6 +40,19 @@ jobs:
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - brand: hanzo
+            namespace: hanzo
+          - brand: lux
+            namespace: lux-system
+          - brand: pars
+            namespace: pars-system
+          - brand: zoo
+            namespace: zoo-system
+          - brand: hanzo-network
+            namespace: hanzo-network
     steps:
       - uses: actions/checkout@v4
 
@@ -51,7 +64,14 @@ jobs:
       - name: Configure kubectl
         run: doctl kubernetes cluster kubeconfig save hanzo-k8s
 
-      - name: Deploy
+      - name: Deploy ${{ matrix.brand }}
         run: |
-          kubectl set image deployment/status status=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} -n status
-          kubectl rollout status deployment/status -n status --timeout=120s
+          # Apply kustomize overlay (creates/updates configmap, deployment, service, ingress)
+          kubectl apply -k k8s/${{ matrix.brand }}/
+
+          # Update image to new SHA
+          kubectl set image deployment/status status=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -n ${{ matrix.namespace }}
+
+          # Wait for rollout
+          kubectl rollout status deployment/status -n ${{ matrix.namespace }} --timeout=120s
