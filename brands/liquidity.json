@@ -1,0 +1,18 @@
+{
+  "name": "Liquidity",
+  "title": "Liquidity Status",
+  "description": "Real-time infrastructure health for the Liquidity Exchange",
+  "domain": "status.{env}.satschel.com",
+  "logo": "",
+  "favicon": "",
+  "url": "https://liquidity.io",
+  "github": "https://github.com/liquidityio",
+  "docs": "https://docs.next.satschel.com",
+  "accent": "#0066ff",
+  "accentRgb": "0, 102, 255",
+  "links": [
+    { "label": "Exchange", "url": "https://exchange.next.satschel.com" },
+    { "label": "Explorer", "url": "https://explore.next.satschel.com" },
+    { "label": "Docs", "url": "https://docs.next.satschel.com" }
+  ]
+}
