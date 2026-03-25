@@ -41,7 +41,7 @@ endpoints:
       - "[RESPONSE_TIME] < 3000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Explorer (C-Chain)"
+  - name: "Explorer"
     group: "Mainnet"
     url: "https://explore.lux.network"
     interval: 60s
@@ -96,6 +96,68 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   # ═══════════════════════════════════════════════
+  # TESTNET
+  # ═══════════════════════════════════════════════
+
+  - name: "API Gateway"
+    group: "Testnet"
+    url: "https://api.testnet.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 404)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Explorer"
+    group: "Testnet"
+    url: "https://explore-test.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Explorer API"
+    group: "Testnet"
+    url: "https://api-explore-test.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302, 404)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  # ═══════════════════════════════════════════════
+  # DEVNET
+  # ═══════════════════════════════════════════════
+
+  - name: "API Gateway"
+    group: "Devnet"
+    url: "https://api.devnet.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 404)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Explorer"
+    group: "Devnet"
+    url: "https://explore-dev.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Explorer API"
+    group: "Devnet"
+    url: "https://api-explore-dev.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302, 404)"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  # ═══════════════════════════════════════════════
   # SERVICES
   # ═══════════════════════════════════════════════
 
@@ -117,9 +179,36 @@ endpoints:
       - "[RESPONSE_TIME] < 5000"
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
+  - name: "Wallet"
+    group: "Services"
+    url: "https://wallet.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
   - name: "MPC Wallet"
     group: "Services"
     url: "https://mpc.lux.network"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Identity"
+    group: "Services"
+    url: "https://lux.id"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302)"
+      - "[RESPONSE_TIME] < 3000"
+      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  - name: "Staking"
+    group: "Services"
+    url: "https://lux.build"
     interval: 60s
     conditions:
       - "[STATUS] == any(200, 302)"
