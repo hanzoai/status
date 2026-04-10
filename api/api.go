@@ -71,22 +71,22 @@ func (a *API) createRouter(cfg *config.Config) *fiber.App {
 		app.Get("/metrics", adaptor.HTTPHandler(metricsHandler))
 	}
 	// Define main router
-	apiRouter := app.Group("/api")
+	apiRouter := app.Group("/v1/status")
 	////////////////////////
 	// UNPROTECTED ROUTES //
 	////////////////////////
 	unprotectedAPIRouter := apiRouter.Group("/")
-	unprotectedAPIRouter.Get("/v1/config", ConfigHandler{securityConfig: cfg.Security, config: cfg}.GetConfig)
-	unprotectedAPIRouter.Get("/v1/endpoints/:key/health/badge.svg", HealthBadge)
-	unprotectedAPIRouter.Get("/v1/endpoints/:key/health/badge.shields", HealthBadgeShields)
-	unprotectedAPIRouter.Get("/v1/endpoints/:key/uptimes/:duration", UptimeRaw)
-	unprotectedAPIRouter.Get("/v1/endpoints/:key/uptimes/:duration/badge.svg", UptimeBadge)
-	unprotectedAPIRouter.Get("/v1/endpoints/:key/response-times/:duration", ResponseTimeRaw)
-	unprotectedAPIRouter.Get("/v1/endpoints/:key/response-times/:duration/badge.svg", ResponseTimeBadge(cfg))
-	unprotectedAPIRouter.Get("/v1/endpoints/:key/response-times/:duration/chart.svg", ResponseTimeChart)
-	unprotectedAPIRouter.Get("/v1/endpoints/:key/response-times/:duration/history", ResponseTimeHistory)
+	unprotectedAPIRouter.Get("/config", ConfigHandler{securityConfig: cfg.Security, config: cfg}.GetConfig)
+	unprotectedAPIRouter.Get("/endpoints/:key/health/badge.svg", HealthBadge)
+	unprotectedAPIRouter.Get("/endpoints/:key/health/badge.shields", HealthBadgeShields)
+	unprotectedAPIRouter.Get("/endpoints/:key/uptimes/:duration", UptimeRaw)
+	unprotectedAPIRouter.Get("/endpoints/:key/uptimes/:duration/badge.svg", UptimeBadge)
+	unprotectedAPIRouter.Get("/endpoints/:key/response-times/:duration", ResponseTimeRaw)
+	unprotectedAPIRouter.Get("/endpoints/:key/response-times/:duration/badge.svg", ResponseTimeBadge(cfg))
+	unprotectedAPIRouter.Get("/endpoints/:key/response-times/:duration/chart.svg", ResponseTimeChart)
+	unprotectedAPIRouter.Get("/endpoints/:key/response-times/:duration/history", ResponseTimeHistory)
 	// This endpoint requires authz with bearer token, so technically it is protected
-	unprotectedAPIRouter.Post("/v1/endpoints/:key/external", CreateExternalEndpointResult(cfg))
+	unprotectedAPIRouter.Post("/endpoints/:key/external", CreateExternalEndpointResult(cfg))
 	// SPA
 	app.Get("/", SinglePageApplication(cfg.UI))
 	app.Get("/endpoints/:key", SinglePageApplication(cfg.UI))
@@ -142,9 +142,9 @@ func (a *API) createRouter(cfg *config.Config) *fiber.App {
 			panic(err)
 		}
 	}
-	protectedAPIRouter.Get("/v1/endpoints/statuses", EndpointStatuses(cfg))
-	protectedAPIRouter.Get("/v1/endpoints/:key/statuses", EndpointStatus(cfg))
-	protectedAPIRouter.Get("/v1/suites/statuses", SuiteStatuses(cfg))
-	protectedAPIRouter.Get("/v1/suites/:key/statuses", SuiteStatus(cfg))
+	protectedAPIRouter.Get("/endpoints/statuses", EndpointStatuses(cfg))
+	protectedAPIRouter.Get("/endpoints/:key/statuses", EndpointStatus(cfg))
+	protectedAPIRouter.Get("/suites/statuses", SuiteStatuses(cfg))
+	protectedAPIRouter.Get("/suites/:key/statuses", SuiteStatus(cfg))
 	return app
 }

@@ -86,19 +86,19 @@ func TestNew(t *testing.T) {
 		},
 		{
 			Name:         "endpoints-should-return-401-if-not-authenticated",
-			Path:         "/api/v1/endpoints/statuses",
+			Path:         "/v1/status/endpoints/statuses",
 			ExpectedCode: fiber.StatusUnauthorized,
 			WithSecurity: true,
 		},
 		{
 			Name:         "config-should-return-200-even-if-not-authenticated",
-			Path:         "/api/v1/config",
+			Path:         "/v1/status/config",
 			ExpectedCode: fiber.StatusOK,
 			WithSecurity: true,
 		},
 		{
 			Name:         "config-should-always-return-200",
-			Path:         "/api/v1/config",
+			Path:         "/v1/status/config",
 			ExpectedCode: fiber.StatusOK,
 			WithSecurity: false,
 		},

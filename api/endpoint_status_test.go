@@ -114,23 +114,23 @@ func TestEndpointStatus(t *testing.T) {
 	scenarios := []Scenario{
 		{
 			Name:         "endpoint-status",
-			Path:         "/api/v1/endpoints/core_frontend/statuses",
+			Path:         "/v1/status/endpoints/core_frontend/statuses",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "endpoint-status-gzip",
-			Path:         "/api/v1/endpoints/core_frontend/statuses",
+			Path:         "/v1/status/endpoints/core_frontend/statuses",
 			ExpectedCode: http.StatusOK,
 			Gzip:         true,
 		},
 		{
 			Name:         "endpoint-status-pagination",
-			Path:         "/api/v1/endpoints/core_frontend/statuses?page=1&pageSize=20",
+			Path:         "/v1/status/endpoints/core_frontend/statuses?page=1&pageSize=20",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "endpoint-status-for-invalid-key",
-			Path:         "/api/v1/endpoints/invalid_key/statuses",
+			Path:         "/v1/status/endpoints/invalid_key/statuses",
 			ExpectedCode: http.StatusNotFound,
 		},
 	}
@@ -178,31 +178,31 @@ func TestEndpointStatuses(t *testing.T) {
 	scenarios := []Scenario{
 		{
 			Name:         "no-pagination",
-			Path:         "/api/v1/endpoints/statuses",
+			Path:         "/v1/status/endpoints/statuses",
 			ExpectedCode: http.StatusOK,
 			ExpectedBody: `[{"name":"name","group":"group","key":"group_name","results":[{"status":200,"hostname":"example.org","duration":150000000,"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 500","success":true},{"condition":"[CERTIFICATE_EXPIRATION] \u003c 72h","success":true}],"success":true,"timestamp":"0001-01-01T00:00:00Z"},{"status":200,"hostname":"example.org","duration":750000000,"errors":["error-1","error-2"],"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 500","success":false},{"condition":"[CERTIFICATE_EXPIRATION] \u003c 72h","success":false}],"success":false,"timestamp":"0001-01-01T00:00:00Z"}]}]`,
 		},
 		{
 			Name:         "pagination-first-result",
-			Path:         "/api/v1/endpoints/statuses?page=1&pageSize=1",
+			Path:         "/v1/status/endpoints/statuses?page=1&pageSize=1",
 			ExpectedCode: http.StatusOK,
 			ExpectedBody: `[{"name":"name","group":"group","key":"group_name","results":[{"status":200,"hostname":"example.org","duration":750000000,"errors":["error-1","error-2"],"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 500","success":false},{"condition":"[CERTIFICATE_EXPIRATION] \u003c 72h","success":false}],"success":false,"timestamp":"0001-01-01T00:00:00Z"}]}]`,
 		},
 		{
 			Name:         "pagination-second-result",
-			Path:         "/api/v1/endpoints/statuses?page=2&pageSize=1",
+			Path:         "/v1/status/endpoints/statuses?page=2&pageSize=1",
 			ExpectedCode: http.StatusOK,
 			ExpectedBody: `[{"name":"name","group":"group","key":"group_name","results":[{"status":200,"hostname":"example.org","duration":150000000,"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 500","success":true},{"condition":"[CERTIFICATE_EXPIRATION] \u003c 72h","success":true}],"success":true,"timestamp":"0001-01-01T00:00:00Z"}]}]`,
 		},
 		{
 			Name:         "pagination-no-results",
-			Path:         "/api/v1/endpoints/statuses?page=5&pageSize=20",
+			Path:         "/v1/status/endpoints/statuses?page=5&pageSize=20",
 			ExpectedCode: http.StatusOK,
 			ExpectedBody: `[{"name":"name","group":"group","key":"group_name","results":[]}]`,
 		},
 		{
 			Name:         "invalid-pagination-should-fall-back-to-default",
-			Path:         "/api/v1/endpoints/statuses?page=INVALID&pageSize=INVALID",
+			Path:         "/v1/status/endpoints/statuses?page=INVALID&pageSize=INVALID",
 			ExpectedCode: http.StatusOK,
 			ExpectedBody: `[{"name":"name","group":"group","key":"group_name","results":[{"status":200,"hostname":"example.org","duration":150000000,"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 500","success":true},{"condition":"[CERTIFICATE_EXPIRATION] \u003c 72h","success":true}],"success":true,"timestamp":"0001-01-01T00:00:00Z"},{"status":200,"hostname":"example.org","duration":750000000,"errors":["error-1","error-2"],"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 500","success":false},{"condition":"[CERTIFICATE_EXPIRATION] \u003c 72h","success":false}],"success":false,"timestamp":"0001-01-01T00:00:00Z"}]}]`,
 		},
