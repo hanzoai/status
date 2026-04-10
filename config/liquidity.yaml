@@ -1,0 +1,202 @@
+web:
+  port: 8080
+
+storage:
+  type: memory
+
+ui:
+  title: "Liquidity Status"
+  description: "Real-time infrastructure health for the Liquidity Exchange"
+  header: "Liquidity Status"
+  logo: "data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M13.0384 4H7.03455V10.0039H13.0384V4Z' fill='%23299BEF'/%3E%3Cpath d='M13.0384 10.004H7.03455V16.0079H13.0384V10.004Z' fill='%230E7DE0'/%3E%3Cpath d='M13.0384 15.9922H7.03455V21.9961H13.0384V15.9922Z' fill='%230051CC'/%3E%3Cpath d='M19.0411 15.9922H13.0372V21.9961H19.0411V15.9922Z' fill='%230E7DE0'/%3E%3Cpath d='M13.0384 21.9961H7.03455V28H13.0384V21.9961Z' fill='%230045AA'/%3E%3Cpath d='M19.0411 21.9961H13.0372V28H19.0411V21.9961Z' fill='%230051CC'/%3E%3Cpath d='M25.0482 21.9961H19.0444V28H25.0482V21.9961Z' fill='%230E7DE0'/%3E%3C/svg%3E"
+  link: "https://liquidity.io"
+  dark-mode: true
+  favicon:
+    default: "data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M13.0384 4H7.03455V10.0039H13.0384V4Z' fill='%23299BEF'/%3E%3Cpath d='M13.0384 10.004H7.03455V16.0079H13.0384V10.004Z' fill='%230E7DE0'/%3E%3Cpath d='M13.0384 15.9922H7.03455V21.9961H13.0384V15.9922Z' fill='%230051CC'/%3E%3Cpath d='M19.0411 15.9922H13.0372V21.9961H19.0411V15.9922Z' fill='%230E7DE0'/%3E%3Cpath d='M13.0384 21.9961H7.03455V28H13.0384V21.9961Z' fill='%230045AA'/%3E%3Cpath d='M19.0411 21.9961H13.0372V28H19.0411V21.9961Z' fill='%230051CC'/%3E%3Cpath d='M25.0482 21.9961H19.0444V28H25.0482V21.9961Z' fill='%230E7DE0'/%3E%3C/svg%3E"
+  buttons:
+    - name: "Exchange"
+      link: "https://exchange.dev.satschel.com"
+    - name: "Explorer"
+      link: "https://explore.dev.satschel.com"
+    - name: "Docs"
+      link: "https://docs.dev.satschel.com"
+
+endpoints:
+
+  # ═══════════════════════════════════════════════
+  # EXCHANGE
+  # ═══════════════════════════════════════════════
+
+  - name: "Liquid ATS"
+    group: "Exchange"
+    url: "http://ats.liquidity.svc.cluster.local:8090/api/health"
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: "Liquid BD"
+    group: "Exchange"
+    url: "http://bd.liquidity.svc.cluster.local:8090/api/health"
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: "BD Compliance"
+    group: "Exchange"
+    url: "http://bd.liquidity.svc.cluster.local:8090/v1/compliance/healthz"
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: "Liquid TA"
+    group: "Exchange"
+    url: "http://ta.liquidity.svc.cluster.local:8090/api/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+
+  # ═══════════════════════════════════════════════
+  # BLOCKCHAIN
+  # ═══════════════════════════════════════════════
+
+  - name: "Liquid EVM"
+    group: "Blockchain"
+    url: "http://chain-rpc.liquidity.svc.cluster.local:9631/ext/bc/C/rpc"
+    body: '{"jsonrpc":"2.0","id":1,"method":"eth_blockNumber","params":[]}'
+    method: POST
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].result != ''"
+
+  - name: "Liquid DEX"
+    group: "Blockchain"
+    url: "http://dex.chain.svc.cluster.local:8080/health"
+    interval: 30s
+    conditions:
+      - "[STATUS] < 500"
+
+  - name: "Liquid MPC"
+    group: "Blockchain"
+    url: "http://mpc.chain.svc.cluster.local:8081/health"
+    interval: 30s
+    conditions:
+      - "[STATUS] < 500"
+
+  - name: "FHE Precompile"
+    group: "Blockchain"
+    url: "http://chain-rpc.liquidity.svc.cluster.local:9631/ext/bc/C/rpc"
+    body: '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"to":"0x0300000000000000000000000000000000000012","data":"0x01"},"latest"]}'
+    method: POST
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+
+  # ═══════════════════════════════════════════════
+  # PLATFORM
+  # ═══════════════════════════════════════════════
+
+  - name: "IAM"
+    group: "Platform"
+    url: "http://iam.liquidity.svc.cluster.local:8000/.well-known/openid-configuration"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: "KMS"
+    group: "Platform"
+    url: "http://kms.liquidity.svc.cluster.local:8443/v1/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] < 500"
+
+  - name: "API Gateway"
+    group: "Platform"
+    url: "http://gateway.liquidity.svc.cluster.local:8080/__health"
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+
+  # ═══════════════════════════════════════════════
+  # COMPLIANCE
+  # ═══════════════════════════════════════════════
+
+  - name: "Liquid AML"
+    group: "Compliance"
+    url: "http://aml-api.liquidity.svc.cluster.local:5001/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] < 500"
+
+  # ═══════════════════════════════════════════════
+  # FRONTEND
+  # ═══════════════════════════════════════════════
+
+  - name: "Exchange"
+    group: "Frontend"
+    url: "https://exchange.dev.satschel.com"
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: "Liquid ID"
+    group: "Frontend"
+    url: "https://id.dev.satschel.com"
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: "SuperAdmin"
+    group: "Frontend"
+    url: "https://superadmin.dev.satschel.com"
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: "Liquid DEX"
+    group: "Frontend"
+    url: "https://swap.dev.satschel.com"
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: "Wallet"
+    group: "Frontend"
+    url: "https://wallet.dev.satschel.com"
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: "Docs"
+    group: "Frontend"
+    url: "https://docs.dev.satschel.com"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: "Explorer"
+    group: "Frontend"
+    url: "https://explore.dev.satschel.com"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: "Chain RPC"
+    group: "Blockchain"
+    url: "https://rpc.dev.satschel.com/ext/bc/C/rpc"
+    body: '{"jsonrpc":"2.0","id":1,"method":"eth_blockNumber","params":[]}'
+    method: POST
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+
+  # ═══════════════════════════════════════════════
+  # MONITORING
+  # ═══════════════════════════════════════════════
+
+  - name: "Grafana"
+    group: "Monitoring"
+    url: "http://grafana.monitoring.svc.cluster.local:3000/api/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
