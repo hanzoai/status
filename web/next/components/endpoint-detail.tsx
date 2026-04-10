@@ -133,9 +133,9 @@ export function EndpointDetail({ endpointKey, navigate }: EndpointDetailProps) {
     setShowAvgResponseTime((prev) => { const next = !prev; localStorage.setItem('gatus:show-average-response-time', next ? 'true' : 'false'); return next })
   }
 
-  const healthBadgeUrl = `/api/v1/endpoints/${endpointKey}/health/badge.svg`
-  const uptimeBadgeUrl = (d: string) => `/api/v1/endpoints/${endpointKey}/uptimes/${d}/badge.svg`
-  const responseTimeBadgeUrl = (d: string) => `/api/v1/endpoints/${endpointKey}/response-times/${d}/badge.svg`
+  const healthBadgeUrl = `/v1/status/endpoints/${endpointKey}/health/badge.svg`
+  const uptimeBadgeUrl = (d: string) => `/v1/status/endpoints/${endpointKey}/uptimes/${d}/badge.svg`
+  const responseTimeBadgeUrl = (d: string) => `/v1/status/endpoints/${endpointKey}/response-times/${d}/badge.svg`
 
   return (
     <div className="relative min-h-screen">

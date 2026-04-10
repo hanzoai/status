@@ -174,23 +174,23 @@ func TestSuiteStatus(t *testing.T) {
 	scenarios := []Scenario{
 		{
 			Name:         "suite-status",
-			Path:         "/api/v1/suites/core_frontend-suite/statuses",
+			Path:         "/v1/status/suites/core_frontend-suite/statuses",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "suite-status-gzip",
-			Path:         "/api/v1/suites/core_frontend-suite/statuses",
+			Path:         "/v1/status/suites/core_frontend-suite/statuses",
 			ExpectedCode: http.StatusOK,
 			Gzip:         true,
 		},
 		{
 			Name:         "suite-status-pagination",
-			Path:         "/api/v1/suites/core_frontend-suite/statuses?page=1&pageSize=20",
+			Path:         "/v1/status/suites/core_frontend-suite/statuses?page=1&pageSize=20",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "suite-status-for-invalid-key",
-			Path:         "/api/v1/suites/invalid_key/statuses",
+			Path:         "/v1/status/suites/invalid_key/statuses",
 			ExpectedCode: http.StatusNotFound,
 		},
 	}
@@ -332,7 +332,7 @@ func TestSuiteStatus_SuiteNotInStoreButInConfig(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			api := New(tt.cfg)
 			router := api.Router()
-			request := httptest.NewRequest("GET", "/api/v1/suites/"+tt.suiteKey+"/statuses", http.NoBody)
+			request := httptest.NewRequest("GET", "/v1/status/suites/"+tt.suiteKey+"/statuses", http.NoBody)
 			response, err := router.Test(request)
 			if err != nil {
 				t.Fatalf("Router test failed: %v", err)
@@ -396,31 +396,31 @@ func TestSuiteStatuses(t *testing.T) {
 	scenarios := []Scenario{
 		{
 			Name:         "no-pagination",
-			Path:         "/api/v1/suites/statuses",
+			Path:         "/v1/status/suites/statuses",
 			ExpectedCode: http.StatusOK,
 			ExpectedBody: `[{"name":"test-suite","group":"suite-group","key":"suite-group_test-suite","results":[{"name":"test-suite","group":"suite-group","success":true,"timestamp":"0001-01-01T00:00:00Z","duration":250000000,"endpointResults":[{"status":200,"hostname":"example.org","duration":100000000,"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 500","success":true}],"success":true,"timestamp":"0001-01-01T00:00:00Z"},{"status":200,"hostname":"example.org","duration":150000000,"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 300","success":true}],"success":true,"timestamp":"0001-01-01T00:00:00Z"}]},{"name":"test-suite","group":"suite-group","success":false,"timestamp":"0001-01-01T00:00:00Z","duration":850000000,"endpointResults":[{"status":200,"hostname":"example.org","duration":100000000,"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 500","success":true}],"success":true,"timestamp":"0001-01-01T00:00:00Z"},{"status":500,"hostname":"example.org","duration":750000000,"errors":["endpoint-error-1"],"conditionResults":[{"condition":"[STATUS] == 200","success":false},{"condition":"[RESPONSE_TIME] \u003c 300","success":false}],"success":false,"timestamp":"0001-01-01T00:00:00Z"}],"errors":["suite-error-1","suite-error-2"]}]}]`,
 		},
 		{
 			Name:         "pagination-first-result",
-			Path:         "/api/v1/suites/statuses?page=1&pageSize=1",
+			Path:         "/v1/status/suites/statuses?page=1&pageSize=1",
 			ExpectedCode: http.StatusOK,
 			ExpectedBody: `[{"name":"test-suite","group":"suite-group","key":"suite-group_test-suite","results":[{"name":"test-suite","group":"suite-group","success":false,"timestamp":"0001-01-01T00:00:00Z","duration":850000000,"endpointResults":[{"status":200,"hostname":"example.org","duration":100000000,"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 500","success":true}],"success":true,"timestamp":"0001-01-01T00:00:00Z"},{"status":500,"hostname":"example.org","duration":750000000,"errors":["endpoint-error-1"],"conditionResults":[{"condition":"[STATUS] == 200","success":false},{"condition":"[RESPONSE_TIME] \u003c 300","success":false}],"success":false,"timestamp":"0001-01-01T00:00:00Z"}],"errors":["suite-error-1","suite-error-2"]}]}]`,
 		},
 		{
 			Name:         "pagination-second-result",
-			Path:         "/api/v1/suites/statuses?page=2&pageSize=1",
+			Path:         "/v1/status/suites/statuses?page=2&pageSize=1",
 			ExpectedCode: http.StatusOK,
 			ExpectedBody: `[{"name":"test-suite","group":"suite-group","key":"suite-group_test-suite","results":[{"name":"test-suite","group":"suite-group","success":true,"timestamp":"0001-01-01T00:00:00Z","duration":250000000,"endpointResults":[{"status":200,"hostname":"example.org","duration":100000000,"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 500","success":true}],"success":true,"timestamp":"0001-01-01T00:00:00Z"},{"status":200,"hostname":"example.org","duration":150000000,"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 300","success":true}],"success":true,"timestamp":"0001-01-01T00:00:00Z"}]}]}]`,
 		},
 		{
 			Name:         "pagination-no-results",
-			Path:         "/api/v1/suites/statuses?page=5&pageSize=20",
+			Path:         "/v1/status/suites/statuses?page=5&pageSize=20",
 			ExpectedCode: http.StatusOK,
 			ExpectedBody: `[{"name":"test-suite","group":"suite-group","key":"suite-group_test-suite","results":[]}]`,
 		},
 		{
 			Name:         "invalid-pagination-should-fall-back-to-default",
-			Path:         "/api/v1/suites/statuses?page=INVALID&pageSize=INVALID",
+			Path:         "/v1/status/suites/statuses?page=INVALID&pageSize=INVALID",
 			ExpectedCode: http.StatusOK,
 			ExpectedBody: `[{"name":"test-suite","group":"suite-group","key":"suite-group_test-suite","results":[{"name":"test-suite","group":"suite-group","success":true,"timestamp":"0001-01-01T00:00:00Z","duration":250000000,"endpointResults":[{"status":200,"hostname":"example.org","duration":100000000,"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 500","success":true}],"success":true,"timestamp":"0001-01-01T00:00:00Z"},{"status":200,"hostname":"example.org","duration":150000000,"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 300","success":true}],"success":true,"timestamp":"0001-01-01T00:00:00Z"}]},{"name":"test-suite","group":"suite-group","success":false,"timestamp":"0001-01-01T00:00:00Z","duration":850000000,"endpointResults":[{"status":200,"hostname":"example.org","duration":100000000,"conditionResults":[{"condition":"[STATUS] == 200","success":true},{"condition":"[RESPONSE_TIME] \u003c 500","success":true}],"success":true,"timestamp":"0001-01-01T00:00:00Z"},{"status":500,"hostname":"example.org","duration":750000000,"errors":["endpoint-error-1"],"conditionResults":[{"condition":"[STATUS] == 200","success":false},{"condition":"[RESPONSE_TIME] \u003c 300","success":false}],"success":false,"timestamp":"0001-01-01T00:00:00Z"}],"errors":["suite-error-1","suite-error-2"]}]}]`,
 		},
@@ -476,7 +476,7 @@ func TestSuiteStatuses_NoSuitesInStoreButExistInConfig(t *testing.T) {
 	}
 	api := New(cfg)
 	router := api.Router()
-	request := httptest.NewRequest("GET", "/api/v1/suites/statuses", http.NoBody)
+	request := httptest.NewRequest("GET", "/v1/status/suites/statuses", http.NoBody)
 	response, err := router.Test(request)
 	if err != nil {
 		t.Fatalf("Router test failed: %v", err)

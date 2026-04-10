@@ -46,62 +46,62 @@ func TestRawDataEndpoint(t *testing.T) {
 	scenarios := []Scenario{
 		{
 			Name:         "raw-uptime-1h",
-			Path:         "/api/v1/endpoints/core_frontend/uptimes/1h",
+			Path:         "/v1/status/endpoints/core_frontend/uptimes/1h",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "raw-uptime-24h",
-			Path:         "/api/v1/endpoints/core_backend/uptimes/24h",
+			Path:         "/v1/status/endpoints/core_backend/uptimes/24h",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "raw-uptime-7d",
-			Path:         "/api/v1/endpoints/core_frontend/uptimes/7d",
+			Path:         "/v1/status/endpoints/core_frontend/uptimes/7d",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "raw-uptime-30d",
-			Path:         "/api/v1/endpoints/core_frontend/uptimes/30d",
+			Path:         "/v1/status/endpoints/core_frontend/uptimes/30d",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "raw-uptime-with-invalid-duration",
-			Path:         "/api/v1/endpoints/core_backend/uptimes/3d",
+			Path:         "/v1/status/endpoints/core_backend/uptimes/3d",
 			ExpectedCode: http.StatusBadRequest,
 		},
 		{
 			Name:         "raw-uptime-for-invalid-key",
-			Path:         "/api/v1/endpoints/invalid_key/uptimes/7d",
+			Path:         "/v1/status/endpoints/invalid_key/uptimes/7d",
 			ExpectedCode: http.StatusNotFound,
 		},
 		{
 			Name:         "raw-response-times-1h",
-			Path:         "/api/v1/endpoints/core_frontend/response-times/1h",
+			Path:         "/v1/status/endpoints/core_frontend/response-times/1h",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "raw-response-times-24h",
-			Path:         "/api/v1/endpoints/core_backend/response-times/24h",
+			Path:         "/v1/status/endpoints/core_backend/response-times/24h",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "raw-response-times-7d",
-			Path:         "/api/v1/endpoints/core_frontend/response-times/7d",
+			Path:         "/v1/status/endpoints/core_frontend/response-times/7d",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "raw-response-times-30d",
-			Path:         "/api/v1/endpoints/core_frontend/response-times/30d",
+			Path:         "/v1/status/endpoints/core_frontend/response-times/30d",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "raw-response-times-with-invalid-duration",
-			Path:         "/api/v1/endpoints/core_backend/response-times/3d",
+			Path:         "/v1/status/endpoints/core_backend/response-times/3d",
 			ExpectedCode: http.StatusBadRequest,
 		},
 		{
 			Name:         "raw-response-times-for-invalid-key",
-			Path:         "/api/v1/endpoints/invalid_key/response-times/7d",
+			Path:         "/v1/status/endpoints/invalid_key/response-times/7d",
 			ExpectedCode: http.StatusNotFound,
 		},
 	}
