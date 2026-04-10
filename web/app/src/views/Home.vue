@@ -426,7 +426,7 @@ const fetchData = async () => {
   }
   try {
     // Fetch endpoints
-    const endpointResponse = await fetch(`/api/v1/endpoints/statuses?page=1&pageSize=${resultPageSize}`, {
+    const endpointResponse = await fetch(`/v1/status/endpoints/statuses?page=1&pageSize=${resultPageSize}`, {
       credentials: 'include'
     })
     if (endpointResponse.status === 200) {
@@ -437,7 +437,7 @@ const fetchData = async () => {
     }
     
     // Fetch suites
-    const suiteResponse = await fetch(`/api/v1/suites/statuses?page=1&pageSize=${resultPageSize}`, {
+    const suiteResponse = await fetch(`/v1/status/suites/statuses?page=1&pageSize=${resultPageSize}`, {
       credentials: 'include'
     })
     if (suiteResponse.status === 200) {

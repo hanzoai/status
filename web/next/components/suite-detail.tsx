@@ -113,7 +113,7 @@ export function SuiteDetail({ suiteKey, navigate }: SuiteDetailProps) {
 
               <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))]">
                 <div className="px-6 pt-6"><h2 className="text-lg font-semibold">Current Health</h2></div>
-                <div className="p-6 text-center"><img src={`/api/v1/endpoints/${suiteKey}/health/badge.svg`} alt="health badge" className="mx-auto" /></div>
+                <div className="p-6 text-center"><img src={`/v1/status/endpoints/${suiteKey}/health/badge.svg`} alt="health badge" className="mx-auto" /></div>
               </div>
             </div>
           ) : (

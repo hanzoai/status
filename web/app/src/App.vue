@@ -188,7 +188,7 @@ const brandName = computed(() => {
 // Methods
 const fetchConfig = async () => {
   try {
-    const response = await fetch(`/api/v1/config`, { credentials: 'include' })
+    const response = await fetch(`/v1/status/config`, { credentials: 'include' })
     if (response.status === 200) {
       const data = await response.json()
       config.value = data

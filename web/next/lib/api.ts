@@ -8,7 +8,7 @@ import type {
 const fetchOpts: RequestInit = { credentials: 'include' }
 
 export async function fetchConfig(): Promise<AppConfig> {
-  const res = await fetch('/api/v1/config', fetchOpts)
+  const res = await fetch('/v1/status/config', fetchOpts)
   if (!res.ok) throw new Error(`config: ${res.status}`)
   return res.json()
 }
@@ -18,7 +18,7 @@ export async function fetchEndpointStatuses(
   pageSize = 50,
 ): Promise<EndpointStatus[]> {
   const res = await fetch(
-    `/api/v1/endpoints/statuses?page=${page}&pageSize=${pageSize}`,
+    `/v1/status/endpoints/statuses?page=${page}&pageSize=${pageSize}`,
     fetchOpts,
   )
   if (!res.ok) throw new Error(`endpoints: ${res.status}`)
@@ -31,7 +31,7 @@ export async function fetchEndpointStatus(
   pageSize = 50,
 ): Promise<EndpointStatus> {
   const res = await fetch(
-    `/api/v1/endpoints/${key}/statuses?page=${page}&pageSize=${pageSize}`,
+    `/v1/status/endpoints/${key}/statuses?page=${page}&pageSize=${pageSize}`,
     fetchOpts,
   )
   if (!res.ok) throw new Error(`endpoint ${key}: ${res.status}`)
@@ -43,7 +43,7 @@ export async function fetchResponseTimeHistory(
   duration: string,
 ): Promise<ResponseTimeHistory> {
   const res = await fetch(
-    `/api/v1/endpoints/${key}/response-times/${duration}/history`,
+    `/v1/status/endpoints/${key}/response-times/${duration}/history`,
     fetchOpts,
   )
   if (!res.ok) throw new Error(`history ${key}: ${res.status}`)
@@ -55,7 +55,7 @@ export async function fetchSuiteStatuses(
   pageSize = 50,
 ): Promise<SuiteStatus[]> {
   const res = await fetch(
-    `/api/v1/suites/statuses?page=${page}&pageSize=${pageSize}`,
+    `/v1/status/suites/statuses?page=${page}&pageSize=${pageSize}`,
     fetchOpts,
   )
   if (!res.ok) throw new Error(`suites: ${res.status}`)
@@ -68,7 +68,7 @@ export async function fetchSuiteStatus(
   pageSize = 50,
 ): Promise<SuiteStatus> {
   const res = await fetch(
-    `/api/v1/suites/${key}/statuses?page=${page}&pageSize=${pageSize}`,
+    `/v1/status/suites/${key}/statuses?page=${page}&pageSize=${pageSize}`,
     fetchOpts,
   )
   if (!res.ok) throw new Error(`suite ${key}: ${res.status}`)
