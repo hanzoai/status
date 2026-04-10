@@ -41,27 +41,27 @@ func TestResponseTimeChart(t *testing.T) {
 	scenarios := []Scenario{
 		{
 			Name:         "chart-response-time-24h",
-			Path:         "/api/v1/endpoints/core_backend/response-times/24h/chart.svg",
+			Path:         "/v1/status/endpoints/core_backend/response-times/24h/chart.svg",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "chart-response-time-7d",
-			Path:         "/api/v1/endpoints/core_frontend/response-times/7d/chart.svg",
+			Path:         "/v1/status/endpoints/core_frontend/response-times/7d/chart.svg",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "chart-response-time-30d",
-			Path:         "/api/v1/endpoints/core_frontend/response-times/30d/chart.svg",
+			Path:         "/v1/status/endpoints/core_frontend/response-times/30d/chart.svg",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "chart-response-time-with-invalid-duration",
-			Path:         "/api/v1/endpoints/core_backend/response-times/3d/chart.svg",
+			Path:         "/v1/status/endpoints/core_backend/response-times/3d/chart.svg",
 			ExpectedCode: http.StatusBadRequest,
 		},
 		{
 			Name:         "chart-response-time-for-invalid-key",
-			Path:         "/api/v1/endpoints/invalid_key/response-times/7d/chart.svg",
+			Path:         "/v1/status/endpoints/invalid_key/response-times/7d/chart.svg",
 			ExpectedCode: http.StatusNotFound,
 		},
 	}
@@ -110,27 +110,27 @@ func TestResponseTimeHistory(t *testing.T) {
 	scenarios := []Scenario{
 		{
 			Name:         "history-response-time-24h",
-			Path:         "/api/v1/endpoints/core_backend/response-times/24h/history",
+			Path:         "/v1/status/endpoints/core_backend/response-times/24h/history",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "history-response-time-7d",
-			Path:         "/api/v1/endpoints/core_frontend/response-times/7d/history",
+			Path:         "/v1/status/endpoints/core_frontend/response-times/7d/history",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "history-response-time-30d",
-			Path:         "/api/v1/endpoints/core_frontend/response-times/30d/history",
+			Path:         "/v1/status/endpoints/core_frontend/response-times/30d/history",
 			ExpectedCode: http.StatusOK,
 		},
 		{
 			Name:         "history-response-time-with-invalid-duration",
-			Path:         "/api/v1/endpoints/core_backend/response-times/3d/history",
+			Path:         "/v1/status/endpoints/core_backend/response-times/3d/history",
 			ExpectedCode: http.StatusBadRequest,
 		},
 		{
 			Name:         "history-response-time-for-invalid-key",
-			Path:         "/api/v1/endpoints/invalid_key/response-times/7d/history",
+			Path:         "/v1/status/endpoints/invalid_key/response-times/7d/history",
 			ExpectedCode: http.StatusNotFound,
 		},
 	}

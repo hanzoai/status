@@ -64,11 +64,11 @@ func TestExtractPageAndPageSizeFromRequest(t *testing.T) {
 	}
 	for _, scenario := range scenarios {
 		t.Run("page-"+scenario.Page+"-pageSize-"+scenario.PageSize, func(t *testing.T) {
-			//request := httptest.NewRequest("GET", fmt.Sprintf("/api/v1/statuses?page=%s&pageSize=%s", scenario.Page, scenario.PageSize), http.NoBody)
+			//request := httptest.NewRequest("GET", fmt.Sprintf("/v1/status/statuses?page=%s&pageSize=%s", scenario.Page, scenario.PageSize), http.NoBody)
 			app := fiber.New()
 			c := app.AcquireCtx(&fasthttp.RequestCtx{})
 			defer app.ReleaseCtx(c)
-			c.Request().SetRequestURI(fmt.Sprintf("/api/v1/statuses?page=%s&pageSize=%s", scenario.Page, scenario.PageSize))
+			c.Request().SetRequestURI(fmt.Sprintf("/v1/status/statuses?page=%s&pageSize=%s", scenario.Page, scenario.PageSize))
 			actualPage, actualPageSize := extractPageAndPageSizeFromRequest(c, scenario.MaximumNumberOfResults)
 			if actualPage != scenario.ExpectedPage {
 				t.Errorf("expected %d, got %d", scenario.ExpectedPage, actualPage)
