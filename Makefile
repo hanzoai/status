@@ -1,4 +1,4 @@
-.PHONY: build push deploy deploy-hanzo deploy-lux deploy-pars deploy-zoo deploy-network dev
+.PHONY: build push deploy deploy-hanzo deploy-lux deploy-pars deploy-zoo deploy-network dev frontend-install-dependencies frontend-build
 
 IMAGE := ghcr.io/hanzoai/status
 TAG   := latest
@@ -9,6 +9,13 @@ build:
 
 push: build
 	docker push $(IMAGE):$(TAG)
+
+# Frontend (Vite SPA)
+frontend-install-dependencies:
+	cd web/app && pnpm install --frozen-lockfile
+
+frontend-build:
+	cd web/app && pnpm build
 
 # Local dev: run with hanzo brand config
 dev:
