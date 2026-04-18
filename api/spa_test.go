@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TwiN/gatus/v5/config"
-	"github.com/TwiN/gatus/v5/config/endpoint"
-	"github.com/TwiN/gatus/v5/config/ui"
-	"github.com/TwiN/gatus/v5/storage/store"
-	"github.com/TwiN/gatus/v5/watchdog"
+	"github.com/hanzoai/status/config"
+	"github.com/hanzoai/status/config/endpoint"
+	"github.com/hanzoai/status/config/ui"
+	"github.com/hanzoai/status/storage/store"
+	"github.com/hanzoai/status/watchdog"
 )
 
 func TestSinglePageApplication(t *testing.T) {

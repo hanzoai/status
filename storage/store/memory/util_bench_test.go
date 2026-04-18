@@ -3,9 +3,9 @@ package memory
 import (
 	"testing"
 
-	"github.com/TwiN/gatus/v5/config/endpoint"
-	"github.com/TwiN/gatus/v5/storage"
-	"github.com/TwiN/gatus/v5/storage/store/common/paging"
+	"github.com/hanzoai/status/config/endpoint"
+	"github.com/hanzoai/status/storage"
+	"github.com/hanzoai/status/storage/store/common/paging"
 )
 
 func BenchmarkShallowCopyEndpointStatus(b *testing.B) {

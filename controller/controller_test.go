@@ -7,9 +7,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/TwiN/gatus/v5/config"
-	"github.com/TwiN/gatus/v5/config/endpoint"
-	"github.com/TwiN/gatus/v5/config/web"
+	"github.com/hanzoai/status/config"
+	"github.com/hanzoai/status/config/endpoint"
+	"github.com/hanzoai/status/config/web"
 	"github.com/gofiber/fiber/v2"
 )
 

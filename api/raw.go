@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/TwiN/gatus/v5/storage/store"
-	"github.com/TwiN/gatus/v5/storage/store/common"
+	"github.com/hanzoai/status/storage/store"
+	"github.com/hanzoai/status/storage/store/common"
 	"github.com/gofiber/fiber/v2"
 )
 

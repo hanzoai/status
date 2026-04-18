@@ -5,8 +5,8 @@ import (
 	"errors"
 	"html/template"
 
-	"github.com/TwiN/gatus/v5/storage"
-	static "github.com/TwiN/gatus/v5/web"
+	"github.com/hanzoai/status/storage"
+	static "github.com/hanzoai/status/web"
 )
 
 const (
