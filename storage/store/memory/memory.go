@@ -6,12 +6,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/TwiN/gatus/v5/alerting/alert"
-	"github.com/TwiN/gatus/v5/config/endpoint"
-	"github.com/TwiN/gatus/v5/config/key"
-	"github.com/TwiN/gatus/v5/config/suite"
-	"github.com/TwiN/gatus/v5/storage/store/common"
-	"github.com/TwiN/gatus/v5/storage/store/common/paging"
+	"github.com/hanzoai/status/alerting/alert"
+	"github.com/hanzoai/status/config/endpoint"
+	"github.com/hanzoai/status/config/key"
+	"github.com/hanzoai/status/config/suite"
+	"github.com/hanzoai/status/storage/store/common"
+	"github.com/hanzoai/status/storage/store/common/paging"
 	"github.com/TwiN/gocache/v2"
 	"github.com/TwiN/logr"
 )

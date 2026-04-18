@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/TwiN/gatus/v5/config"
-	"github.com/TwiN/gatus/v5/config/endpoint"
-	"github.com/TwiN/gatus/v5/metrics"
-	"github.com/TwiN/gatus/v5/storage/store"
+	"github.com/hanzoai/status/config"
+	"github.com/hanzoai/status/config/endpoint"
+	"github.com/hanzoai/status/metrics"
+	"github.com/hanzoai/status/storage/store"
 	"github.com/TwiN/logr"
 )
 

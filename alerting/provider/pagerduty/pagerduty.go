@@ -8,9 +8,9 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/TwiN/gatus/v5/alerting/alert"
-	"github.com/TwiN/gatus/v5/client"
-	"github.com/TwiN/gatus/v5/config/endpoint"
+	"github.com/hanzoai/status/alerting/alert"
+	"github.com/hanzoai/status/client"
+	"github.com/hanzoai/status/config/endpoint"
 	"github.com/TwiN/logr"
 	"gopkg.in/yaml.v3"
 )

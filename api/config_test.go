@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/TwiN/gatus/v5/security"
+	"github.com/hanzoai/status/security"
 	"github.com/gofiber/fiber/v2"
 )
 

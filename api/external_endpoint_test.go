@@ -5,14 +5,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/TwiN/gatus/v5/alerting"
-	"github.com/TwiN/gatus/v5/alerting/alert"
-	"github.com/TwiN/gatus/v5/alerting/provider/discord"
-	"github.com/TwiN/gatus/v5/config"
-	"github.com/TwiN/gatus/v5/config/endpoint"
-	"github.com/TwiN/gatus/v5/config/maintenance"
-	"github.com/TwiN/gatus/v5/storage/store"
-	"github.com/TwiN/gatus/v5/storage/store/common/paging"
+	"github.com/hanzoai/status/alerting"
+	"github.com/hanzoai/status/alerting/alert"
+	"github.com/hanzoai/status/alerting/provider/discord"
+	"github.com/hanzoai/status/config"
+	"github.com/hanzoai/status/config/endpoint"
+	"github.com/hanzoai/status/config/maintenance"
+	"github.com/hanzoai/status/storage/store"
+	"github.com/hanzoai/status/storage/store/common/paging"
 )
 
 func TestCreateExternalEndpointResult(t *testing.T) {

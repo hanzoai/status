@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TwiN/gatus/v5/alerting/alert"
-	"github.com/TwiN/gatus/v5/config/endpoint/heartbeat"
-	"github.com/TwiN/gatus/v5/config/maintenance"
+	"github.com/hanzoai/status/alerting/alert"
+	"github.com/hanzoai/status/config/endpoint/heartbeat"
+	"github.com/hanzoai/status/config/maintenance"
 )
 
 func TestExternalEndpoint_ValidateAndSetDefaults(t *testing.T) {

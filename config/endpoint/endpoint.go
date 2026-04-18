@@ -17,14 +17,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/TwiN/gatus/v5/alerting/alert"
-	"github.com/TwiN/gatus/v5/client"
-	"github.com/TwiN/gatus/v5/config/endpoint/dns"
-	sshconfig "github.com/TwiN/gatus/v5/config/endpoint/ssh"
-	"github.com/TwiN/gatus/v5/config/endpoint/ui"
-	"github.com/TwiN/gatus/v5/config/gontext"
-	"github.com/TwiN/gatus/v5/config/key"
-	"github.com/TwiN/gatus/v5/config/maintenance"
+	"github.com/hanzoai/status/alerting/alert"
+	"github.com/hanzoai/status/client"
+	"github.com/hanzoai/status/config/endpoint/dns"
+	sshconfig "github.com/hanzoai/status/config/endpoint/ssh"
+	"github.com/hanzoai/status/config/endpoint/ui"
+	"github.com/hanzoai/status/config/gontext"
+	"github.com/hanzoai/status/config/key"
+	"github.com/hanzoai/status/config/maintenance"
 	"golang.org/x/crypto/ssh"
 )
 

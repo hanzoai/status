@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/TwiN/gatus/v5/storage"
+	"github.com/hanzoai/status/storage"
 	"github.com/gofiber/fiber/v2"
 	"github.com/valyala/fasthttp"
 )
