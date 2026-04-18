@@ -7,11 +7,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/TwiN/gatus/v5/config"
-	"github.com/TwiN/gatus/v5/controller"
-	"github.com/TwiN/gatus/v5/metrics"
-	"github.com/TwiN/gatus/v5/storage/store"
-	"github.com/TwiN/gatus/v5/watchdog"
+	"github.com/hanzoai/status/config"
+	"github.com/hanzoai/status/controller"
+	"github.com/hanzoai/status/metrics"
+	"github.com/hanzoai/status/storage/store"
+	"github.com/hanzoai/status/watchdog"
 	"github.com/TwiN/logr"
 )
 

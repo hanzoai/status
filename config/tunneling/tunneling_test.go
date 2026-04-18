@@ -3,7 +3,7 @@ package tunneling
 import (
 	"testing"
 
-	"github.com/TwiN/gatus/v5/config/tunneling/sshtunnel"
+	"github.com/hanzoai/status/config/tunneling/sshtunnel"
 )
 
 func TestConfig_ValidateAndSetDefaults(t *testing.T) {
