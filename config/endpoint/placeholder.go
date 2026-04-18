@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/TwiN/gatus/v5/config/gontext"
-	"github.com/TwiN/gatus/v5/jsonpath"
+	"github.com/hanzoai/status/config/gontext"
+	"github.com/hanzoai/status/jsonpath"
 )
 
 // Placeholders

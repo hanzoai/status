@@ -4,13 +4,13 @@ import (
 	"context"
 	"time"
 
-	"github.com/TwiN/gatus/v5/alerting/alert"
-	"github.com/TwiN/gatus/v5/config/endpoint"
-	"github.com/TwiN/gatus/v5/config/suite"
-	"github.com/TwiN/gatus/v5/storage"
-	"github.com/TwiN/gatus/v5/storage/store/common/paging"
-	"github.com/TwiN/gatus/v5/storage/store/memory"
-	"github.com/TwiN/gatus/v5/storage/store/sql"
+	"github.com/hanzoai/status/alerting/alert"
+	"github.com/hanzoai/status/config/endpoint"
+	"github.com/hanzoai/status/config/suite"
+	"github.com/hanzoai/status/storage"
+	"github.com/hanzoai/status/storage/store/common/paging"
+	"github.com/hanzoai/status/storage/store/memory"
+	"github.com/hanzoai/status/storage/store/sql"
 	"github.com/TwiN/logr"
 )
 

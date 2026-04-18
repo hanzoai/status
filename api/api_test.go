@@ -5,9 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/TwiN/gatus/v5/config"
-	"github.com/TwiN/gatus/v5/config/ui"
-	"github.com/TwiN/gatus/v5/security"
+	"github.com/hanzoai/status/config"
+	"github.com/hanzoai/status/config/ui"
+	"github.com/hanzoai/status/security"
 	"github.com/gofiber/fiber/v2"
 )
 

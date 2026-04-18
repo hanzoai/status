@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/TwiN/gatus/v5/config"
+	"github.com/hanzoai/status/config"
 	"golang.org/x/sync/semaphore"
 )
 
