@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { Button, Separator } from '@hanzo/gui'
 import { RefreshCw, Sun, Moon } from 'lucide-react'
 import { getTheme, toggleTheme } from '@/lib/theme'
 
@@ -75,9 +76,12 @@ export function Settings({ onRefresh }: SettingsProps) {
   return (
     <div ref={settingsRef} className="fixed bottom-4 left-4 z-50">
       <div className="flex items-center gap-0.5 rounded-full border border-border bg-card/95 p-1 shadow-lg backdrop-blur-sm">
-        <button
-          onClick={() => setShowMenu(!showMenu)}
-          className="relative flex items-center gap-1.5 rounded-full px-2.5 py-1.5 transition-colors hover:bg-accent"
+        <Button
+          size="$2"
+          chromeless
+          circular
+          onPress={() => setShowMenu(!showMenu)}
+          className="relative flex items-center gap-1.5 px-2.5 py-1.5"
         >
           <RefreshCw className="h-3 w-3 text-muted-foreground" />
           <span className="font-mono text-[11px] font-medium text-muted-foreground">{formatLabel(interval)}</span>
@@ -85,36 +89,40 @@ export function Settings({ onRefresh }: SettingsProps) {
           {showMenu && (
             <div
               className="absolute bottom-full left-0 mb-2 overflow-hidden rounded-xl border border-border bg-popover shadow-xl"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
             >
               {INTERVALS.map((i) => (
-                <button
+                <Button
                   key={i.value}
-                  onClick={() => selectInterval(i.value)}
-                  className={`block w-full px-4 py-2 text-left font-mono text-[11px] transition-colors hover:bg-accent ${
-                    interval === i.value ? 'bg-accent text-foreground' : 'text-muted-foreground'
+                  size="$2"
+                  chromeless
+                  onPress={() => selectInterval(i.value)}
+                  className={`block w-full px-4 py-2 text-left font-mono text-[11px] ${
+                    interval === i.value ? 'bg-accent' : ''
                   }`}
                 >
                   {i.label}
-                </button>
+                </Button>
               ))}
             </div>
           )}
-        </button>
+        </Button>
 
-        <div className="h-4 w-px bg-border" />
+        <Separator vertical className="h-4" />
 
-        <button
-          onClick={handleToggleTheme}
+        <Button
+          size="$2"
+          chromeless
+          circular
+          onPress={handleToggleTheme}
           aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-          className="rounded-full p-1.5 transition-colors hover:bg-accent"
         >
           {isDark ? (
             <Sun className="h-3 w-3 text-muted-foreground" />
           ) : (
             <Moon className="h-3 w-3 text-muted-foreground" />
           )}
-        </button>
+        </Button>
       </div>
     </div>
   )

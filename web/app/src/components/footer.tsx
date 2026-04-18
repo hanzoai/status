@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
+import { Separator } from '@hanzo/gui'
 import { getLink, getConfig } from '@/lib/config'
 import type { UIButton } from '@/lib/types'
 
@@ -17,9 +18,7 @@ export function Footer() {
 
   const year = new Date().getFullYear()
 
-  const governanceBtn = buttons.find(
-    (b) => /^[A-Z]IPs$/.test(b.name) || b.name === 'ZIPs'
-  )
+  const governanceBtn = buttons.find((b) => /^[A-Z]IPs$/.test(b.name) || b.name === 'ZIPs')
   const docsBtn = buttons.find((b) => b.name === 'Docs')
   const githubBtn = buttons.find((b) => b.name === 'GitHub')
   const supportBtn = buttons.find((b) => b.name === 'Support')
@@ -37,23 +36,15 @@ export function Footer() {
             {securityUrl && <FooterLink href={securityUrl}>Security</FooterLink>}
           </div>
 
+          <Separator className="w-16" />
+
           <div className="flex items-center gap-3 text-xs text-muted-foreground/50">
-            <a
-              href="https://github.com/hanzoai/status"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-colors hover:text-muted-foreground"
-            >
+            <a href="https://github.com/hanzoai/status" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-muted-foreground">
               Powered by Hanzo Status
             </a>
             <span>{'·'}</span>
             {link ? (
-              <a
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-colors hover:text-muted-foreground"
-              >
+              <a href={link} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-muted-foreground">
                 &copy; {year} {orgName}
               </a>
             ) : (
@@ -68,12 +59,7 @@ export function Footer() {
 
 function FooterLink({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="transition-colors hover:text-foreground"
-    >
+    <a href={href} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">
       {children}
     </a>
   )

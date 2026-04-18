@@ -1,5 +1,3 @@
-import { cn } from '@/lib/utils'
-
 type Status = 'healthy' | 'unhealthy' | 'degraded' | 'unknown'
 
 const variants: Record<Status, { bg: string; dot: string; label: string }> = {
@@ -28,13 +26,8 @@ const variants: Record<Status, { bg: string; dot: string; label: string }> = {
 export function StatusBadge({ status }: { status: Status }) {
   const v = variants[status] ?? variants.unknown
   return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium',
-        v.bg,
-      )}
-    >
-      <span className={cn('h-1.5 w-1.5 rounded-full', v.dot)} />
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium ${v.bg}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${v.dot}`} />
       {v.label}
     </span>
   )
