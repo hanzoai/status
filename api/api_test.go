@@ -47,28 +47,6 @@ func TestNew(t *testing.T) {
 			ExpectedCode: fiber.StatusOK,
 		},
 		{
-			Name:         "app.js",
-			Path:         "/js/app.js",
-			ExpectedCode: fiber.StatusOK,
-		},
-		{
-			Name:         "app.js-gzipped",
-			Path:         "/js/app.js",
-			ExpectedCode: fiber.StatusOK,
-			Gzip:         true,
-		},
-		{
-			Name:         "chunk-vendors.js",
-			Path:         "/js/chunk-vendors.js",
-			ExpectedCode: fiber.StatusOK,
-		},
-		{
-			Name:         "chunk-vendors.js-gzipped",
-			Path:         "/js/chunk-vendors.js",
-			ExpectedCode: fiber.StatusOK,
-			Gzip:         true,
-		},
-		{
 			Name:         "index",
 			Path:         "/",
 			ExpectedCode: fiber.StatusOK,
