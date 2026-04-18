@@ -1,11 +1,7 @@
-[![Gatus](.github/assets/logo-with-dark-text.png)](https://gatus.io)
+# Hanzo Status
 
-![test](https://github.com/TwiN/gatus/actions/workflows/test.yml/badge.svg)
-[![Go Report Card](https://goreportcard.com/badge/github.com/TwiN/gatus?)](https://goreportcard.com/report/github.com/TwiN/gatus)
-[![codecov](https://codecov.io/gh/TwiN/gatus/branch/master/graph/badge.svg)](https://codecov.io/gh/TwiN/gatus)
-[![Go version](https://img.shields.io/github/go-mod/go-version/TwiN/gatus.svg)](https://github.com/TwiN/gatus)
-[![Docker pulls](https://img.shields.io/docker/pulls/twinproduction/gatus.svg)](https://cloud.docker.com/repository/docker/twinproduction/gatus)
-[![Follow TwiN](https://img.shields.io/github/followers/TwiN?label=Follow&style=social)](https://github.com/TwiN)
+![test](https://github.com/hanzoai/status/actions/workflows/test.yml/badge.svg)
+[![Go version](https://img.shields.io/github/go-mod/go-version/hanzoai/status.svg)](https://github.com/hanzoai/status)
 
 Gatus is a developer-oriented health dashboard that gives you the ability to monitor your services using HTTP, ICMP, TCP, and even DNS
 queries as well as evaluate the result of said queries by using a list of conditions on values like the status code,
@@ -21,12 +17,12 @@ _Looking for a managed solution? Check out [Gatus.io](https://gatus.io)._
   <summary><b>Quick start</b></summary>
 
 ```console
-docker run -p 8080:8080 --name gatus ghcr.io/twin/gatus:stable
+docker run -p 8080:8080 --name gatus ghcr.io/hanzoai/status:latest
 ```
 
 You can also use Docker Hub if you prefer:
 ```console
-docker run -p 8080:8080 --name gatus twinproduction/gatus:stable
+docker run -p 8080:8080 --name gatus ghcr.io/hanzoai/status:latest
 ```
 For more details, see [Usage](#usage)
 </details>
@@ -193,12 +189,12 @@ The main features of Gatus are:
 ## Usage
 
 ```console
-docker run -p 8080:8080 --name gatus ghcr.io/twin/gatus:stable
+docker run -p 8080:8080 --name gatus ghcr.io/hanzoai/status:latest
 ```
 
 You can also use Docker Hub if you prefer:
 ```console
-docker run -p 8080:8080 --name gatus twinproduction/gatus:stable
+docker run -p 8080:8080 --name gatus ghcr.io/hanzoai/status:latest
 ```
 If you want to create your own configuration, see [Docker](#docker) for information on how to mount a configuration file.
 
@@ -2863,24 +2859,24 @@ Many examples can be found in the [.examples](.examples) folder, but this sectio
 ### Docker
 To run Gatus locally with Docker:
 ```console
-docker run -p 8080:8080 --name gatus ghcr.io/twin/gatus:stable
+docker run -p 8080:8080 --name gatus ghcr.io/hanzoai/status:latest
 ```
 
 Other than using one of the examples provided in the [.examples](.examples) folder, you can also try it out locally by
 creating a configuration file, we'll call it `config.yaml` for this example, and running the following
 command:
 ```console
-docker run -p 8080:8080 --mount type=bind,source="$(pwd)"/config.yaml,target=/config/config.yaml --name gatus ghcr.io/twin/gatus:stable
+docker run -p 8080:8080 --mount type=bind,source="$(pwd)"/config.yaml,target=/config/config.yaml --name gatus ghcr.io/hanzoai/status:latest
 ```
 
 If you're on Windows, replace `"$(pwd)"` by the absolute path to your current directory, e.g.:
 ```console
-docker run -p 8080:8080 --mount type=bind,source=C:/Users/Chris/Desktop/config.yaml,target=/config/config.yaml --name gatus ghcr.io/twin/gatus:stable
+docker run -p 8080:8080 --mount type=bind,source=C:/Users/Chris/Desktop/config.yaml,target=/config/config.yaml --name gatus ghcr.io/hanzoai/status:latest
 ```
 
 To build the image locally:
 ```console
-docker build . -t ghcr.io/twin/gatus:stable
+docker build . -t ghcr.io/hanzoai/status:latest
 ```
 
 

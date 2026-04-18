@@ -1,7 +1,7 @@
 # LLM.md - Hanzo Status
 
 ## Overview
-Go module: github.com/TwiN/gatus/v5
+Go module: github.com/hanzoai/status
 
 ## Tech Stack
 - **Language**: Go
