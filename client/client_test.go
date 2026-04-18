@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TwiN/gatus/v5/config/endpoint/dns"
-	"github.com/TwiN/gatus/v5/pattern"
-	"github.com/TwiN/gatus/v5/test"
+	"github.com/hanzoai/status/config/endpoint/dns"
+	"github.com/hanzoai/status/pattern"
+	"github.com/hanzoai/status/test"
 )
 
 func TestGetHTTPClient(t *testing.T) {

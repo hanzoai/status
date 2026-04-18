@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TwiN/gatus/v5/config"
-	"github.com/TwiN/gatus/v5/config/endpoint"
-	"github.com/TwiN/gatus/v5/config/endpoint/dns"
-	"github.com/TwiN/gatus/v5/config/suite"
+	"github.com/hanzoai/status/config"
+	"github.com/hanzoai/status/config/endpoint"
+	"github.com/hanzoai/status/config/endpoint/dns"
+	"github.com/hanzoai/status/config/suite"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 )

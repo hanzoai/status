@@ -1,4 +1,4 @@
-module github.com/TwiN/gatus/v5
+module github.com/hanzoai/status
 
 go 1.26.1
 

@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TwiN/gatus/v5/config/endpoint"
-	"github.com/TwiN/gatus/v5/config/gontext"
+	"github.com/hanzoai/status/config/endpoint"
+	"github.com/hanzoai/status/config/gontext"
 )
 
 func TestSuite_ValidateAndSetDefaults(t *testing.T) {

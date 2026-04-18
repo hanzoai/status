@@ -5,11 +5,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TwiN/gatus/v5/config/endpoint"
-	"github.com/TwiN/gatus/v5/storage"
-	"github.com/TwiN/gatus/v5/storage/store/common/paging"
-	"github.com/TwiN/gatus/v5/storage/store/memory"
-	"github.com/TwiN/gatus/v5/storage/store/sql"
+	"github.com/hanzoai/status/config/endpoint"
+	"github.com/hanzoai/status/storage"
+	"github.com/hanzoai/status/storage/store/common/paging"
+	"github.com/hanzoai/status/storage/store/memory"
+	"github.com/hanzoai/status/storage/store/sql"
 )
 
 func BenchmarkStore_GetAllEndpointStatuses(b *testing.B) {

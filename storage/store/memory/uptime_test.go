@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TwiN/gatus/v5/config/endpoint"
-	"github.com/TwiN/gatus/v5/storage"
+	"github.com/hanzoai/status/config/endpoint"
+	"github.com/hanzoai/status/storage"
 )
 
 func TestProcessUptimeAfterResult(t *testing.T) {

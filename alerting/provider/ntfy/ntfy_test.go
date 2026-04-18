@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/TwiN/gatus/v5/alerting/alert"
-	"github.com/TwiN/gatus/v5/config/endpoint"
+	"github.com/hanzoai/status/alerting/alert"
+	"github.com/hanzoai/status/config/endpoint"
 )
 
 func TestAlertProvider_Validate(t *testing.T) {
