@@ -1,0 +1,101 @@
+import { useMemo } from 'react'
+import type { EndpointResult, EndpointStatus } from '@/lib/types'
+import { StatusBadge } from './status-badge'
+import { HealthBar } from './health-bar'
+
+interface EndpointCardProps {
+  endpoint: EndpointStatus
+  maxResults?: number
+  showAverageResponseTime?: boolean
+  onNavigate: (key: string) => void
+  onTooltip?: (result: EndpointResult | null, anchor: HTMLElement | null, action: 'hover' | 'click') => void
+}
+
+export function EndpointCard({
+  endpoint,
+  maxResults = 50,
+  showAverageResponseTime = true,
+  onNavigate,
+  onTooltip,
+}: EndpointCardProps) {
+  const results = endpoint.results ?? []
+  const latest = results.length > 0 ? results[results.length - 1] : null
+  const status = latest ? (latest.success ? 'healthy' : 'unhealthy') : 'unknown'
+  const hostname = latest?.hostname ?? null
+
+  const responseTimeText = useMemo(() => {
+    if (results.length === 0) return 'N/A'
+    let total = 0
+    let count = 0
+    let min = Infinity
+    let max = 0
+    for (const r of results) {
+      if (r.duration) {
+        const ms = r.duration / 1_000_000
+        total += ms
+        count++
+        min = Math.min(min, ms)
+        max = Math.max(max, ms)
+      }
+    }
+    if (count === 0) return 'N/A'
+    if (showAverageResponseTime) {
+      return `~${Math.round(total / count)}ms`
+    }
+    const minMs = Math.trunc(min)
+    const maxMs = Math.trunc(max)
+    return minMs === maxMs ? `${minMs}ms` : `${minMs}-${maxMs}ms`
+  }, [results, showAverageResponseTime])
+
+  return (
+    <div className="group flex h-full flex-col rounded-xl border border-border bg-card transition-all duration-200 hover:border-border/80 hover:bg-accent/30">
+      <div className="space-y-0 px-4 pb-2 pt-4">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <button
+              onClick={() => onNavigate(endpoint.key)}
+              className="block truncate text-left text-sm font-medium text-foreground transition-colors hover:text-brand sm:text-[15px]"
+              title={endpoint.name}
+            >
+              {endpoint.name}
+            </button>
+            <div className="flex min-h-[1.25rem] items-center gap-1.5 text-xs text-muted-foreground">
+              {endpoint.group && (
+                <span className="truncate" title={endpoint.group}>
+                  {endpoint.group}
+                </span>
+              )}
+              {endpoint.group && hostname && <span className="opacity-40">{'\u2022'}</span>}
+              {hostname && (
+                <span className="truncate font-mono text-[11px] opacity-70" title={hostname}>
+                  {hostname}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="ml-2 flex-shrink-0">
+            <StatusBadge status={status} />
+          </div>
+        </div>
+      </div>
+      <div className="flex-1 px-4 pb-4 pt-2">
+        <div className="space-y-2">
+          <div className="mb-1 flex items-center justify-between">
+            <div className="flex-1" />
+            <p
+              className="font-mono text-[11px] text-muted-foreground"
+              title={showAverageResponseTime ? 'Average response time' : 'Min-max response time'}
+            >
+              {responseTimeText}
+            </p>
+          </div>
+          <HealthBar
+            results={results}
+            maxResults={maxResults}
+            onTooltip={onTooltip}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
