@@ -1,19 +1,15 @@
 name: benchmark
 on:
   workflow_run:
-    workflows: [publish-latest]
-    branches: [master]
+    workflows: [Docker]
+    branches: [main]
     types: [completed]
   workflow_dispatch:
     inputs:
-      repository:
-        description: "Repository to checkout. Useful for benchmarking a fork. Format should be <owner>/<repository>."
-        required: true
-        default: "TwiN/gatus"
       ref:
         description: "Branch, tag or SHA to checkout"
         required: true
-        default: "master"
+        default: "main"
 jobs:
   build:
     name: benchmark
@@ -22,9 +18,9 @@ jobs:
     steps:
       - uses: actions/setup-go@v6
         with:
-          go-version: 1.25.5
-          repository: "${{ github.event.inputs.repository || 'TwiN/gatus' }}"
-          ref: "${{ github.event.inputs.ref || 'master' }}"
+          go-version: 1.26.1
       - uses: actions/checkout@v5
+        with:
+          ref: "${{ github.event.inputs.ref || 'main' }}"
       - name: Benchmark
         run: go test -bench=. ./storage/store

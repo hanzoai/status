@@ -154,7 +154,7 @@ func (provider *AlertProvider) buildRequestBody(cfg *Config, ep *endpoint.Endpoi
 				Text:       message + description,
 				Color:      color,
 				AuthorName: "Gatus",
-				AuthorIcon: "https://raw.githubusercontent.com/TwiN/gatus/master/.github/assets/logo.png",
+				AuthorIcon: "https://raw.githubusercontent.com/hanzoai/status/main/.github/assets/logo.png",
 			},
 		},
 	}

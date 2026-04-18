@@ -10,7 +10,7 @@ services:
       - mtls
 
   gatus:
-    image: twinproduction/gatus:latest
+    image: ghcr.io/hanzoai/status:latest
     restart: always
     ports:
       - "8080:8080"
