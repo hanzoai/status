@@ -2,7 +2,7 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [main]
+    tags: ['v*']
 
 jobs:
   docker:
@@ -38,7 +38,6 @@ jobs:
           HANZO_API_KEY: ${{ secrets.HANZO_API_KEY }}
           KMS_ENDPOINT: ${{ vars.KMS_ENDPOINT || 'https://kms.hanzo.ai' }}
         run: |
-          # Auth: Universal Auth (preferred) or legacy API key
           if [ -n "${KMS_CLIENT_ID}" ] && [ -n "${KMS_CLIENT_SECRET}" ]; then
             HANZO_API_KEY=$(curl -sf "${KMS_ENDPOINT}/api/v1/auth/universal-auth/login" \
               -H "Content-Type: application/json" \
@@ -66,12 +65,7 @@ jobs:
 
       - name: Deploy ${{ matrix.brand }}
         run: |
-          # Apply kustomize overlay (creates/updates configmap, deployment, service, ingress)
           kubectl apply -k k8s/${{ matrix.brand }}/
-
-          # Update image to new SHA
-          kubectl set image deployment/status status=ghcr.io/hanzoai/status:${{ github.sha }} \
+          kubectl set image deployment/status status=ghcr.io/hanzoai/status:${{ github.ref_name }} \
             -n ${{ matrix.namespace }}
-
-          # Wait for rollout
           kubectl rollout status deployment/status -n ${{ matrix.namespace }} --timeout=120s
