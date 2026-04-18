@@ -1,13 +1,14 @@
 # syntax=docker/dockerfile:1
 
-# Stage 1: Build Next.js frontend (static export)
-FROM node:20-alpine AS frontend
+# Stage 1: Build Vite frontend (static export)
+FROM node:22-alpine AS frontend
+RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
-COPY web/next/package*.json web/next/
-RUN cd web/next && npm ci
-COPY web/next/ web/next/
+COPY web/app/package.json web/app/pnpm-lock.yaml* web/app/
+RUN cd web/app && pnpm install --frozen-lockfile 2>/dev/null || cd web/app && pnpm install
+COPY web/app/ web/app/
 COPY web/static/brands/ web/static/brands/
-RUN cd web/next && sh scripts/build.sh
+RUN cd web/app && sh scripts/build.sh
 
 # Stage 2: Build Go binary (pure Go, no CGO needed — modernc.org/sqlite)
 FROM golang:1.26-alpine AS backend
