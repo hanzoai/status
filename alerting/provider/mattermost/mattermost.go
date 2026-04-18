@@ -152,7 +152,7 @@ func (provider *AlertProvider) buildRequestBody(cfg *Config, ep *endpoint.Endpoi
 		Channel:  cfg.Channel,
 		Text:     "",
 		Username: "gatus",
-		IconURL:  "https://raw.githubusercontent.com/TwiN/gatus/master/.github/assets/logo.png",
+		IconURL:  "https://raw.githubusercontent.com/hanzoai/status/main/.github/assets/logo.png",
 		Attachments: []Attachment{
 			{
 				Title:    ":helmet_with_white_cross: Gatus",
