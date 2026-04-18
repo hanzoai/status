@@ -52,37 +52,31 @@ func TestEmbed(t *testing.T) {
 		})
 	}
 
-	// Verify Next.js static assets directory exists
-	t.Run("_next/static/chunks", func(t *testing.T) {
-		entries, err := fs.ReadDir(staticFileSystem, "_next/static/chunks")
+	// Verify Vite static assets directory exists
+	t.Run("assets", func(t *testing.T) {
+		entries, err := fs.ReadDir(staticFileSystem, "assets")
 		if err != nil {
-			t.Errorf("_next/static/chunks directory should exist, got error: %s", err.Error())
+			t.Errorf("assets directory should exist, got error: %s", err.Error())
 			return
 		}
 		if len(entries) == 0 {
-			t.Error("_next/static/chunks directory should not be empty")
+			t.Error("assets directory should not be empty")
 		}
-		// Verify at least one JS file exists
 		hasJS := false
+		hasCSS := false
 		for _, entry := range entries {
 			if strings.HasSuffix(entry.Name(), ".js") {
 				hasJS = true
-				break
+			}
+			if strings.HasSuffix(entry.Name(), ".css") {
+				hasCSS = true
 			}
 		}
 		if !hasJS {
-			t.Error("_next/static/chunks should contain at least one .js file")
+			t.Error("assets should contain at least one .js file")
 		}
-	})
-
-	t.Run("_next/static/css", func(t *testing.T) {
-		entries, err := fs.ReadDir(staticFileSystem, "_next/static/css")
-		if err != nil {
-			t.Errorf("_next/static/css directory should exist, got error: %s", err.Error())
-			return
-		}
-		if len(entries) == 0 {
-			t.Error("_next/static/css directory should not be empty")
+		if !hasCSS {
+			t.Error("assets should contain at least one .css file")
 		}
 	})
 }
