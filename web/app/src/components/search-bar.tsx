@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { Card, Input, Select } from '@hanzo/gui'
 import { Search } from 'lucide-react'
 import { getConfig } from '@/lib/config'
 
@@ -55,19 +56,19 @@ export function SearchBar({ onSearch, onFilterChange, onSortChange }: SearchBarP
   )
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-3 sm:p-4 lg:flex-row lg:gap-4">
+    <Card bordered padded className="flex flex-col gap-3 p-3 sm:p-4 lg:flex-row lg:gap-4">
       <div className="flex-1">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/50" />
-          <input
-            type="text"
+          <Input
             placeholder="Search endpoints..."
             value={query}
-            onChange={(e) => {
-              setQuery(e.target.value)
-              onSearch(e.target.value)
+            onChangeText={(text: string) => {
+              setQuery(text)
+              onSearch(text)
             }}
-            className="w-full rounded-lg border border-border bg-background py-2 pl-10 pr-3 text-sm placeholder:text-muted-foreground/50 focus:border-brand/50 focus:outline-none focus:ring-1 focus:ring-brand/30"
+            className="w-full pl-10"
+            size="$3"
           />
         </div>
       </div>
@@ -76,35 +77,37 @@ export function SearchBar({ onSearch, onFilterChange, onSortChange }: SearchBarP
           <label className="whitespace-nowrap text-xs font-medium text-muted-foreground/70">
             Filter
           </label>
-          <select
-            value={filter}
-            onChange={(e) => handleFilterChange(e.target.value)}
-            className="flex-1 rounded-lg border border-border bg-background px-3 py-1.5 text-sm focus:border-brand/50 focus:outline-none focus:ring-1 focus:ring-brand/30 sm:w-[120px]"
-          >
-            {filterOptions.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
+          <Select value={filter} onValueChange={handleFilterChange} size="$3">
+            <Select.Trigger className="flex-1 sm:w-[120px]">
+              <Select.Value />
+            </Select.Trigger>
+            <Select.Content>
+              {filterOptions.map((o) => (
+                <Select.Item key={o.value} value={o.value} index={filterOptions.indexOf(o)}>
+                  <Select.ItemText>{o.label}</Select.ItemText>
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select>
         </div>
         <div className="flex flex-1 items-center gap-2 sm:flex-initial">
           <label className="whitespace-nowrap text-xs font-medium text-muted-foreground/70">
             Sort
           </label>
-          <select
-            value={sort}
-            onChange={(e) => handleSortChange(e.target.value)}
-            className="flex-1 rounded-lg border border-border bg-background px-3 py-1.5 text-sm focus:border-brand/50 focus:outline-none focus:ring-1 focus:ring-brand/30 sm:w-[100px]"
-          >
-            {sortOptions.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
+          <Select value={sort} onValueChange={handleSortChange} size="$3">
+            <Select.Trigger className="flex-1 sm:w-[100px]">
+              <Select.Value />
+            </Select.Trigger>
+            <Select.Content>
+              {sortOptions.map((o) => (
+                <Select.Item key={o.value} value={o.value} index={sortOptions.indexOf(o)}>
+                  <Select.ItemText>{o.label}</Select.ItemText>
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select>
         </div>
       </div>
-    </div>
+    </Card>
   )
 }

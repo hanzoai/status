@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { Card } from '@hanzo/gui'
 import type { EndpointResult, EndpointStatus } from '@/lib/types'
 import { StatusBadge } from './status-badge'
 import { HealthBar } from './health-bar'
@@ -48,7 +49,7 @@ export function EndpointCard({
   }, [results, showAverageResponseTime])
 
   return (
-    <div className="group flex h-full flex-col rounded-xl border border-border bg-card transition-all duration-200 hover:border-border/80 hover:bg-accent/30">
+    <Card className="group flex h-full flex-col transition-all duration-200 hover:opacity-90" bordered padded={false}>
       <div className="space-y-0 px-4 pb-2 pt-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1 overflow-hidden">
@@ -61,15 +62,11 @@ export function EndpointCard({
             </button>
             <div className="flex min-h-[1.25rem] items-center gap-1.5 text-xs text-muted-foreground">
               {endpoint.group && (
-                <span className="truncate" title={endpoint.group}>
-                  {endpoint.group}
-                </span>
+                <span className="truncate" title={endpoint.group}>{endpoint.group}</span>
               )}
               {endpoint.group && hostname && <span className="opacity-40">{'\u2022'}</span>}
               {hostname && (
-                <span className="truncate font-mono text-[11px] opacity-70" title={hostname}>
-                  {hostname}
-                </span>
+                <span className="truncate font-mono text-[11px] opacity-70" title={hostname}>{hostname}</span>
               )}
             </div>
           </div>
@@ -89,13 +86,9 @@ export function EndpointCard({
               {responseTimeText}
             </p>
           </div>
-          <HealthBar
-            results={results}
-            maxResults={maxResults}
-            onTooltip={onTooltip}
-          />
+          <HealthBar results={results} maxResults={maxResults} onTooltip={onTooltip} />
         </div>
       </div>
-    </div>
+    </Card>
   )
 }

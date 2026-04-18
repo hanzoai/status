@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Button, Image } from '@hanzo/gui'
 import { Menu, X, ExternalLink } from 'lucide-react'
 import { getLogo, getLink, getConfig } from '@/lib/config'
 import type { UIButton } from '@/lib/types'
@@ -37,18 +38,18 @@ export function Header() {
             >
               <div className="flex items-center justify-center">
                 {logo ? (
-                  <img
-                    src={logo}
+                  <Image
+                    source={{ uri: logo }}
                     alt=""
+                    width={140}
+                    height={28}
                     className="h-7 max-w-[140px] object-contain dark:invert"
                   />
                 ) : (
                   <DefaultMark />
                 )}
               </div>
-              <span className="text-sm font-semibold tracking-tight text-foreground">
-                Status
-              </span>
+              <span className="text-sm font-semibold tracking-tight text-foreground">Status</span>
             </Wrapper>
           </div>
 
@@ -82,12 +83,15 @@ export function Header() {
             )}
 
             {(buttons.length > 0 || ctaLabel) && (
-              <button
-                className="ml-1 inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-accent md:hidden"
-                onClick={() => setMobileOpen(!mobileOpen)}
+              <Button
+                chromeless
+                circular
+                size="$3"
+                className="ml-1 md:hidden"
+                onPress={() => setMobileOpen(!mobileOpen)}
               >
                 {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -129,17 +133,10 @@ export function Header() {
 
 function DefaultMark() {
   return (
-    <svg
-      viewBox="0 0 67 67"
-      className="h-7 w-7 dark:invert"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg viewBox="0 0 67 67" className="h-7 w-7 dark:invert" xmlns="http://www.w3.org/2000/svg">
       <path d="M22.21 67V44.6369H0V67H22.21Z" fill="#000" />
       <path d="M0 44.6369L22.21 46.8285V44.6369H0Z" fill="#999" />
-      <path
-        d="M66.7038 22.3184H22.2534L0.0878906 44.6367H44.4634L66.7038 22.3184Z"
-        fill="#000"
-      />
+      <path d="M66.7038 22.3184H22.2534L0.0878906 44.6367H44.4634L66.7038 22.3184Z" fill="#000" />
       <path d="M22.21 0H0V22.3184H22.21V0Z" fill="#000" />
       <path d="M66.7198 0H44.5098V22.3184H66.7198V0Z" fill="#000" />
       <path d="M66.6753 22.3185L44.5098 20.0822V22.3185H66.6753Z" fill="#999" />
