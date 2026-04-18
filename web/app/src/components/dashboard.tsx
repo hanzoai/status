@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
+import { Button, Card } from '@hanzo/gui'
 import {
   Activity,
   Timer,
@@ -238,20 +239,24 @@ export function Dashboard({ announcements, navigate }: DashboardProps) {
         <div className="container mx-auto max-w-7xl px-4 py-6">
           <div className="mb-6">
             <div className="mb-3 flex items-center justify-end gap-1">
-              <button
-                onClick={toggleResponseTimeDisplay}
+              <Button
+                chromeless
+                circular
+                size="$3"
+                onPress={toggleResponseTimeDisplay}
                 title={showAvgResponseTime ? 'Show min-max response time' : 'Show average response time'}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
               >
                 {showAvgResponseTime ? <Activity className="h-4 w-4" /> : <Timer className="h-4 w-4" />}
-              </button>
-              <button
-                onClick={refreshData}
+              </Button>
+              <Button
+                chromeless
+                circular
+                size="$3"
+                onPress={refreshData}
                 title="Refresh data"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
               >
                 <RefreshCw className="h-4 w-4" />
-              </button>
+              </Button>
             </div>
 
             <AnnouncementBanner announcements={activeAnnouncements} />
@@ -281,10 +286,11 @@ export function Dashboard({ announcements, navigate }: DashboardProps) {
               {isGrouped && combinedGroups ? (
                 <div className="space-y-4">
                   {combinedGroups.map(([group, items]) => (
-                    <div key={group} className="overflow-hidden rounded-xl border border-border">
-                      <button
-                        onClick={() => toggleGroup(group)}
-                        className="flex w-full items-center justify-between border-b border-border bg-card px-5 py-3.5 transition-colors hover:bg-accent/30"
+                    <Card key={group} bordered padded={false} className="overflow-hidden">
+                      <Button
+                        chromeless
+                        onPress={() => toggleGroup(group)}
+                        className="flex w-full items-center justify-between border-b border-border px-5 py-3.5"
                       >
                         <div className="flex items-center gap-2.5">
                           {uncollapsedGroups.has(group) ? (
@@ -303,7 +309,7 @@ export function Dashboard({ announcements, navigate }: DashboardProps) {
                             <CheckCircle className="h-5 w-5 text-emerald-500" />
                           )}
                         </div>
-                      </button>
+                      </Button>
 
                       {uncollapsedGroups.has(group) && (
                         <div className="p-4">
@@ -331,7 +337,7 @@ export function Dashboard({ announcements, navigate }: DashboardProps) {
                           )}
                         </div>
                       )}
-                    </div>
+                    </Card>
                   ))}
                 </div>
               ) : (

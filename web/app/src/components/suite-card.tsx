@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { Card } from '@hanzo/gui'
 import type { SuiteStatus, EndpointResult } from '@/lib/types'
 import { StatusBadge } from './status-badge'
 import { HealthBar } from './health-bar'
@@ -10,12 +11,7 @@ interface SuiteCardProps {
   onTooltip?: (result: EndpointResult | null, anchor: HTMLElement | null, action: 'hover' | 'click') => void
 }
 
-export function SuiteCard({
-  suite,
-  maxResults = 50,
-  onNavigate,
-  onTooltip,
-}: SuiteCardProps) {
+export function SuiteCard({ suite, maxResults = 50, onNavigate, onTooltip }: SuiteCardProps) {
   const results = suite.results ?? []
   const latest = results.length > 0 ? results[results.length - 1] : null
   const status = latest ? (latest.success ? 'healthy' : 'unhealthy') : 'unknown'
@@ -31,7 +27,7 @@ export function SuiteCard({
   }, [results])
 
   return (
-    <div className="flex h-full flex-col rounded-xl border border-border bg-card transition-all duration-200 hover:border-border/80 hover:bg-accent/30">
+    <Card className="flex h-full flex-col transition-all duration-200 hover:opacity-90" bordered padded={false}>
       <div className="space-y-0 px-4 pb-2 pt-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1 overflow-hidden">
@@ -43,11 +39,7 @@ export function SuiteCard({
               {suite.name}
             </button>
             {suite.group && (
-              <div className="flex min-h-[1.25rem] items-center text-xs text-muted-foreground">
-                <span className="truncate" title={suite.group}>
-                  {suite.group}
-                </span>
-              </div>
+              <p className="truncate text-xs text-muted-foreground" title={suite.group}>{suite.group}</p>
             )}
           </div>
           <div className="ml-2 flex-shrink-0">
@@ -56,12 +48,8 @@ export function SuiteCard({
         </div>
       </div>
       <div className="flex-1 px-4 pb-4 pt-2">
-        <HealthBar
-          results={adaptedResults}
-          maxResults={maxResults}
-          onTooltip={onTooltip}
-        />
+        <HealthBar results={adaptedResults} maxResults={maxResults} onTooltip={onTooltip} />
       </div>
-    </div>
+    </Card>
   )
 }
