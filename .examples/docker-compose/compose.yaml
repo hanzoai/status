@@ -1,6 +1,6 @@
 services:
   gatus:
-    image: ghcr.io/hanzoai/status:latest
+    image: ghcr.io/hanzoai/status:1.0.1-arm64
     ports:
       - 8080:8080
     volumes:
