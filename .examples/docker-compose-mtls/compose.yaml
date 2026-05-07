@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: ghcr.io/hanzoai/static:latest
+    image: ghcr.io/hanzoai/static:0.4.1
     volumes:
       - ./certs/server:/etc/nginx/certs
       - ./nginx:/etc/nginx/conf.d
@@ -10,7 +10,7 @@ services:
       - mtls
 
   gatus:
-    image: ghcr.io/hanzoai/status:latest
+    image: ghcr.io/hanzoai/status:1.0.1-arm64
     restart: always
     ports:
       - "8080:8080"
