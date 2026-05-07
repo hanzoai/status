@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - name: status
-          image: ghcr.io/hanzoai/status:latest
+          image: ghcr.io/hanzoai/status:1.0.1-arm64
           ports:
             - name: http
               containerPort: 8080
