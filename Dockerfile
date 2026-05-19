@@ -18,6 +18,14 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     go mod download
 COPY . .
 COPY --from=frontend /app/web/static/ ./web/static/
+
+# Per SCALE_STANDARD.md §2 — every Go production Dockerfile that
+# emits JSON to a client builds with GOEXPERIMENT=jsonv2. Verified
+# -12% time / -23% allocs on the edge POST roundtrip vs encoding/json
+# v1 (json_bench_test.go in hanzoai/zip).
+ARG GO_EXPERIMENT=jsonv2
+ENV GOEXPERIMENT=${GO_EXPERIMENT}
+
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /status .
