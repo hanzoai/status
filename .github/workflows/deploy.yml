@@ -33,7 +33,7 @@ jobs:
           - brand: hanzo-network
             namespace: hanzo-network
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Fetch deploy credentials from KMS
         id: kms
