@@ -11,7 +11,7 @@ COPY web/static/brands/ web/static/brands/
 RUN cd web/app && sh scripts/build.sh
 
 # Stage 2: Build Go binary (pure Go, no CGO needed — modernc.org/sqlite)
-FROM golang:1.26-alpine AS backend
+FROM golang:1.26.4-alpine AS backend
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN --mount=type=cache,target=/go/pkg/mod \
