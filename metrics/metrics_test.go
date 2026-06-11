@@ -9,7 +9,7 @@ import (
 	"github.com/hanzoai/status/config/endpoint"
 	"github.com/hanzoai/status/config/endpoint/dns"
 	"github.com/hanzoai/status/config/suite"
-	"github.com/prometheus/client_golang/prometheus"
+	metric "github.com/luxfi/metric"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 )
 
@@ -30,7 +30,7 @@ func TestInitializePrometheusMetrics(t *testing.T) {
 			},
 		},
 	}
-	reg := prometheus.NewRegistry()
+	reg := metric.NewRegistry()
 	InitializePrometheusMetrics(cfgWithExtras, reg)
 	// Metrics variables should be non-nil
 	if resultTotal == nil {
@@ -66,7 +66,7 @@ func TestInitializePrometheusMetrics(t *testing.T) {
 // TestPublishMetricsForEndpoint_withExtraLabels ensures extraLabels are included in the exported metrics.
 func TestPublishMetricsForEndpoint_withExtraLabels(t *testing.T) {
 	// Only test one label set per process due to Prometheus registry limits.
-	reg := prometheus.NewRegistry()
+	reg := metric.NewRegistry()
 	cfg := &config.Config{
 		Endpoints: []*endpoint.Endpoint{
 			{
@@ -112,7 +112,7 @@ gatus_results_total{bar="my-bar",foo="my-foo",group="g1",key="g1_ep-extra",name=
 }
 
 func TestPublishMetricsForEndpoint(t *testing.T) {
-	reg := prometheus.NewRegistry()
+	reg := metric.NewRegistry()
 	InitializePrometheusMetrics(&config.Config{}, reg)
 
 	httpEndpoint := &endpoint.Endpoint{Name: "http-ep-name", Group: "http-ep-group", URL: "https://example.org"}
@@ -242,7 +242,7 @@ gatus_results_endpoint_success{group="http-ep-group",key="http-ep-group_http-ep-
 }
 
 func TestPublishMetricsForSuite(t *testing.T) {
-	reg := prometheus.NewRegistry()
+	reg := metric.NewRegistry()
 	InitializePrometheusMetrics(&config.Config{}, reg)
 
 	testSuite := &suite.Suite{
@@ -300,7 +300,7 @@ gatus_suite_results_total{group="test-group",key="test-group_test-suite",name="t
 }
 
 func TestPublishMetricsForSuite_NoGroup(t *testing.T) {
-	reg := prometheus.NewRegistry()
+	reg := metric.NewRegistry()
 	InitializePrometheusMetrics(&config.Config{}, reg)
 
 	testSuite := &suite.Suite{
