@@ -5,10 +5,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/config/ui"
-	"github.com/hanzoai/status/config/web"
-	static "github.com/hanzoai/status/web"
 	"github.com/TwiN/health"
 	"github.com/TwiN/logr"
 	fiber "github.com/gofiber/fiber/v2"
@@ -18,8 +14,11 @@ import (
 	fiberfs "github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/redirect"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/hanzoai/status/config"
+	"github.com/hanzoai/status/config/ui"
+	"github.com/hanzoai/status/config/web"
+	static "github.com/hanzoai/status/web"
+	metric "github.com/luxfi/metric"
 )
 
 type API struct {
@@ -65,7 +64,7 @@ func (a *API) createRouter(cfg *config.Config) *fiber.App {
 	app.Use(compress.New())
 	// Define metrics handler, if necessary
 	if cfg.Metrics {
-		metricsHandler := promhttp.InstrumentMetricHandler(prometheus.DefaultRegisterer, promhttp.HandlerFor(prometheus.DefaultGatherer, promhttp.HandlerOpts{
+		metricsHandler := metric.InstrumentMetricHandler(metric.DefaultRegisterer, metric.NewHTTPHandler(metric.DefaultGatherer, metric.HandlerOpts{
 			DisableCompression: true,
 		}))
 		app.Get("/metrics", adaptor.HTTPHandler(metricsHandler))
