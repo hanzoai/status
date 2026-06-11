@@ -10,7 +10,6 @@ import (
 	"github.com/hanzoai/status/config/endpoint/dns"
 	"github.com/hanzoai/status/config/suite"
 	metric "github.com/luxfi/metric"
-	"github.com/prometheus/client_golang/prometheus/testutil"
 )
 
 // TestInitializePrometheusMetrics tests metrics initialization with extraLabels.
