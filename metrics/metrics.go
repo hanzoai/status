@@ -6,28 +6,28 @@ import (
 	"github.com/hanzoai/status/config"
 	"github.com/hanzoai/status/config/endpoint"
 	"github.com/hanzoai/status/config/suite"
-	"github.com/prometheus/client_golang/prometheus"
+	metric "github.com/luxfi/metric"
 )
 
 const namespace = "gatus" // The prefix of the metrics
 
 var (
-	resultTotal                        *prometheus.CounterVec
-	resultDurationSeconds              *prometheus.GaugeVec
-	resultConnectedTotal               *prometheus.CounterVec
-	resultCodeTotal                    *prometheus.CounterVec
-	resultCertificateExpirationSeconds *prometheus.GaugeVec
-	resultDomainExpirationSeconds      *prometheus.GaugeVec
-	resultEndpointSuccess              *prometheus.GaugeVec
+	resultTotal                        *metric.CounterVec
+	resultDurationSeconds              *metric.GaugeVec
+	resultConnectedTotal               *metric.CounterVec
+	resultCodeTotal                    *metric.CounterVec
+	resultCertificateExpirationSeconds *metric.GaugeVec
+	resultDomainExpirationSeconds      *metric.GaugeVec
+	resultEndpointSuccess              *metric.GaugeVec
 
 	// Suite metrics
-	suiteResultTotal           *prometheus.CounterVec
-	suiteResultDurationSeconds *prometheus.GaugeVec
-	suiteResultSuccess         *prometheus.GaugeVec
+	suiteResultTotal           *metric.CounterVec
+	suiteResultDurationSeconds *metric.GaugeVec
+	suiteResultSuccess         *metric.GaugeVec
 
 	// Track if metrics have been initialized to prevent duplicate registration
 	metricsInitialized bool
-	currentRegisterer  prometheus.Registerer
+	currentRegisterer  metric.Registerer
 )
 
 // UnregisterPrometheusMetrics unregisters all previously registered metrics
@@ -74,63 +74,63 @@ func UnregisterPrometheusMetrics() {
 	currentRegisterer = nil
 }
 
-func InitializePrometheusMetrics(cfg *config.Config, reg prometheus.Registerer) {
+func InitializePrometheusMetrics(cfg *config.Config, reg metric.Registerer) {
 	// If metrics are already initialized, unregister them first
 	if metricsInitialized {
 		UnregisterPrometheusMetrics()
 	}
 
 	if reg == nil {
-		reg = prometheus.DefaultRegisterer
+		reg = metric.DefaultRegisterer
 	}
 
 	// Store the registerer for later unregistration
 	currentRegisterer = reg
 
 	extraLabels := cfg.GetUniqueExtraMetricLabels()
-	resultTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
+	resultTotal = metric.NewCounterVec(metric.CounterOpts{
 		Namespace: namespace,
 		Name:      "results_total",
 		Help:      "Number of results per endpoint",
 	}, append([]string{"key", "group", "name", "type", "success"}, extraLabels...))
 	reg.MustRegister(resultTotal)
 
-	resultDurationSeconds = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+	resultDurationSeconds = metric.NewGaugeVec(metric.GaugeOpts{
 		Namespace: namespace,
 		Name:      "results_duration_seconds",
 		Help:      "Duration of the request in seconds",
 	}, append([]string{"key", "group", "name", "type"}, extraLabels...))
 	reg.MustRegister(resultDurationSeconds)
 
-	resultConnectedTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
+	resultConnectedTotal = metric.NewCounterVec(metric.CounterOpts{
 		Namespace: namespace,
 		Name:      "results_connected_total",
 		Help:      "Total number of results in which a connection was successfully established",
 	}, append([]string{"key", "group", "name", "type"}, extraLabels...))
 	reg.MustRegister(resultConnectedTotal)
 
-	resultCodeTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
+	resultCodeTotal = metric.NewCounterVec(metric.CounterOpts{
 		Namespace: namespace,
 		Name:      "results_code_total",
 		Help:      "Total number of results by code",
 	}, append([]string{"key", "group", "name", "type", "code"}, extraLabels...))
 	reg.MustRegister(resultCodeTotal)
 
-	resultCertificateExpirationSeconds = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+	resultCertificateExpirationSeconds = metric.NewGaugeVec(metric.GaugeOpts{
 		Namespace: namespace,
 		Name:      "results_certificate_expiration_seconds",
 		Help:      "Number of seconds until the certificate expires",
 	}, append([]string{"key", "group", "name", "type"}, extraLabels...))
 	reg.MustRegister(resultCertificateExpirationSeconds)
 
-	resultDomainExpirationSeconds = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+	resultDomainExpirationSeconds = metric.NewGaugeVec(metric.GaugeOpts{
 		Namespace: namespace,
 		Name:      "results_domain_expiration_seconds",
 		Help:      "Number of seconds until the domain expires",
 	}, append([]string{"key", "group", "name", "type"}, extraLabels...))
 	reg.MustRegister(resultDomainExpirationSeconds)
 
-	resultEndpointSuccess = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+	resultEndpointSuccess = metric.NewGaugeVec(metric.GaugeOpts{
 		Namespace: namespace,
 		Name:      "results_endpoint_success",
 		Help:      "Displays whether or not the endpoint was a success",
@@ -138,21 +138,21 @@ func InitializePrometheusMetrics(cfg *config.Config, reg prometheus.Registerer) 
 	reg.MustRegister(resultEndpointSuccess)
 
 	// Suite metrics
-	suiteResultTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
+	suiteResultTotal = metric.NewCounterVec(metric.CounterOpts{
 		Namespace: namespace,
 		Name:      "suite_results_total",
 		Help:      "Total number of suite executions",
 	}, append([]string{"key", "group", "name", "success"}, extraLabels...))
 	reg.MustRegister(suiteResultTotal)
 
-	suiteResultDurationSeconds = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+	suiteResultDurationSeconds = metric.NewGaugeVec(metric.GaugeOpts{
 		Namespace: namespace,
 		Name:      "suite_results_duration_seconds",
 		Help:      "Duration of suite execution in seconds",
 	}, append([]string{"key", "group", "name"}, extraLabels...))
 	reg.MustRegister(suiteResultDurationSeconds)
 
-	suiteResultSuccess = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+	suiteResultSuccess = metric.NewGaugeVec(metric.GaugeOpts{
 		Namespace: namespace,
 		Name:      "suite_results_success",
 		Help:      "Whether the suite execution was successful (1) or not (0)",

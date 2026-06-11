@@ -23,7 +23,6 @@ require (
 	github.com/lib/pq v1.12.1
 	github.com/miekg/dns v1.1.72
 	github.com/prometheus-community/pro-bing v0.8.0
-	github.com/prometheus/client_golang v1.23.2
 	github.com/registrobr/rdap v1.1.8
 	github.com/valyala/fasthttp v1.69.0
 	github.com/wcharczuk/go-chart/v2 v2.1.2
@@ -72,6 +71,7 @@ require (
 	github.com/hashicorp/go-version v1.9.0 // indirect
 	github.com/klauspost/compress v1.18.5 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
+	github.com/luxfi/metric v1.5.8
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.21 // indirect
