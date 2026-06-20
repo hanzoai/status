@@ -1,4 +1,4 @@
-# LLM.md - Hanzo Status
+# Hanzo Status
 
 ## Overview
 Go module: github.com/hanzoai/status
