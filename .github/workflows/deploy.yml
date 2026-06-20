@@ -18,7 +18,7 @@ jobs:
 
   deploy:
     needs: docker
-    runs-on: ubuntu-latest
+    runs-on: hanzo-deploy-linux-amd64
     strategy:
       matrix:
         include:
