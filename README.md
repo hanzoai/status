@@ -1,3 +1,5 @@
+<p align="center"><img src=".github/hero.svg" alt="status" width="880"></p>
+
 # Hanzo Status
 
 ![test](https://github.com/hanzoai/status/actions/workflows/test.yml/badge.svg)
