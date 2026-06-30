@@ -12,18 +12,18 @@ import (
 const namespace = "gatus" // The prefix of the metrics
 
 var (
-	resultTotal                        *metric.CounterVec
-	resultDurationSeconds              *metric.GaugeVec
-	resultConnectedTotal               *metric.CounterVec
-	resultCodeTotal                    *metric.CounterVec
-	resultCertificateExpirationSeconds *metric.GaugeVec
-	resultDomainExpirationSeconds      *metric.GaugeVec
-	resultEndpointSuccess              *metric.GaugeVec
+	resultTotal                        metric.CounterVec
+	resultDurationSeconds              metric.GaugeVec
+	resultConnectedTotal               metric.CounterVec
+	resultCodeTotal                    metric.CounterVec
+	resultCertificateExpirationSeconds metric.GaugeVec
+	resultDomainExpirationSeconds      metric.GaugeVec
+	resultEndpointSuccess              metric.GaugeVec
 
 	// Suite metrics
-	suiteResultTotal           *metric.CounterVec
-	suiteResultDurationSeconds *metric.GaugeVec
-	suiteResultSuccess         *metric.GaugeVec
+	suiteResultTotal           metric.CounterVec
+	suiteResultDurationSeconds metric.GaugeVec
+	suiteResultSuccess         metric.GaugeVec
 
 	// Track if metrics have been initialized to prevent duplicate registration
 	metricsInitialized bool
