@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Stage 1: Build Vite frontend (static export)
-FROM node:22-alpine AS frontend
+FROM ghcr.io/hanzoai/nodejs:v24.18.0 AS frontend
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 COPY web/app/package.json web/app/pnpm-lock.yaml* web/app/
