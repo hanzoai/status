@@ -2,7 +2,11 @@
 
 # Stage 1: Build Vite frontend (static export)
 FROM node:22-alpine AS frontend
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Pin pnpm to 9.x to match the repo's lockfileVersion 9.0. `pnpm@latest` (v10)
+# was non-reproducible AND treats ignored build scripts (esbuild's postinstall)
+# as a FATAL error (ERR_PNPM_IGNORED_BUILDS -> exit 1), breaking the build; v9
+# runs the postinstall so esbuild's platform binary is installed for vite.
+RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
 WORKDIR /app/web/app
 COPY web/app/package.json web/app/pnpm-lock.yaml* ./
 # Prefer the frozen lockfile; fall back to a normal install if it has drifted.
