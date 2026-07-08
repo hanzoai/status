@@ -3,9 +3,13 @@
 # Stage 1: Build Vite frontend (static export)
 FROM node:22-alpine AS frontend
 RUN corepack enable && corepack prepare pnpm@latest --activate
+WORKDIR /app/web/app
+COPY web/app/package.json web/app/pnpm-lock.yaml* ./
+# Prefer the frozen lockfile; fall back to a normal install if it has drifted.
+# (The prior `... || cd web/app && ...` double-cd'd on the fallback because the
+# first cd had already moved CWD — it broke every time frozen-lockfile failed.)
+RUN pnpm install --frozen-lockfile || pnpm install
 WORKDIR /app
-COPY web/app/package.json web/app/pnpm-lock.yaml* web/app/
-RUN cd web/app && pnpm install --frozen-lockfile 2>/dev/null || cd web/app && pnpm install
 COPY web/app/ web/app/
 COPY web/static/brands/ web/static/brands/
 RUN cd web/app && sh scripts/build.sh
