@@ -121,12 +121,14 @@ endpoints:
       - "[STATUS] == any(200, 401, 403)"
       - "[RESPONSE_TIME] < 3000"
 
+  # The public prompts surface is the catalog (200); bare /v1/prompts is
+  # tenancy-gated (500 "X-Org-Id required").
   - name: "Prompts"
     group: "AI"
-    url: "https://api.hanzo.ai/v1/prompts"
+    url: "https://api.hanzo.ai/v1/prompts/catalog"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 401, 403)"
+      - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 3000"
 
   - name: "Code Exec"
