@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Button, Separator } from '@hanzo/gui'
+import { Button, Separator } from '@/components/ui'
 import { RefreshCw, Sun, Moon } from 'lucide-react'
 import { getTheme, toggleTheme } from '@/lib/theme'
 

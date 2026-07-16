@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Card, Input, Select } from '@hanzo/gui'
+import { Card, Input } from '@/components/ui'
 import { Search } from 'lucide-react'
 import { getConfig } from '@/lib/config'
 
@@ -77,35 +77,33 @@ export function SearchBar({ onSearch, onFilterChange, onSortChange }: SearchBarP
           <label className="whitespace-nowrap text-xs font-medium text-muted-foreground/70">
             Filter
           </label>
-          <Select value={filter} onValueChange={handleFilterChange} size="$3">
-            <Select.Trigger className="flex-1 sm:w-[120px]">
-              <Select.Value />
-            </Select.Trigger>
-            <Select.Content>
-              {filterOptions.map((o) => (
-                <Select.Item key={o.value} value={o.value} index={filterOptions.indexOf(o)}>
-                  <Select.ItemText>{o.label}</Select.ItemText>
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select>
+          <select
+            value={filter}
+            onChange={(e) => handleFilterChange(e.target.value)}
+            className="flex-1 rounded-md border border-border bg-card px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:w-[120px]"
+          >
+            {filterOptions.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="flex flex-1 items-center gap-2 sm:flex-initial">
           <label className="whitespace-nowrap text-xs font-medium text-muted-foreground/70">
             Sort
           </label>
-          <Select value={sort} onValueChange={handleSortChange} size="$3">
-            <Select.Trigger className="flex-1 sm:w-[100px]">
-              <Select.Value />
-            </Select.Trigger>
-            <Select.Content>
-              {sortOptions.map((o) => (
-                <Select.Item key={o.value} value={o.value} index={sortOptions.indexOf(o)}>
-                  <Select.ItemText>{o.label}</Select.ItemText>
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select>
+          <select
+            value={sort}
+            onChange={(e) => handleSortChange(e.target.value)}
+            className="flex-1 rounded-md border border-border bg-card px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:w-[100px]"
+          >
+            {sortOptions.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
     </Card>
