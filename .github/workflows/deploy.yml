@@ -1,4 +1,14 @@
-name: Build and Deploy
+name: Build and Publish
+
+# Tag push (vX.Y.Z) builds and publishes the multi-arch image to GHCR:
+#   ghcr.io/hanzoai/status:<X.Y.Z>  (semver, no `v`) + :sha-<short> + :latest
+#
+# Deployment is NOT done here. It is GitOps via hanzoai/universe
+# (infra/k8s/status: deployment.yaml image pin + configmap-hanzo.yaml) and the
+# hanzo operator (infra/k8s/operator/crs/status*.yaml). The previous in-repo
+# per-brand `kubectl apply -k k8s/<brand>` deploy job was removed: it pinned an
+# arm64-only image and dropped the tuned Deployment (hostAliases for internal
+# probing, Recreate strategy), regressing the live pod. One way to deploy: universe.
 
 on:
   push:
@@ -15,62 +25,3 @@ jobs:
     with:
       image: ghcr.io/hanzoai/status
     secrets: inherit
-
-  deploy:
-    needs: docker
-    runs-on: hanzo-deploy-linux-amd64
-    strategy:
-      matrix:
-        include:
-          - brand: hanzo
-            namespace: hanzo
-          - brand: lux
-            namespace: lux-system
-          - brand: pars
-            namespace: pars-system
-          - brand: zoo
-            namespace: zoo-system
-          - brand: hanzo-network
-            namespace: hanzo-network
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Fetch deploy credentials from KMS
-        id: kms
-        env:
-          KMS_CLIENT_ID: ${{ secrets.KMS_CLIENT_ID }}
-          KMS_CLIENT_SECRET: ${{ secrets.KMS_CLIENT_SECRET }}
-          HANZO_API_KEY: ${{ secrets.HANZO_API_KEY }}
-          KMS_ENDPOINT: ${{ vars.KMS_ENDPOINT || 'https://kms.hanzo.ai' }}
-        run: |
-          if [ -n "${KMS_CLIENT_ID}" ] && [ -n "${KMS_CLIENT_SECRET}" ]; then
-            HANZO_API_KEY=$(curl -sf "${KMS_ENDPOINT}/api/v1/auth/universal-auth/login" \
-              -H "Content-Type: application/json" \
-              -d "{\"clientId\":\"${KMS_CLIENT_ID}\",\"clientSecret\":\"${KMS_CLIENT_SECRET}\"}" | jq -r '.accessToken')
-          fi
-          response=$(curl -sf "${KMS_ENDPOINT}/api/v3/secrets/raw?workspaceId=e1359bf4-31b4-4dfa-bb90-323e2c298ad8&secretPath=/deploy&environment=prod" \
-            -H "Authorization: Bearer ${HANZO_API_KEY}" 2>/dev/null || echo "")
-          if [ -n "$response" ]; then
-            token=$(echo "$response" | jq -r '.secrets[] | select(.secretKey=="DO_API_TOKEN") | .secretValue // empty')
-          fi
-          if [ -z "${token:-}" ]; then
-            echo "::error::Deploy credentials not found. Set HANZO_API_KEY with KMS access."
-            exit 1
-          fi
-          echo "::add-mask::${token}"
-          echo "token=${token}" >> "$GITHUB_OUTPUT"
-
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ steps.kms.outputs.token }}
-
-      - name: Configure kubectl
-        run: doctl kubernetes cluster kubeconfig save hanzo-k8s
-
-      - name: Deploy ${{ matrix.brand }}
-        run: |
-          kubectl apply -k k8s/${{ matrix.brand }}/
-          kubectl set image deployment/status status=ghcr.io/hanzoai/status:${{ github.ref_name }} \
-            -n ${{ matrix.namespace }}
-          kubectl rollout status deployment/status -n ${{ matrix.namespace }} --timeout=120s
