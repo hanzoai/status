@@ -1,4 +1,4 @@
-import { Spinner } from '@hanzo/gui'
+import { Spinner } from '@/components/ui'
 
 const sizeMap = {
   xs: 'small' as const,

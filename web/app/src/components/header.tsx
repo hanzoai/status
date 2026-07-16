@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Button, Image } from '@hanzo/gui'
+import { Button, Image } from '@/components/ui'
 import { Menu, X, ExternalLink } from 'lucide-react'
 import { getLogo, getLink, getConfig } from '@/lib/config'
 import type { UIButton } from '@/lib/types'
