@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { Button, Card } from '@hanzo/gui'
+import { Button, Card } from '@/components/ui'
 import {
   Activity,
   Timer,

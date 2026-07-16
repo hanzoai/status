@@ -1,4 +1,4 @@
-import { Card } from '@hanzo/gui'
+import { Card } from '@/components/ui'
 import { AlertTriangle, Info, AlertCircle } from 'lucide-react'
 import type { Announcement } from '@/lib/types'
 
