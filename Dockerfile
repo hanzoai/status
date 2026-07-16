@@ -2,12 +2,14 @@
 
 # Stage 1: Build Vite frontend (static export)
 FROM ghcr.io/hanzoai/nodejs:v24.18.0 AS frontend
-# Pin pnpm (NOT @latest): pnpm 10+ hard-errors on unapproved dependency build
-# scripts (ERR_PNPM_IGNORED_BUILDS: esbuild) AND no longer reads
-# pnpm.onlyBuiltDependencies from package.json — which silently broke every Vite
-# image build. 9.15.9 runs the esbuild build script and is reproducible. Install
-# via npm (not `corepack prepare`, whose spec parser choked on the pinned version).
-RUN npm install -g '[email protected]'
+# Pin pnpm via corepack's packageManager field (web/app/package.json), NOT
+# `pnpm@latest`: pnpm 10+ hard-errors on unapproved dependency build scripts
+# (ERR_PNPM_IGNORED_BUILDS: esbuild) and dropped pnpm.onlyBuiltDependencies from
+# package.json, which silently broke every Vite image build. The version lives in
+# the packageManager field (pure JSON — immune to shell arg mangling that tripped
+# `corepack prepare`/`npm i -g`); corepack activates it on first pnpm invocation.
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+RUN corepack enable
 WORKDIR /app
 COPY web/app/package.json web/app/pnpm-lock.yaml* web/app/
 RUN cd web/app && (pnpm install --frozen-lockfile || pnpm install)
