@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { Separator } from '@hanzo/gui'
+import { Separator } from '@/components/ui'
 import { getLink, getConfig } from '@/lib/config'
 import type { UIButton } from '@/lib/types'
 

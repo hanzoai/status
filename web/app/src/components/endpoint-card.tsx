@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Card } from '@hanzo/gui'
+import { Card } from '@/components/ui'
 import type { EndpointResult, EndpointStatus } from '@/lib/types'
 import { StatusBadge } from './status-badge'
 import { HealthBar } from './health-bar'
