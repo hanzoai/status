@@ -5,7 +5,7 @@ FROM ghcr.io/hanzoai/nodejs:v24.18.0 AS frontend
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 COPY web/app/package.json web/app/pnpm-lock.yaml* web/app/
-RUN cd web/app && pnpm install --frozen-lockfile 2>/dev/null || cd web/app && pnpm install
+RUN cd web/app && (pnpm install --frozen-lockfile || pnpm install)
 COPY web/app/ web/app/
 COPY web/static/brands/ web/static/brands/
 RUN cd web/app && sh scripts/build.sh
