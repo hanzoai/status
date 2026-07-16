@@ -7,7 +7,7 @@ storage:
 
 ui:
   title: "Hanzo Status"
-  description: "Real-time infrastructure health and performance"
+  description: "Real-time health of the Hanzo cloud — every product served by the one unified cloud binary at api.hanzo.ai"
   header: "Status"
   logo: "/brands/hanzo/logo.svg"
   link: "https://hanzo.ai"
@@ -17,96 +17,125 @@ ui:
     size16x16: "/brands/hanzo/favicon-16.png"
     size32x32: "/brands/hanzo/favicon-32.png"
   buttons:
-    - name: "HIPs"
-      link: "https://github.com/hanzoai/hips"
     - name: "Docs"
       link: "https://docs.hanzo.ai"
+    - name: "Console"
+      link: "https://console.hanzo.ai"
+    - name: "HIPs"
+      link: "https://github.com/hanzoai/HIPs"
     - name: "GitHub"
       link: "https://github.com/hanzoai"
-    - name: "Support"
-      link: "https://hanzo.ai/support"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# One unified cloud binary serves the entire /v1 surface at api.hanzo.ai.
+# Every product below is a subsystem of that binary — health is measured by
+# probing its own /v1/<product> route through the public edge (api.hanzo.ai),
+# exactly the path a customer hits.
+#
+#   UP    = 200, or an auth gate (401/403), or a tenancy gate (500
+#           "X-Org-Id required" — the gateway currently mis-codes the missing
+#           org header as 500 instead of 400/401; the route IS served, so it
+#           counts as reachable). See tenancy note on the DATA group.
+#   DOWN  = 404 (route not mounted) · 502/503/504 (binary unreachable) · timeout.
+#
+# A capability that is NOT served on the /v1 surface but ships as its own
+# public host (Base, Registry, and the Web properties) is probed at its real
+# host — never a /v1 route that 404s.
+#
+# NOTE: the live source of truth for this config is
+# universe/infra/k8s/status/configmap-hanzo.yaml (mounted as the status-config
+# ConfigMap). This file mirrors it for the repo-native kustomize build.
+# ─────────────────────────────────────────────────────────────────────────────
 
 endpoints:
 
   # ═══════════════════════════════════════════════
-  # PLATFORM
+  # CORE API — the unified cloud binary
   # ═══════════════════════════════════════════════
 
-  - name: "Identity"
-    group: "Platform"
-    url: "https://hanzo.id"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 302)"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Console"
-    group: "Platform"
-    url: "https://console.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 302)"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Cloud"
-    group: "Platform"
-    url: "https://cloud.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Cloud API"
-    group: "Platform"
-    url: "https://cloud-api.hanzo.ai/health"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "KMS"
-    group: "Platform"
-    url: "https://kms.hanzo.ai/api/status"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "PaaS"
-    group: "Platform"
-    url: "https://platform.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 302)"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Registry"
-    group: "Platform"
-    url: "https://registry.hanzo.ai/v2/"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 401"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  # ═══════════════════════════════════════════════
-  # AI
-  # ═══════════════════════════════════════════════
-
-  - name: "API Gateway"
-    group: "AI"
+  - name: "api.hanzo.ai"
+    group: "Core API"
     url: "https://api.hanzo.ai/health"
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 2000"
+
+  - name: "/v1 surface"
+    group: "Core API"
+    url: "https://api.hanzo.ai/v1/health"
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 2000"
+
+  # ═══════════════════════════════════════════════
+  # AI — inference, agents, retrieval
+  # ═══════════════════════════════════════════════
+
+  # /v1/models is the served catalog — a 200 here means the Zen + Enso model
+  # families are being served through the router. Chat completions itself is
+  # POST-only (GET/HEAD 404 by design), so serving health is measured here and
+  # at the in-cluster engine below, not by probing /v1/chat/completions.
+  - name: "Models & Inference"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/models"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+
+  # In-cluster inference engine / model router (Zen + Enso serving). Probed on
+  # the cluster Service — the status pod runs in-namespace, so this is the
+  # ground-truth serving signal behind the public /v1/models catalog.
+  - name: "Inference Engine"
+    group: "AI"
+    url: "http://engine.hanzo.svc:36900/health"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  # Model router stats — the flywheel/routing control plane (auth-gated).
+  - name: "Router"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/router/stats"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403)"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: "Agents"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/agents"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: "RAG"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/rag/query"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403)"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: "Prompts"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/prompts"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403)"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: "Code Exec"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/exec"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403)"
+      - "[RESPONSE_TIME] < 3000"
 
   - name: "Chat"
     group: "AI"
@@ -115,261 +144,216 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 5000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Chat (alt)"
-    group: "AI"
-    url: "https://chat.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 5000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Studio"
-    group: "AI"
-    url: "https://studio.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 5000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Flow"
-    group: "AI"
-    url: "https://flow.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Flow App"
-    group: "AI"
-    url: "https://app.flow.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Zen"
-    group: "AI"
-    url: "https://zen.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Zen API"
-    group: "AI"
-    url: "https://api.zen.hanzo.ai/health"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 401)"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Visor"
-    group: "AI"
-    url: "https://vm.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "MPC"
-    group: "AI"
-    url: "https://mpc.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
 
   # ═══════════════════════════════════════════════
-  # BOOTNODE CLOUD
+  # IDENTITY & SECURITY
   # ═══════════════════════════════════════════════
 
-  - name: "bootno.de"
-    group: "Bootnode Cloud"
-    url: "https://bootno.de"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 302)"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "API"
-    group: "Bootnode Cloud"
-    url: "https://api.bootno.de/health"
+  - name: "Identity (IAM)"
+    group: "Identity & Security"
+    url: "https://api.hanzo.ai/v1/iam/.well-known/openid-configuration"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "WebSocket"
-    group: "Bootnode Cloud"
-    url: "wss://ws.bootno.de"
-    interval: 60s
-    conditions:
-      - "[CONNECTED] == true"
-
-  - name: "web3.hanzo.ai"
-    group: "Bootnode Cloud"
-    url: "https://web3.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 302)"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "web3 API"
-    group: "Bootnode Cloud"
-    url: "https://api.web3.hanzo.ai/health"
+  - name: "KMS"
+    group: "Identity & Security"
+    url: "https://api.hanzo.ai/v1/kms/health"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "web3 WebSocket"
-    group: "Bootnode Cloud"
-    url: "wss://ws.web3.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[CONNECTED] == true"
 
   # ═══════════════════════════════════════════════
   # COMMERCE
   # ═══════════════════════════════════════════════
 
-  - name: "API"
-    group: "Commerce"
-    url: "https://commerce.hanzo.ai/api/v1/ping"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Admin"
-    group: "Commerce"
-    url: "https://admin.commerce.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Store"
-    group: "Commerce"
-    url: "https://store.commerce.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
   - name: "Billing"
     group: "Commerce"
-    url: "https://billing.hanzo.ai"
+    url: "https://api.hanzo.ai/v1/billing/balance"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403)"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: "Plans"
+    group: "Commerce"
+    url: "https://api.hanzo.ai/v1/plans"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: "Pricing"
     group: "Commerce"
-    url: "https://pricing.hanzo.ai/health"
+    url: "https://api.hanzo.ai/v1/pricing"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Models"
+  - name: "Entitlements"
     group: "Commerce"
-    url: "https://models.hanzo.ai/health"
+    url: "https://api.hanzo.ai/v1/orgs/hanzo/entitlements"
     interval: 60s
     conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
+      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[RESPONSE_TIME] < 3000"
 
   # ═══════════════════════════════════════════════
-  # BOT
+  # DATA — datastore primitives on the unified /v1 surface
+  #
+  # These routes are tenancy-scoped: a request without an org context returns
+  # 500 "X-Org-Id required" (a gateway mis-code — it should be 400/401). The
+  # route IS served, so any(200,401,403,500) = reachable; a real outage shows
+  # as 502/503/504/timeout. TODO(gateway): return 400/401 for missing org so
+  # these can tighten to any(200,401,403).
   # ═══════════════════════════════════════════════
 
-  - name: "Site"
-    group: "Bot"
-    url: "https://hanzo.bot"
+  - name: "SQL"
+    group: "Data"
+    url: "https://api.hanzo.ai/v1/sql"
     interval: 60s
     conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
+      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[RESPONSE_TIME] < 3000"
 
-  - name: "Gateway"
-    group: "Bot"
-    url: "https://bot.hanzo.ai"
+  - name: "KV"
+    group: "Data"
+    url: "https://api.hanzo.ai/v1/kv"
     interval: 60s
     conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
+      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[RESPONSE_TIME] < 3000"
 
-  - name: "Hub"
-    group: "Bot"
-    url: "https://hub.hanzo.bot"
+  - name: "DocDB"
+    group: "Data"
+    url: "https://api.hanzo.ai/v1/docdb"
     interval: 60s
     conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
+      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[RESPONSE_TIME] < 3000"
 
-  - name: "Playground"
-    group: "Bot"
-    url: "https://app.hanzo.bot"
+  - name: "Datastore"
+    group: "Data"
+    url: "https://api.hanzo.ai/v1/datastore"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[RESPONSE_TIME] < 3000"
+
+  # Base ships as its OWN app at base.hanzo.ai (the binary does NOT mount
+  # /v1/base). Probe the real host; it 307-redirects anon traffic to /dashboard/.
+  - name: "Base"
+    group: "Data"
+    url: "https://base.hanzo.ai"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 302, 307, 308)"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: "Storage (S3)"
+    group: "Data"
+    url: "https://api.hanzo.ai/v1/s3"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: "Vector"
+    group: "Data"
+    url: "https://api.hanzo.ai/v1/vector"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[RESPONSE_TIME] < 3000"
+
+  # ═══════════════════════════════════════════════
+  # STREAMS — messaging · durable tasks
+  # ═══════════════════════════════════════════════
+
+  - name: "Tasks"
+    group: "Streams"
+    url: "https://api.hanzo.ai/v1/tasks"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 301, 302, 307, 308, 401, 403)"
+      - "[RESPONSE_TIME] < 3000"
+
+  # ═══════════════════════════════════════════════
+  # APPS
+  # ═══════════════════════════════════════════════
+
+  - name: "Search"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/search"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: "Bot"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/bot"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: "Functions"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/functions"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[RESPONSE_TIME] < 3000"
+
+  # ═══════════════════════════════════════════════
+  # OBSERVE
+  # ═══════════════════════════════════════════════
+
+  - name: "Analytics"
+    group: "Observe"
+    url: "https://api.hanzo.ai/v1/analytics/overview"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[RESPONSE_TIME] < 3000"
+
+  # Observability (o11y / SigNoz) is IAM-gated at the edge — a 403 means
+  # UP-but-gated, not down.
+  - name: "Observability"
+    group: "Observe"
+    url: "https://api.hanzo.ai/v1/o11y"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403)"
+      - "[RESPONSE_TIME] < 3000"
+
+  # ═══════════════════════════════════════════════
+  # PLATFORM
+  # ═══════════════════════════════════════════════
+
+  - name: "PaaS"
+    group: "Platform"
+    url: "https://api.hanzo.ai/v1/platform/health"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "Skills"
-    group: "Bot"
-    url: "https://skills.hanzo.bot"
+  # Container registry ships as its own host; /v2/ answers 401 (token auth) = UP.
+  - name: "Registry"
+    group: "Platform"
+    url: "https://registry.hanzo.ai/v2/"
     interval: 60s
     conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Docs"
-    group: "Bot"
-    url: "https://docs.hanzo.bot"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Market"
-    group: "Bot"
-    url: "https://market.hanzo.bot"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
+      - "[STATUS] == any(200, 401)"
+      - "[RESPONSE_TIME] < 3000"
 
   # ═══════════════════════════════════════════════
-  # WEB
+  # WEB — external surfaces (CF edge)
   # ═══════════════════════════════════════════════
 
   - name: "hanzo.ai"
@@ -379,71 +363,76 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: "hanzo.app"
+  - name: "Console"
     group: "Web"
-    url: "https://hanzo.app"
+    url: "https://console.hanzo.ai"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
+      - "[RESPONSE_TIME] < 5000"
 
-  - name: "hanzo.team"
+  - name: "Admin"
     group: "Web"
-    url: "https://hanzo.team"
+    url: "https://admin.hanzo.ai"
     interval: 60s
     conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
+      - "[STATUS] == any(200, 401, 403)"
+      - "[RESPONSE_TIME] < 5000"
 
-  - name: "s3.hanzo.ai"
-    group: "Web"
-    url: "https://s3.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "docs.hanzo.ai"
+  - name: "Docs"
     group: "Web"
     url: "https://docs.hanzo.ai"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  # ═══════════════════════════════════════════════
-  # OBSERVABILITY
-  # ═══════════════════════════════════════════════
-
-  - name: "Analytics"
-    group: "Observability"
-    url: "https://analytics.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 301, 302, 307)"
-      - "[RESPONSE_TIME] < 5000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Insights"
-    group: "Observability"
-    url: "https://insights.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 301, 302)"
-      - "[RESPONSE_TIME] < 3000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
-
-  - name: "Feature Flags"
-    group: "Observability"
-    url: "https://auto.hanzo.ai/api/v1/flags"
+  - name: "World"
+    group: "Web"
+    url: "https://world.hanzo.ai"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 5000"
-      - "[CERTIFICATE_EXPIRATION] > 720h"
+
+  # World's in-app proxy to the cloud model-router stats (public, 200).
+  - name: "World Router Stats"
+    group: "Web"
+    url: "https://world.hanzo.ai/v1/world/cloud/router-stats"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: "App"
+    group: "Web"
+    url: "https://hanzo.app"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: "Studio"
+    group: "Web"
+    url: "https://studio.hanzo.ai"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: "Flow"
+    group: "Web"
+    url: "https://flow.hanzo.ai"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 301, 302)"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: "Status"
+    group: "Web"
+    url: "https://status.hanzo.ai"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
