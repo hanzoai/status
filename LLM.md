@@ -16,10 +16,15 @@ Module: `github.com/hanzoai/status`
   - `GET /` + everything else — the embedded SPA (`web/static`, `//go:embed`).
   - NOTE: legacy Gatus used `/api/v1/*`; this fork is `/v1/status/*`. An old image
     serving `/api/v1/*` + a Next.js SPA will make `/v1/status/*` 404 → dead dashboard.
-- `web/app/` — the SPA (Vite + React 19 + `@hanzo/gui`). `src/lib/api.ts` = the API client
+- `web/app/` — the SPA (Vite + React 19 + Tailwind, plain). `src/lib/api.ts` = the API client
   (calls `/v1/status/*`). `scripts/build.sh` → `vite build` → `web/static/` → `make-template.mjs`
   rewrites `index.html` into a Go `html/template` that injects `window.config` (brand). The built
   `web/static/` is committed AND rebuilt in the Docker frontend stage.
+  - NOTE: `@hanzo/gui` was REMOVED (v1.1.5). `@hanzo/[email protected]` shipped an inconsistent
+    tree (provider on `@hanzogui/core@4.4.0`, components on `@hanzogui/*@3.0.x`) → split theme
+    React-context → uncaught `Missing theme.` → BLANK page. No good pin exists (4.7.3 leaks
+    `workspace:*` and is uninstallable; 7.x drops `getDefaultGuiConfig`). Its 7 primitives now
+    live as a tiny plain-React+Tailwind shim in `src/components/ui.tsx`. Do not re-add `@hanzo/gui`.
 - `config/` — brand configs (`hanzo.yaml`, `lux.yaml`, …) in Gatus format
   (`web:`/`storage:`/`ui:`/`endpoints:`). Validated by `config.LoadConfiguration`.
 
