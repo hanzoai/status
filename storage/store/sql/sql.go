@@ -16,8 +16,8 @@ import (
 	"github.com/hanzoai/status/storage/store/common/paging"
 	"github.com/TwiN/gocache/v2"
 	"github.com/TwiN/logr"
+	_ "github.com/hanzoai/sqlite"
 	_ "github.com/lib/pq"
-	_ "modernc.org/sqlite"
 )
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
