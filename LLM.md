@@ -34,10 +34,28 @@ Module: `github.com/hanzoai/status`
 - **Live source of truth is universe, not this repo:** the deployed `status-config`
   ConfigMap is `hanzoai/universe/infra/k8s/status/configmap-hanzo.yaml`. `config/hanzo.yaml`
   here mirrors it for the repo-native kustomize build.
-- Hanzo design: the unified cloud binary serves the whole `/v1` surface at `api.hanzo.ai`;
-  probe each product's own `/v1/<product>` route (200, or auth-gate 401/403 = UP).
-  Tenancy-gated data routes return `500 "X-Org-Id required"` (a gateway mis-code) —
-  accepted via `any(200,401,403,500)`; a real outage is 502/503/504/timeout.
+- Hanzo design: the unified cloud binary serves the whole `/v1` surface at `api.hanzo.ai`.
+  It is monitored **exhaustively** — one truthful probe per subsystem:
+  - Each subsystem is probed at its OWN JSON health route `/v1/<product>/health`
+    (`[STATUS] == 200`). The `/v1` surface returns a clean `404` for unmounted
+    routes (no SPA catch-all), so `404`/`5xx`/timeout = DOWN. This is the whole
+    `apps.Wire()` set (~82 live `/health` routes).
+  - **SPA false-up:** bare `api.hanzo.ai/health` returns the `200` HTML SPA shell —
+    a false-up. The core probe uses `/v1/health` (JSON, live-only). Never probe a
+    `/v1` subsystem at a web host.
+  - Tenancy-gated datastore primitives (`sql`/`kv`/`vector`/`docdb`/`datastore`/
+    `search`) return `403 "X-Org-Id required"` = reachable; accepted via
+    `any(200,401,403)`. (The old `500` mis-code is fixed, so a real `500` = DOWN.)
+  - No `/health` route: `commerce` (`/v1/commerce/health`, auth-gated 401),
+    `billing` (`/v1/billing/balance`), `pricing` (`/v1/pricing` catalog).
+  - Web properties are edge SPAs: host-level `200` (+ `[CERTIFICATE_EXPIRATION]` on
+    apex hosts) is the only meaningful liveness signal.
+- Alerting: `alerting.slack` + `alerting.pagerduty` fire on transitions; webhooks
+  come from env (`${ALERT_SLACK_WEBHOOK_URL}` / `${ALERT_PAGERDUTY_ROUTING_KEY}`,
+  `os.ExpandEnv`) sourced from KMS via a `KMSSecret` CRD into the status Deployment.
+  An unset webhook is validated-invalid and ignored (no crash), so the block ships
+  inert until the secret is wired. Slack on every endpoint; pagerduty on the
+  page-worthy core (api, engine, models, iam, kms, gateway, paas).
 
 ## Build & deploy — ONE way
 - **Build**: tag `vX.Y.Z` → GHCR `ghcr.io/hanzoai/status:X.Y.Z` (multi-arch) via

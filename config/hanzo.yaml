@@ -27,92 +27,150 @@ ui:
       link: "https://github.com/hanzoai"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# One unified cloud binary serves the entire /v1 surface at api.hanzo.ai.
-# Every product below is a subsystem of that binary — health is measured by
-# probing its own /v1/<product> route through the public edge (api.hanzo.ai),
-# exactly the path a customer hits.
+# Live runtime authority is universe/infra/k8s/status/configmap-hanzo.yaml (the
+# status-config ConfigMap); hanzoai/status/config/hanzo.yaml mirrors it.
 #
-#   UP    = 200, or an auth gate (401/403), or a tenancy gate (500
-#           "X-Org-Id required" — the gateway currently mis-codes the missing
-#           org header as 500 instead of 400/401; the route IS served, so it
-#           counts as reachable). See tenancy note on the DATA group.
+# EXHAUSTIVE probe set — one truthful health probe per cloud subsystem.
+#
+#   The unified cloud binary serves the whole /v1 surface at api.hanzo.ai and
+#   returns a clean 404 (text/plain) for any unmounted /v1 route — there is NO
+#   SPA catch-all on /v1. So each subsystem is probed at its OWN JSON health
+#   route /v1/<product>/health: 200 = UP, 404 = not mounted = DOWN, 5xx/timeout
+#   = DOWN. This avoids the SPA false-up entirely (bare api.hanzo.ai/health
+#   returns the 200 HTML SPA shell — a false-up — so the core probe uses
+#   /v1/health, which is JSON served only when the binary is live).
+#
+#   UP    = 200 on a JSON route; or an auth gate (401/403) on a gated route;
+#           a redirect (3xx) on a host that redirects anon traffic.
 #   DOWN  = 404 (route not mounted) · 502/503/504 (binary unreachable) · timeout.
 #
-# A capability that is NOT served on the /v1 surface but ships as its own
-# public host (Base, Registry, and the Web properties) is probed at its real
-# host — never a /v1 route that 404s.
+#   Datastore primitives (sql/kv/vector/docdb/datastore) are tenancy-scoped: a
+#   request with no org context returns 403 "X-Org-Id required" = reachable/UP;
+#   a real outage is 5xx/timeout. (The former 500 mis-code is fixed — probes are
+#   tightened to any(200,401,403), so a genuine 500 now reads as DOWN.)
 #
-# NOTE: the live source of truth for this config is
-# universe/infra/k8s/status/configmap-hanzo.yaml (mounted as the status-config
-# ConfigMap). This file mirrors it for the repo-native kustomize build.
+#   Web properties are SPAs served at the edge; a 200 on the shell is the only
+#   meaningful liveness signal for a static site, so they stay host-level 200.
+#   The unified binary's own /v1 subsystems are NEVER probed at a web host.
 # ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Alerting — transitions page a channel. Provider webhooks come from env
+# (os.ExpandEnv), sourced from KMS via a KMSSecret CRD -> status Deployment env.
+# An UNSET webhook is validated-invalid and silently ignored (no crash), so this
+# block is safe to ship before the secret is wired. Slack = all endpoints;
+# PagerDuty = the page-worthy core (api, engine, models, iam, kms, gateway, paas).
+# OWNER: create the KMS secret + KMSSecret CRD and inject ALERT_SLACK_WEBHOOK_URL
+# (+ ALERT_PAGERDUTY_ROUTING_KEY) into the status Deployment to activate.
+# ─────────────────────────────────────────────────────────────────────────────
+alerting:
+  slack:
+    webhook-url: "${ALERT_SLACK_WEBHOOK_URL}"
+    default-alert:
+      failure-threshold: 3
+      success-threshold: 2
+      send-on-resolved: true
+  pagerduty:
+    integration-key: "${ALERT_PAGERDUTY_ROUTING_KEY}"
+    default-alert:
+      failure-threshold: 5
+      success-threshold: 2
+      send-on-resolved: true
 
 endpoints:
 
-  # ═══════════════════════════════════════════════
-  # CORE API — the unified cloud binary
-  # ═══════════════════════════════════════════════
-
+  # ═══ Core API ═══
   - name: "api.hanzo.ai"
-    group: "Core API"
-    url: "https://api.hanzo.ai/health"
-    interval: 30s
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-
-  - name: "/v1 surface"
     group: "Core API"
     url: "https://api.hanzo.ai/v1/health"
     interval: 30s
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 2000"
-
-  # ═══════════════════════════════════════════════
-  # AI — inference, agents, retrieval
-  # ═══════════════════════════════════════════════
-
-  # /v1/models is the served catalog — a 200 here means the Zen + Enso model
-  # families are being served through the router. Chat completions itself is
-  # POST-only (GET/HEAD 404 by design), so serving health is measured here and
-  # at the in-cluster engine below, not by probing /v1/chat/completions.
+      - "[CERTIFICATE_EXPIRATION] > 168h"
+    alerts: [{type: slack}, {type: pagerduty}]
   - name: "Models & Inference"
-    group: "AI"
+    group: "Core API"
     url: "https://api.hanzo.ai/v1/models"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 3000"
-
-  # In-cluster inference engine / model router (Zen + Enso serving). Probed on
-  # the cluster Service — the status pod runs in-namespace, so this is the
-  # ground-truth serving signal behind the public /v1/models catalog.
+    alerts: [{type: slack}, {type: pagerduty}]
   - name: "Inference Engine"
-    group: "AI"
+    group: "Core API"
     url: "http://engine.hanzo.svc:36900/health"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 2000"
-
-  # Model router stats — the flywheel/routing control plane (auth-gated).
-  - name: "Router"
-    group: "AI"
+    alerts: [{type: slack}, {type: pagerduty}]
+  - name: "Model Router"
+    group: "Core API"
     url: "https://api.hanzo.ai/v1/router/stats"
     interval: 60s
     conditions:
       - "[STATUS] == any(200, 401, 403)"
       - "[RESPONSE_TIME] < 3000"
-
-  - name: "Agents"
-    group: "AI"
-    url: "https://api.hanzo.ai/v1/agents"
+    alerts: [{type: slack}]
+  - name: "Gateway"
+    group: "Core API"
+    url: "https://api.hanzo.ai/v1/gateway/health"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 401, 403, 500)"
-      - "[RESPONSE_TIME] < 3000"
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 2000"
+    alerts: [{type: slack}, {type: pagerduty}]
 
+  # ═══ AI ═══
+  - name: "AI Core"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/ai/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Zen (in-house models)"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/zen/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Agent Orchestrator"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/agent/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Agents"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/agents/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Agent Skills"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/agentskills/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Prompts"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/prompts/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
   - name: "RAG"
     group: "AI"
     url: "https://api.hanzo.ai/v1/rag/query"
@@ -120,37 +178,105 @@ endpoints:
     conditions:
       - "[STATUS] == any(200, 401, 403)"
       - "[RESPONSE_TIME] < 3000"
-
-  # The public prompts surface is the catalog (200); bare /v1/prompts is
-  # tenancy-gated (500 "X-Org-Id required").
-  - name: "Prompts"
+    alerts: [{type: slack}]
+  - name: "Knowledge"
     group: "AI"
-    url: "https://api.hanzo.ai/v1/prompts/catalog"
+    url: "https://api.hanzo.ai/v1/knowledge/health"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 3000"
-
+    alerts: [{type: slack}]
+  - name: "Framework"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/framework/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Code"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/code/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
   - name: "Code Exec"
     group: "AI"
-    url: "https://api.hanzo.ai/v1/exec"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 401, 403)"
-      - "[RESPONSE_TIME] < 3000"
-
-  - name: "Chat"
-    group: "AI"
-    url: "https://hanzo.chat"
+    url: "https://api.hanzo.ai/v1/exec/health"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 5000"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Evals"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/evals/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Guide"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/guide/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Tools"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/tools/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Marketplace"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/marketplace/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Automations"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/automations/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Web Search"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/websearch/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "ML"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/ml/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Training"
+    group: "AI"
+    url: "https://api.hanzo.ai/v1/train/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
 
-  # ═══════════════════════════════════════════════
-  # IDENTITY & SECURITY
-  # ═══════════════════════════════════════════════
-
+  # ═══ Identity & Security ═══
   - name: "Identity (IAM)"
     group: "Identity & Security"
     url: "https://api.hanzo.ai/v1/iam/.well-known/openid-configuration"
@@ -158,7 +284,7 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 2000"
-
+    alerts: [{type: slack}, {type: pagerduty}]
   - name: "KMS"
     group: "Identity & Security"
     url: "https://api.hanzo.ai/v1/kms/health"
@@ -166,11 +292,89 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 2000"
+    alerts: [{type: slack}, {type: pagerduty}]
+  - name: "Authorization"
+    group: "Identity & Security"
+    url: "https://api.hanzo.ai/v1/authz/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Zero Trust"
+    group: "Identity & Security"
+    url: "https://api.hanzo.ai/v1/zero-trust/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Security"
+    group: "Identity & Security"
+    url: "https://api.hanzo.ai/v1/security/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "SBOM"
+    group: "Identity & Security"
+    url: "https://api.hanzo.ai/v1/sbom/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Audit Log"
+    group: "Identity & Security"
+    url: "https://api.hanzo.ai/v1/audit/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Account"
+    group: "Identity & Security"
+    url: "https://api.hanzo.ai/v1/account/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Settings"
+    group: "Identity & Security"
+    url: "https://api.hanzo.ai/v1/settings/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Team"
+    group: "Identity & Security"
+    url: "https://api.hanzo.ai/v1/team/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Entitlements"
+    group: "Identity & Security"
+    url: "https://api.hanzo.ai/v1/entitlements/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
 
-  # ═══════════════════════════════════════════════
-  # COMMERCE
-  # ═══════════════════════════════════════════════
-
+  # ═══ Commerce ═══
+  - name: "Commerce"
+    group: "Commerce"
+    url: "https://api.hanzo.ai/v1/commerce/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403)"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
   - name: "Billing"
     group: "Commerce"
     url: "https://api.hanzo.ai/v1/billing/balance"
@@ -178,174 +382,505 @@ endpoints:
     conditions:
       - "[STATUS] == any(200, 401, 403)"
       - "[RESPONSE_TIME] < 3000"
-
+    alerts: [{type: slack}]
   - name: "Plans"
     group: "Commerce"
-    url: "https://api.hanzo.ai/v1/plans"
+    url: "https://api.hanzo.ai/v1/plans/health"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
   - name: "Pricing"
     group: "Commerce"
     url: "https://api.hanzo.ai/v1/pricing"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-
-  - name: "Entitlements"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Wallets"
     group: "Commerce"
-    url: "https://api.hanzo.ai/v1/orgs/hanzo/entitlements"
+    url: "https://api.hanzo.ai/v1/wallets/health"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "x402 Payments"
+    group: "Commerce"
+    url: "https://api.hanzo.ai/v1/x402/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Treasury"
+    group: "Commerce"
+    url: "https://api.hanzo.ai/v1/treasury/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Referrals"
+    group: "Commerce"
+    url: "https://api.hanzo.ai/v1/referrals/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Affiliates"
+    group: "Commerce"
+    url: "https://api.hanzo.ai/v1/affiliates/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Licensing"
+    group: "Commerce"
+    url: "https://api.hanzo.ai/v1/licensing/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Cap Table"
+    group: "Commerce"
+    url: "https://api.hanzo.ai/v1/captable/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
 
-  # ═══════════════════════════════════════════════
-  # DATA — datastore primitives on the unified /v1 surface
-  #
-  # These routes are tenancy-scoped: a request without an org context returns
-  # 500 "X-Org-Id required" (a gateway mis-code — it should be 400/401). The
-  # route IS served, so any(200,401,403,500) = reachable; a real outage shows
-  # as 502/503/504/timeout. TODO(gateway): return 400/401 for missing org so
-  # these can tighten to any(200,401,403).
-  # ═══════════════════════════════════════════════
-
+  # ═══ Data ═══
+  - name: "Storage (S3)"
+    group: "Data"
+    url: "https://api.hanzo.ai/v1/s3/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Provisioning"
+    group: "Data"
+    url: "https://api.hanzo.ai/v1/provisioning/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
   - name: "SQL"
     group: "Data"
     url: "https://api.hanzo.ai/v1/sql"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[STATUS] == any(200, 401, 403)"
       - "[RESPONSE_TIME] < 3000"
-
+    alerts: [{type: slack}]
   - name: "KV"
     group: "Data"
     url: "https://api.hanzo.ai/v1/kv"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[STATUS] == any(200, 401, 403)"
       - "[RESPONSE_TIME] < 3000"
-
-  - name: "DocDB"
-    group: "Data"
-    url: "https://api.hanzo.ai/v1/docdb"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 401, 403, 500)"
-      - "[RESPONSE_TIME] < 3000"
-
-  - name: "Datastore"
-    group: "Data"
-    url: "https://api.hanzo.ai/v1/datastore"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 401, 403, 500)"
-      - "[RESPONSE_TIME] < 3000"
-
-  # Base ships as its OWN app at base.hanzo.ai (the binary does NOT mount
-  # /v1/base). Probe the real host; it 307-redirects anon traffic to /dashboard/.
-  - name: "Base"
-    group: "Data"
-    url: "https://base.hanzo.ai"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 302, 307, 308)"
-      - "[RESPONSE_TIME] < 3000"
-
-  - name: "Storage (S3)"
-    group: "Data"
-    url: "https://api.hanzo.ai/v1/s3"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 401, 403, 500)"
-      - "[RESPONSE_TIME] < 3000"
-
+    alerts: [{type: slack}]
   - name: "Vector"
     group: "Data"
     url: "https://api.hanzo.ai/v1/vector"
     interval: 60s
     conditions:
-      - "[STATUS] == any(200, 401, 403, 500)"
+      - "[STATUS] == any(200, 401, 403)"
       - "[RESPONSE_TIME] < 3000"
-
-  # ═══════════════════════════════════════════════
-  # STREAMS — messaging · durable tasks
-  # ═══════════════════════════════════════════════
-
-  - name: "Tasks"
-    group: "Streams"
-    url: "https://api.hanzo.ai/v1/tasks"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 301, 302, 307, 308, 401, 403)"
-      - "[RESPONSE_TIME] < 3000"
-
-  # ═══════════════════════════════════════════════
-  # APPS
-  # ═══════════════════════════════════════════════
-
-  - name: "Search"
-    group: "Apps"
-    url: "https://api.hanzo.ai/v1/search"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 401, 403, 500)"
-      - "[RESPONSE_TIME] < 3000"
-
-  - name: "Bot"
-    group: "Apps"
-    url: "https://api.hanzo.ai/v1/bot"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 401, 403, 500)"
-      - "[RESPONSE_TIME] < 3000"
-
-  - name: "Functions"
-    group: "Apps"
-    url: "https://api.hanzo.ai/v1/functions"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 401, 403, 500)"
-      - "[RESPONSE_TIME] < 3000"
-
-  # ═══════════════════════════════════════════════
-  # OBSERVE
-  # ═══════════════════════════════════════════════
-
-  - name: "Analytics"
-    group: "Observe"
-    url: "https://api.hanzo.ai/v1/analytics/overview"
-    interval: 60s
-    conditions:
-      - "[STATUS] == any(200, 401, 403, 500)"
-      - "[RESPONSE_TIME] < 3000"
-
-  # Observability (o11y / SigNoz) is IAM-gated at the edge — a 403 means
-  # UP-but-gated, not down.
-  - name: "Observability"
-    group: "Observe"
-    url: "https://api.hanzo.ai/v1/o11y"
+    alerts: [{type: slack}]
+  - name: "DocDB"
+    group: "Data"
+    url: "https://api.hanzo.ai/v1/docdb"
     interval: 60s
     conditions:
       - "[STATUS] == any(200, 401, 403)"
       - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Datastore"
+    group: "Data"
+    url: "https://api.hanzo.ai/v1/datastore"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403)"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Search"
+    group: "Data"
+    url: "https://api.hanzo.ai/v1/search"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401, 403)"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Graph"
+    group: "Data"
+    url: "https://api.hanzo.ai/v1/graph/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Base"
+    group: "Data"
+    url: "https://base.hanzo.ai"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 301, 302, 307, 308)"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
 
-  # ═══════════════════════════════════════════════
-  # PLATFORM
-  # ═══════════════════════════════════════════════
+  # ═══ Streams ═══
+  - name: "PubSub (NATS)"
+    group: "Streams"
+    url: "https://api.hanzo.ai/v1/pubsub/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Kafka"
+    group: "Streams"
+    url: "https://api.hanzo.ai/v1/kafka/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Tasks"
+    group: "Streams"
+    url: "https://api.hanzo.ai/v1/tasks/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Sync"
+    group: "Streams"
+    url: "https://api.hanzo.ai/v1/sync/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Notify"
+    group: "Streams"
+    url: "https://api.hanzo.ai/v1/notify/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
 
-  - name: "PaaS"
+  # ═══ Apps ═══
+  - name: "Functions"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/functions/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Bot"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/bots/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Social"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/social/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "CRM"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/crm/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Marketing"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/marketing/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Ads"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/ads/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Content"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/content/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Catalog Sync"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/catalogsync/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Company"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/company/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Product"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/product/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Projects"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/projects/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Tracker"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/tracker/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Templates"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/templates/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Sign"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/sign/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Data Room"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/dataroom/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Integrations"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/integrations/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Link Manager"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/link/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Git"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/git/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Visor"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/visor/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Bot Runtime"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/runtime/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Authors"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/authors/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Usage"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/usage/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Admin"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/admin/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Cloud Infra (DO)"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/do/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Account Bridge"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/account-bridge/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "World (cloud)"
+    group: "Apps"
+    url: "https://api.hanzo.ai/v1/world/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+
+  # ═══ Observe ═══
+  - name: "Analytics"
+    group: "Observe"
+    url: "https://api.hanzo.ai/v1/analytics/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Observability (o11y)"
+    group: "Observe"
+    url: "https://api.hanzo.ai/v1/o11y/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Metrics"
+    group: "Observe"
+    url: "https://api.hanzo.ai/v1/metrics/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Traces"
+    group: "Observe"
+    url: "https://api.hanzo.ai/v1/traces/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Logs"
+    group: "Observe"
+    url: "https://api.hanzo.ai/v1/logs/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Insights"
+    group: "Observe"
+    url: "https://api.hanzo.ai/v1/insights/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+
+  # ═══ Platform ═══
+  - name: "PaaS (platform)"
     group: "Platform"
     url: "https://api.hanzo.ai/v1/platform/health"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 3000"
-
-  # Container registry ships as its own host; /v2/ answers 401 (token auth) = UP.
+    alerts: [{type: slack}, {type: pagerduty}]
+  - name: "PaaS (app)"
+    group: "Platform"
+    url: "https://api.hanzo.ai/v1/paas/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Deploy"
+    group: "Platform"
+    url: "https://api.hanzo.ai/v1/deploy/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Plugins"
+    group: "Platform"
+    url: "https://api.hanzo.ai/v1/plugins/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
+  - name: "Flags"
+    group: "Platform"
+    url: "https://api.hanzo.ai/v1/flags/health"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
   - name: "Registry"
     group: "Platform"
     url: "https://registry.hanzo.ai/v2/"
@@ -353,19 +888,18 @@ endpoints:
     conditions:
       - "[STATUS] == any(200, 401)"
       - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
 
-  # ═══════════════════════════════════════════════
-  # WEB — external surfaces (CF edge)
-  # ═══════════════════════════════════════════════
-
+  # ═══ Web ═══
   - name: "hanzo.ai"
     group: "Web"
     url: "https://hanzo.ai"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 3000"
-
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 168h"
+    alerts: [{type: slack}]
   - name: "Console"
     group: "Web"
     url: "https://console.hanzo.ai"
@@ -373,7 +907,7 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 5000"
-
+    alerts: [{type: slack}]
   - name: "Admin"
     group: "Web"
     url: "https://admin.hanzo.ai"
@@ -381,7 +915,16 @@ endpoints:
     conditions:
       - "[STATUS] == any(200, 401, 403)"
       - "[RESPONSE_TIME] < 5000"
-
+    alerts: [{type: slack}]
+  - name: "Chat"
+    group: "Web"
+    url: "https://hanzo.chat"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 168h"
+    alerts: [{type: slack}]
   - name: "Docs"
     group: "Web"
     url: "https://docs.hanzo.ai"
@@ -389,7 +932,7 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 3000"
-
+    alerts: [{type: slack}]
   - name: "World"
     group: "Web"
     url: "https://world.hanzo.ai"
@@ -397,8 +940,7 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 5000"
-
-  # World's in-app proxy to the cloud model-router stats (public, 200).
+    alerts: [{type: slack}]
   - name: "World Router Stats"
     group: "Web"
     url: "https://world.hanzo.ai/v1/world/cloud/router-stats"
@@ -406,7 +948,7 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 5000"
-
+    alerts: [{type: slack}]
   - name: "App"
     group: "Web"
     url: "https://hanzo.app"
@@ -414,7 +956,8 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 5000"
-
+      - "[CERTIFICATE_EXPIRATION] > 168h"
+    alerts: [{type: slack}]
   - name: "Studio"
     group: "Web"
     url: "https://studio.hanzo.ai"
@@ -422,7 +965,7 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 5000"
-
+    alerts: [{type: slack}]
   - name: "Flow"
     group: "Web"
     url: "https://flow.hanzo.ai"
@@ -430,7 +973,7 @@ endpoints:
     conditions:
       - "[STATUS] == any(200, 301, 302)"
       - "[RESPONSE_TIME] < 5000"
-
+    alerts: [{type: slack}]
   - name: "Status"
     group: "Web"
     url: "https://status.hanzo.ai"
@@ -438,3 +981,4 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 3000"
+    alerts: [{type: slack}]
