@@ -1,27 +1,15 @@
 name: Build and Publish
-
-# Tag push (vX.Y.Z) builds and publishes the multi-arch image to GHCR:
-#   ghcr.io/hanzoai/status:<X.Y.Z>  (semver, no `v`) + :sha-<short> + :latest
-#
-# Deployment is NOT done here. It is GitOps via hanzoai/universe
-# (infra/k8s/status: deployment.yaml image pin + configmap-hanzo.yaml) and the
-# hanzo operator (infra/k8s/operator/crs/status*.yaml). The previous in-repo
-# per-brand `kubectl apply -k k8s/<brand>` deploy job was removed: it pinned an
-# arm64-only image and dropped the tuned Deployment (hostAliases for internal
-# probing, Recreate strategy), regressing the live pod. One way to deploy: universe.
-
+# NEUTRALIZED — hanzoai/status migrated to Hanzo's native deploy pipeline.
+# The ONE canonical build/deploy is .hanzo/workflows/deploy.yml, which runs
+# in-cluster: Hanzo Git push → act_runner → BuildKit builds the Dockerfile →
+# ghcr.io/hanzoai/status:<sha> → kubectl patch app (status, status-lux) →
+# operator reconcile → hanzocd. GitHub is a downstream mirror; this workflow no
+# longer builds or publishes the image.
 on:
-  push:
-    tags: ['v*']
-
-permissions:
-  contents: read
-  packages: write
-  id-token: write
-
+  workflow_dispatch:
 jobs:
-  docker:
-    uses: hanzoai/.github/.github/workflows/docker-build.yml@main
-    with:
-      image: ghcr.io/hanzoai/status
-    secrets: inherit
+  notice:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync notice
+        run: echo "native pipeline is .hanzo/workflows/deploy.yml; GitHub is a mirror"
