@@ -10,7 +10,7 @@ import (
 	"github.com/hanzoai/status/config"
 	"github.com/hanzoai/status/config/endpoint"
 	"github.com/hanzoai/status/config/web"
-	"github.com/gofiber/fiber/v2"
+	"github.com/zap-proto/zip"
 )
 
 func TestHandle(t *testing.T) {
@@ -36,7 +36,7 @@ func TestHandle(t *testing.T) {
 	Handle(cfg)
 	defer Shutdown()
 	request := httptest.NewRequest("GET", "/health", http.NoBody)
-	response, err := app.Test(request)
+	response, err := app.Fiber().Test(request)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -78,7 +78,7 @@ func TestHandleTLS(t *testing.T) {
 			Handle(cfg)
 			defer Shutdown()
 			request := httptest.NewRequest("GET", "/health", http.NoBody)
-			response, err := app.Test(request)
+			response, err := app.Fiber().Test(request)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -94,7 +94,7 @@ func TestHandleTLS(t *testing.T) {
 
 func TestShutdown(t *testing.T) {
 	// Pretend that we called controller.Handle(), which initializes the server variable
-	app = fiber.New()
+	app = zip.New(zip.Config{})
 	Shutdown()
 	if app != nil {
 		t.Error("server should've been shut down")

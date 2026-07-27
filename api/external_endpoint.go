@@ -5,69 +5,69 @@ import (
 	"strings"
 	"time"
 
+	"github.com/TwiN/logr"
 	"github.com/hanzoai/status/config"
 	"github.com/hanzoai/status/config/endpoint"
 	"github.com/hanzoai/status/metrics"
 	"github.com/hanzoai/status/storage/store"
 	"github.com/hanzoai/status/storage/store/common"
 	"github.com/hanzoai/status/watchdog"
-	"github.com/TwiN/logr"
-	"github.com/gofiber/fiber/v2"
+	"github.com/zap-proto/zip"
 )
 
-func CreateExternalEndpointResult(cfg *config.Config) fiber.Handler {
+func CreateExternalEndpointResult(cfg *config.Config) zip.Handler {
 	extraLabels := cfg.GetUniqueExtraMetricLabels()
-	return func(c *fiber.Ctx) error {
+	return func(c *zip.Ctx) error {
 		// Check if the success query parameter is present
-		success, exists := c.Queries()["success"]
+		success, exists := c.Fiber().Queries()["success"]
 		if !exists || (success != "true" && success != "false") {
-			return c.Status(400).SendString("missing or invalid success query parameter")
+			return c.String(400, "missing or invalid success query parameter")
 		}
 		// Check if the authorization bearer token header is correct
-		authorizationHeader := string(c.Request().Header.Peek("Authorization"))
+		authorizationHeader := c.Header("Authorization")
 		if !strings.HasPrefix(authorizationHeader, "Bearer ") {
-			return c.Status(401).SendString("invalid Authorization header")
+			return c.String(401, "invalid Authorization header")
 		}
 		token := strings.TrimSpace(strings.TrimPrefix(authorizationHeader, "Bearer "))
 		if len(token) == 0 {
-			return c.Status(401).SendString("bearer token must not be empty")
+			return c.String(401, "bearer token must not be empty")
 		}
-		key := c.Params("key")
+		key := c.Param("key")
 		externalEndpoint := cfg.GetExternalEndpointByKey(key)
 		if externalEndpoint == nil {
 			logr.Errorf("[api.CreateExternalEndpointResult] External endpoint with key=%s not found", key)
-			return c.Status(404).SendString("not found")
+			return c.String(404, "not found")
 		}
 		if externalEndpoint.Token != token {
 			logr.Errorf("[api.CreateExternalEndpointResult] Invalid token for external endpoint with key=%s", key)
-			return c.Status(401).SendString("invalid token")
+			return c.String(401, "invalid token")
 		}
 		// Persist the result in the storage
 		result := &endpoint.Result{
 			Timestamp: time.Now(),
-			Success:   c.QueryBool("success"),
+			Success:   success == "true",
 			Errors:    []string{},
 		}
 		if len(c.Query("duration")) > 0 {
 			parsedDuration, err := time.ParseDuration(c.Query("duration"))
 			if err != nil {
 				logr.Errorf("[api.CreateExternalEndpointResult] Invalid duration from string=%s with error: %s", c.Query("duration"), err.Error())
-				return c.Status(400).SendString("invalid duration: " + err.Error())
+				return c.String(400, "invalid duration: "+err.Error())
 			}
 			result.Duration = parsedDuration
 		}
 		if errorFromQuery := c.Query("error"); !result.Success && len(errorFromQuery) > 0 {
-			result.AddError(errorFromQuery)
+			result.AddError(strings.Clone(errorFromQuery))
 		}
 		convertedEndpoint := externalEndpoint.ToEndpoint()
 		if err := store.Get().InsertEndpointResult(convertedEndpoint, result); err != nil {
 			if errors.Is(err, common.ErrEndpointNotFound) {
-				return c.Status(404).SendString(err.Error())
+				return c.String(404, err.Error())
 			}
 			logr.Errorf("[api.CreateExternalEndpointResult] Failed to insert result in storage: %s", err.Error())
-			return c.Status(500).SendString(err.Error())
+			return c.String(500, err.Error())
 		}
-		logr.Infof("[api.CreateExternalEndpointResult] Successfully inserted result for external endpoint with key=%s and success=%s", c.Params("key"), success)
+		logr.Infof("[api.CreateExternalEndpointResult] Successfully inserted result for external endpoint with key=%s and success=%s", c.Param("key"), success)
 		inEndpointMaintenanceWindow := false
 		for _, maintenanceWindow := range externalEndpoint.MaintenanceWindows {
 			if maintenanceWindow.IsUnderMaintenance() {
@@ -87,6 +87,6 @@ func CreateExternalEndpointResult(cfg *config.Config) fiber.Handler {
 			metrics.PublishMetricsForEndpoint(convertedEndpoint, result, extraLabels)
 		}
 		// Return the result
-		return c.Status(200).SendString("")
+		return c.String(200, "")
 	}
 }

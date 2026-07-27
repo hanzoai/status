@@ -2,27 +2,27 @@ package api
 
 import (
 	"io/fs"
-	"net/http"
 	"os"
 
 	"github.com/TwiN/health"
 	"github.com/TwiN/logr"
-	fiber "github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/adaptor"
-	"github.com/gofiber/fiber/v2/middleware/compress"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	fiberfs "github.com/gofiber/fiber/v2/middleware/filesystem"
-	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/gofiber/fiber/v2/middleware/redirect"
 	"github.com/hanzoai/status/config"
 	"github.com/hanzoai/status/config/ui"
 	"github.com/hanzoai/status/config/web"
 	static "github.com/hanzoai/status/web"
+	"github.com/hanzoai/status/zipx"
 	metric "github.com/luxfi/metric"
+	fiber "github.com/zap-proto/fiber/v3"
+	"github.com/zap-proto/fiber/v3/middleware/compress"
+	"github.com/zap-proto/fiber/v3/middleware/cors"
+	"github.com/zap-proto/fiber/v3/middleware/recover"
+	"github.com/zap-proto/fiber/v3/middleware/redirect"
+	fiberstatic "github.com/zap-proto/fiber/v3/middleware/static"
+	"github.com/zap-proto/zip"
 )
 
 type API struct {
-	router *fiber.App
+	router *zip.App
 }
 
 func New(cfg *config.Config) *API {
@@ -39,35 +39,33 @@ func New(cfg *config.Config) *API {
 	return api
 }
 
-func (a *API) Router() *fiber.App {
+func (a *API) Router() *zip.App {
 	return a.router
 }
 
-func (a *API) createRouter(cfg *config.Config) *fiber.App {
-	app := fiber.New(fiber.Config{
-		ErrorHandler: func(c *fiber.Ctx, err error) error {
+func (a *API) createRouter(cfg *config.Config) *zip.App {
+	app := zip.New(zip.Config{
+		ErrorHandler: func(c fiber.Ctx, err error) error {
 			logr.Errorf("[api.ErrorHandler] %s", err.Error())
 			return fiber.DefaultErrorHandler(c, err)
 		},
 		ReadBufferSize: cfg.Web.ReadBufferSize,
-		Network:        fiber.NetworkTCP,
-		Immutable:      true, // If not enabled, will cause issues due to fiber's zero allocation. See #1268 and https://docs.gofiber.io/#zero-allocation
 	})
 	if os.Getenv("ENVIRONMENT") == "dev" {
-		app.Use(cors.New(cors.Config{
-			AllowOrigins:     "http://localhost:8081",
+		app.Use(zipx.Wrap(cors.New(cors.Config{
+			AllowOrigins:     []string{"http://localhost:8081"},
 			AllowCredentials: true,
-		}))
+		})))
 	}
 	// Middlewares
-	app.Use(recover.New())
-	app.Use(compress.New())
+	app.Use(zipx.Wrap(recover.New()))
+	app.Use(zipx.Wrap(compress.New()))
 	// Define metrics handler, if necessary
 	if cfg.Metrics {
 		metricsHandler := metric.InstrumentMetricHandler(metric.DefaultRegisterer, metric.NewHTTPHandler(metric.DefaultGatherer, metric.HandlerOpts{
 			DisableCompression: true,
 		}))
-		app.Get("/metrics", adaptor.HTTPHandler(metricsHandler))
+		app.Get("/metrics", zip.AdaptNetHTTP(metricsHandler))
 	}
 	// Define main router
 	apiRouter := app.Group("/v1/status")
@@ -92,42 +90,42 @@ func (a *API) createRouter(cfg *config.Config) *fiber.App {
 	app.Get("/suites/:key", SinglePageApplication(cfg.UI))
 	// Health endpoint
 	healthHandler := health.Handler().WithJSON(true)
-	app.Get("/health", func(c *fiber.Ctx) error {
+	app.Get("/health", func(c *zip.Ctx) error {
 		statusCode, body := healthHandler.GetResponseStatusCodeAndBody()
-		return c.Status(statusCode).Send(body)
+		return c.Bytes(statusCode, body)
 	})
 	// Custom CSS
 	app.Get("/css/custom.css", CustomCSSHandler{customCSS: cfg.UI.CustomCSS}.GetCustomCSS)
 	// Everything else falls back on static content
-	app.Use(redirect.New(redirect.Config{
+	app.Use(zipx.Wrap(redirect.New(redirect.Config{
 		Rules: map[string]string{
 			"/index.html": "/",
 		},
 		StatusCode: 301,
-	}))
+	})))
 	staticFileSystem, err := fs.Sub(static.FileSystem, static.RootPath)
 	if err != nil {
 		panic(err)
 	}
-	app.Use("/", func(c *fiber.Ctx) error {
+	app.Use(func(c *zip.Ctx) error {
 		// Static assets have no filename hashing, so ensure browsers revalidate
 		path := c.Path()
 		if len(path) > 3 {
 			switch path[len(path)-3:] {
 			case ".js":
-				c.Set("Cache-Control", "no-cache")
+				c.SetHeader("Cache-Control", "no-cache")
 			}
 		}
 		if len(path) > 4 && path[len(path)-4:] == ".css" {
-			c.Set("Cache-Control", "no-cache")
+			c.SetHeader("Cache-Control", "no-cache")
 		}
 		return c.Next()
 	})
-	app.Use("/", fiberfs.New(fiberfs.Config{
-		Root:   http.FS(staticFileSystem),
-		Index:  "index.html",
-		Browse: true,
-	}))
+	app.Use(zipx.Wrap(fiberstatic.New("", fiberstatic.Config{
+		FS:         staticFileSystem,
+		IndexNames: []string{"index.html"},
+		Browse:     true,
+	})))
 	//////////////////////
 	// PROTECTED ROUTES //
 	//////////////////////

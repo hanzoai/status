@@ -111,7 +111,7 @@ func TestRawDataEndpoint(t *testing.T) {
 			if scenario.Gzip {
 				request.Header.Set("Accept-Encoding", "gzip")
 			}
-			response, err := router.Test(request)
+			response, err := router.Fiber().Test(request)
 			if err != nil {
 				return
 			}
