@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/hanzoai/status/security"
-	"github.com/gofiber/fiber/v2"
+	"github.com/zap-proto/zip"
 )
 
 func TestConfigHandler_ServeHTTP(t *testing.T) {
@@ -20,7 +20,7 @@ func TestConfigHandler_ServeHTTP(t *testing.T) {
 	}
 	handler := ConfigHandler{securityConfig: securityConfig}
 	// Create a fake router. We're doing this because I need the gate to be initialized.
-	app := fiber.New()
+	app := zip.New(zip.Config{})
 	app.Get("/v1/status/config", handler.GetConfig)
 	err := securityConfig.ApplySecurityMiddleware(app)
 	if err != nil {
@@ -28,7 +28,7 @@ func TestConfigHandler_ServeHTTP(t *testing.T) {
 	}
 	// Test the config handler
 	request, _ := http.NewRequest("GET", "/v1/status/config", http.NoBody)
-	response, err := app.Test(request)
+	response, err := app.Fiber().Test(request)
 	if err != nil {
 		t.Error("expected err to be nil, but was", err)
 	}

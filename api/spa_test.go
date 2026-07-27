@@ -83,7 +83,7 @@ func TestSinglePageApplication(t *testing.T) {
 			if scenario.CookieDarkMode {
 				request.Header.Set("Cookie", "theme=dark")
 			}
-			response, err := router.Test(request)
+			response, err := router.Fiber().Test(request)
 			if err != nil {
 				return
 			}

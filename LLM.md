@@ -7,7 +7,8 @@ Module: `github.com/hanzoai/status`
 
 ## Architecture
 - `main.go` — boots config → storage → `controller.Handle` (HTTP) + `watchdog.Monitor` (probes).
-- `api/api.go` — Fiber router. **This is the API contract:**
+- `api/api.go` — `zip` router (`github.com/zap-proto/zip`, the fleet-wide framework;
+  a fiber v3 fork). Handlers are `func(c *zip.Ctx) error`. **This is the API contract:**
   - `GET /v1/status/config` — UI config (unprotected) — the SPA's first call.
   - `GET /v1/status/endpoints/statuses` — per-endpoint results (the live data; `?page=&pageSize=`).
   - `GET /v1/status/endpoints/:key/...` — uptimes / response-times / badges.
@@ -38,6 +39,20 @@ Module: `github.com/hanzoai/status`
   probe each product's own `/v1/<product>` route (200, or auth-gate 401/403 = UP).
   Tenancy-gated data routes return `500 "X-Org-Id required"` (a gateway mis-code) —
   accepted via `any(200,401,403,500)`; a real outage is 502/503/504/timeout.
+
+## Routing on zip — what to know before editing `api/api.go`
+- The route table is **pinned** by `declaredRoutes` in `api/routes_test.go`. Changing the
+  published surface means editing that list deliberately; a refactor must never move it.
+- `zipx.Wrap` is the ONE bridge from a fiber middleware (`fiber.Handler`) to a
+  `zip.Handler`. Use `zip.AdaptNetHTTP*` for net/http handlers and middleware.
+- Route precedence in zip's fiber fork is **specificity-based**, not registration order
+  (`static ≻ :param ≻ *`), and two distinct patterns of equal specificity panic at boot
+  rather than silently shadow. `Use` middleware are precedence *barriers*, which is what
+  keeps the "unprotected routes registered before the security middleware" split working.
+- `api.writeJSON` exists because `zip.Ctx.JSON` tags bodies
+  `application/json; charset=utf-8`; this API has always sent bare `application/json`.
+- `controller.Handle` listens via `app.Fiber().Listen(addr, fiber.ListenConfig{…})` — the
+  one escape from the zip surface, because `zip.Listen` carries no TLS or dual-stack knob.
 
 ## Build & deploy — ONE way
 - **Build**: tag `vX.Y.Z` → GHCR `ghcr.io/hanzoai/status:X.Y.Z` (multi-arch) via

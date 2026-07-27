@@ -8,7 +8,7 @@ import (
 	"github.com/hanzoai/status/config"
 	"github.com/hanzoai/status/config/ui"
 	"github.com/hanzoai/status/security"
-	"github.com/gofiber/fiber/v2"
+	fiber "github.com/zap-proto/fiber/v3"
 )
 
 func TestNew(t *testing.T) {
@@ -98,7 +98,7 @@ func TestNew(t *testing.T) {
 			if scenario.Gzip {
 				request.Header.Set("Accept-Encoding", "gzip")
 			}
-			response, err := router.Test(request)
+			response, err := router.Fiber().Test(request)
 			if err != nil {
 				t.Fatal(err)
 			}
