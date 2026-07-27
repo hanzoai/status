@@ -7,17 +7,17 @@ import (
 	"github.com/hanzoai/status/config/suite"
 	"github.com/hanzoai/status/storage/store"
 	"github.com/hanzoai/status/storage/store/common/paging"
-	"github.com/gofiber/fiber/v2"
+	"github.com/zap-proto/zip"
 )
 
 // SuiteStatuses handles requests to retrieve all suite statuses
-func SuiteStatuses(cfg *config.Config) fiber.Handler {
-	return func(c *fiber.Ctx) error {
+func SuiteStatuses(cfg *config.Config) zip.Handler {
+	return func(c *zip.Ctx) error {
 		page, pageSize := extractPageAndPageSizeFromRequest(c, 100)
 		params := paging.NewSuiteStatusParams().WithPagination(page, pageSize)
 		suiteStatuses, err := store.Get().GetAllSuiteStatuses(params)
 		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			return writeJSON(c, 500, map[string]any{
 				"error": fmt.Sprintf("Failed to retrieve suite statuses: %v", err),
 			})
 		}
@@ -29,15 +29,15 @@ func SuiteStatuses(cfg *config.Config) fiber.Handler {
 				}
 			}
 		}
-		return c.Status(fiber.StatusOK).JSON(suiteStatuses)
+		return writeJSON(c, 200, suiteStatuses)
 	}
 }
 
 // SuiteStatus handles requests to retrieve a single suite's status
-func SuiteStatus(cfg *config.Config) fiber.Handler {
-	return func(c *fiber.Ctx) error {
+func SuiteStatus(cfg *config.Config) zip.Handler {
+	return func(c *zip.Ctx) error {
 		page, pageSize := extractPageAndPageSizeFromRequest(c, 100)
-		key := c.Params("key")
+		key := c.Param("key")
 		params := paging.NewSuiteStatusParams().WithPagination(page, pageSize)
 		status, err := store.Get().GetSuiteStatusByKey(key, params)
 		if err != nil || status == nil {
@@ -49,11 +49,11 @@ func SuiteStatus(cfg *config.Config) fiber.Handler {
 				}
 			}
 			if status == nil {
-				return c.Status(404).JSON(fiber.Map{
+				return writeJSON(c, 404, map[string]any{
 					"error": fmt.Sprintf("Suite with key '%s' not found", key),
 				})
 			}
 		}
-		return c.Status(fiber.StatusOK).JSON(status)
+		return writeJSON(c, 200, status)
 	}
 }

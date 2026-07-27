@@ -1,14 +1,14 @@
 package api
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/zap-proto/zip"
 )
 
 type CustomCSSHandler struct {
 	customCSS string
 }
 
-func (handler CustomCSSHandler) GetCustomCSS(c *fiber.Ctx) error {
-	c.Set("Content-Type", "text/css")
-	return c.Status(200).SendString(handler.customCSS)
+func (handler CustomCSSHandler) GetCustomCSS(c *zip.Ctx) error {
+	c.SetHeader("Content-Type", "text/css")
+	return c.String(200, handler.customCSS)
 }

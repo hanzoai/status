@@ -5,8 +5,7 @@ import (
 	"testing"
 
 	"github.com/hanzoai/status/storage"
-	"github.com/gofiber/fiber/v2"
-	"github.com/valyala/fasthttp"
+	"github.com/zap-proto/zip"
 )
 
 func TestExtractPageAndPageSizeFromRequest(t *testing.T) {
@@ -65,10 +64,9 @@ func TestExtractPageAndPageSizeFromRequest(t *testing.T) {
 	for _, scenario := range scenarios {
 		t.Run("page-"+scenario.Page+"-pageSize-"+scenario.PageSize, func(t *testing.T) {
 			//request := httptest.NewRequest("GET", fmt.Sprintf("/v1/status/statuses?page=%s&pageSize=%s", scenario.Page, scenario.PageSize), http.NoBody)
-			app := fiber.New()
-			c := app.AcquireCtx(&fasthttp.RequestCtx{})
-			defer app.ReleaseCtx(c)
-			c.Request().SetRequestURI(fmt.Sprintf("/v1/status/statuses?page=%s&pageSize=%s", scenario.Page, scenario.PageSize))
+			app := zip.New(zip.Config{})
+			c := app.TestCtx("GET", "/v1/status/statuses")
+			c.Fiber().Request().SetRequestURI(fmt.Sprintf("/v1/status/statuses?page=%s&pageSize=%s", scenario.Page, scenario.PageSize))
 			actualPage, actualPageSize := extractPageAndPageSizeFromRequest(c, scenario.MaximumNumberOfResults)
 			if actualPage != scenario.ExpectedPage {
 				t.Errorf("expected %d, got %d", scenario.ExpectedPage, actualPage)
