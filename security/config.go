@@ -6,9 +6,11 @@ import (
 
 	g8 "github.com/TwiN/g8/v2"
 	"github.com/TwiN/logr"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/adaptor"
-	"github.com/gofiber/fiber/v2/middleware/basicauth"
+	"github.com/hanzoai/status/zipx"
+	fiber "github.com/zap-proto/fiber/v3"
+	"github.com/zap-proto/fiber/v3/middleware/adaptor"
+	"github.com/zap-proto/fiber/v3/middleware/basicauth"
+	"github.com/zap-proto/zip"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -17,6 +19,14 @@ const (
 	cookieNameNonce   = "gatus_nonce"
 	cookieNameSession = "gatus_session"
 )
+
+// Router is the slice of zip's routing surface this package needs. Both
+// *zip.App and zip.Router (a Group) satisfy it, so RegisterHandlers can take
+// the app while ApplySecurityMiddleware takes a sub-router.
+type Router interface {
+	Use(handlers ...zip.Handler) zip.Router
+	All(path string, handlers ...zip.Handler) zip.Router
+}
 
 // Config is the security configuration for Gatus
 type Config struct {
@@ -32,20 +42,20 @@ func (c *Config) ValidateAndSetDefaults() bool {
 }
 
 // RegisterHandlers registers all handlers required based on the security configuration
-func (c *Config) RegisterHandlers(router fiber.Router) error {
+func (c *Config) RegisterHandlers(router Router) error {
 	if c.OIDC != nil {
 		if err := c.OIDC.initialize(); err != nil {
 			return err
 		}
 		router.All("/oidc/login", c.OIDC.loginHandler)
-		router.All("/authorization-code/callback", adaptor.HTTPHandlerFunc(c.OIDC.callbackHandler))
+		router.All("/authorization-code/callback", zip.AdaptNetHTTPFunc(c.OIDC.callbackHandler))
 	}
 	return nil
 }
 
 // ApplySecurityMiddleware applies an authentication middleware to the router passed.
 // The router passed should be a sub-router in charge of handlers that require authentication.
-func (c *Config) ApplySecurityMiddleware(router fiber.Router) error {
+func (c *Config) ApplySecurityMiddleware(router Router) error {
 	if c.OIDC != nil {
 		// We're going to use g8 for session handling
 		clientProvider := g8.NewClientProvider(func(token string) *g8.Client {
@@ -64,7 +74,7 @@ func (c *Config) ApplySecurityMiddleware(router fiber.Router) error {
 		// TODO: g8: Add a way to update cookie after? would need the writer
 		authorizationService := g8.NewAuthorizationService().WithClientProvider(clientProvider)
 		c.gate = g8.New().WithAuthorizationService(authorizationService).WithCustomTokenExtractor(customTokenExtractorFunc)
-		router.Use(adaptor.HTTPMiddleware(c.gate.Protect))
+		router.Use(zip.AdaptNetHTTPMiddleware(c.gate.Protect))
 	} else if c.Basic != nil {
 		var decodedBcryptHash []byte
 		if len(c.Basic.PasswordBcryptHashBase64Encoded) > 0 {
@@ -74,8 +84,8 @@ func (c *Config) ApplySecurityMiddleware(router fiber.Router) error {
 				return err
 			}
 		}
-		router.Use(basicauth.New(basicauth.Config{
-			Authorizer: func(username, password string) bool {
+		router.Use(zipx.Wrap(basicauth.New(basicauth.Config{
+			Authorizer: func(username, password string, _ fiber.Ctx) bool {
 				if len(c.Basic.PasswordBcryptHashBase64Encoded) > 0 {
 					if username != c.Basic.Username || bcrypt.CompareHashAndPassword(decodedBcryptHash, []byte(password)) != nil {
 						return false
@@ -83,21 +93,21 @@ func (c *Config) ApplySecurityMiddleware(router fiber.Router) error {
 				}
 				return true
 			},
-			Unauthorized: func(ctx *fiber.Ctx) error {
+			Unauthorized: func(ctx fiber.Ctx) error {
 				ctx.Set("WWW-Authenticate", "Basic")
 				return ctx.Status(401).SendString("Unauthorized")
 			},
-		}))
+		})))
 	}
 	return nil
 }
 
 // IsAuthenticated checks whether the user is authenticated
 // If the Config does not warrant authentication, it will always return true.
-func (c *Config) IsAuthenticated(ctx *fiber.Ctx) bool {
+func (c *Config) IsAuthenticated(ctx *zip.Ctx) bool {
 	if c.gate != nil {
 		// TODO: Update g8 to support fasthttp natively? (see g8's fasthttp branch)
-		request, err := adaptor.ConvertRequest(ctx, false)
+		request, err := adaptor.ConvertRequest(ctx.Fiber(), false)
 		if err != nil {
 			logr.Errorf("[security.IsAuthenticated] Unexpected error converting request: %v", err)
 			return false

@@ -4,21 +4,22 @@ import (
 	"os"
 	"time"
 
+	"github.com/TwiN/logr"
 	"github.com/hanzoai/status/api"
 	"github.com/hanzoai/status/config"
-	"github.com/TwiN/logr"
-	"github.com/gofiber/fiber/v2"
+	fiber "github.com/zap-proto/fiber/v3"
+	"github.com/zap-proto/zip"
 )
 
 var (
-	app *fiber.App
+	app *zip.App
 )
 
 // Handle creates the router and starts the server
 func Handle(cfg *config.Config) {
 	api := api.New(cfg)
 	app = api.Router()
-	server := app.Server()
+	server := app.Fiber().Server()
 	server.ReadTimeout = 15 * time.Second
 	server.WriteTimeout = 15 * time.Second
 	server.IdleTimeout = 15 * time.Second
@@ -26,16 +27,16 @@ func Handle(cfg *config.Config) {
 		return
 	}
 	logr.Info("[controller.Handle] Listening on " + cfg.Web.SocketAddress())
+	// TLS is a value in the listen config, not a second Listen method. zip's own
+	// Listen carries neither a TLS nor a dual-stack knob, so this is the one
+	// place the app escapes to the underlying fiber listener.
+	listenConfig := fiber.ListenConfig{ListenerNetwork: fiber.NetworkTCP}
 	if cfg.Web.HasTLS() {
-		err := app.ListenTLS(cfg.Web.SocketAddress(), cfg.Web.TLS.CertificateFile, cfg.Web.TLS.PrivateKeyFile)
-		if err != nil {
-			logr.Fatalf("[controller.Handle] %s", err.Error())
-		}
-	} else {
-		err := app.Listen(cfg.Web.SocketAddress())
-		if err != nil {
-			logr.Fatalf("[controller.Handle] %s", err.Error())
-		}
+		listenConfig.CertFile = cfg.Web.TLS.CertificateFile
+		listenConfig.CertKeyFile = cfg.Web.TLS.PrivateKeyFile
+	}
+	if err := app.Fiber().Listen(cfg.Web.SocketAddress(), listenConfig); err != nil {
+		logr.Fatalf("[controller.Handle] %s", err.Error())
 	}
 	logr.Info("[controller.Handle] Server has shut down successfully")
 }
@@ -43,7 +44,7 @@ func Handle(cfg *config.Config) {
 // Shutdown stops the server
 func Shutdown() {
 	if app != nil {
-		_ = app.Shutdown()
+		_ = app.Fiber().Shutdown()
 		app = nil
 	}
 }

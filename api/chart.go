@@ -8,12 +8,12 @@ import (
 	"sort"
 	"time"
 
+	"github.com/TwiN/logr"
 	"github.com/hanzoai/status/storage/store"
 	"github.com/hanzoai/status/storage/store/common"
-	"github.com/TwiN/logr"
-	"github.com/gofiber/fiber/v2"
 	"github.com/wcharczuk/go-chart/v2"
 	"github.com/wcharczuk/go-chart/v2/drawing"
+	"github.com/zap-proto/zip"
 )
 
 const timeFormat = "3:04PM"
@@ -31,8 +31,8 @@ var (
 	}
 )
 
-func ResponseTimeChart(c *fiber.Ctx) error {
-	duration := c.Params("duration")
+func ResponseTimeChart(c *zip.Ctx) error {
+	duration := c.Param("duration")
 	chartTimestampFormatter := chart.TimeValueFormatterWithFormat(timeFormat)
 	var from time.Time
 	switch duration {
@@ -44,23 +44,23 @@ func ResponseTimeChart(c *fiber.Ctx) error {
 	case "24h":
 		from = time.Now().Truncate(time.Hour).Add(-24 * time.Hour)
 	default:
-		return c.Status(400).SendString("Durations supported: 30d, 7d, 24h")
+		return c.String(400, "Durations supported: 30d, 7d, 24h")
 	}
-	key, err := url.QueryUnescape(c.Params("key"))
+	key, err := url.QueryUnescape(c.Param("key"))
 	if err != nil {
-		return c.Status(400).SendString("invalid key encoding")
+		return c.String(400, "invalid key encoding")
 	}
 	hourlyAverageResponseTime, err := store.Get().GetHourlyAverageResponseTimeByKey(key, from, time.Now())
 	if err != nil {
 		if errors.Is(err, common.ErrEndpointNotFound) {
-			return c.Status(404).SendString(err.Error())
+			return c.String(404, err.Error())
 		} else if errors.Is(err, common.ErrInvalidTimeRange) {
-			return c.Status(400).SendString(err.Error())
+			return c.String(400, err.Error())
 		}
-		return c.Status(500).SendString(err.Error())
+		return c.String(500, err.Error())
 	}
 	if len(hourlyAverageResponseTime) == 0 {
-		return c.Status(204).SendString("")
+		return c.String(204, "")
 	}
 	series := chart.TimeSeries{
 		Name: "Average response time per hour",
@@ -116,19 +116,19 @@ func ResponseTimeChart(c *fiber.Ctx) error {
 		},
 		Series: []chart.Series{series},
 	}
-	c.Set("Content-Type", "image/svg+xml")
-	c.Set("Cache-Control", "no-cache, no-store")
-	c.Set("Expires", "0")
+	c.SetHeader("Content-Type", "image/svg+xml")
+	c.SetHeader("Cache-Control", "no-cache, no-store")
+	c.SetHeader("Expires", "0")
 	c.Status(http.StatusOK)
-	if err := graph.Render(chart.SVG, c); err != nil {
+	if err := graph.Render(chart.SVG, c.Fiber()); err != nil {
 		logr.Errorf("[api.ResponseTimeChart] Failed to render response time chart: %s", err.Error())
-		return c.Status(500).SendString(err.Error())
+		return c.String(500, err.Error())
 	}
 	return nil
 }
 
-func ResponseTimeHistory(c *fiber.Ctx) error {
-	duration := c.Params("duration")
+func ResponseTimeHistory(c *zip.Ctx) error {
+	duration := c.Param("duration")
 	var from time.Time
 	switch duration {
 	case "30d":
@@ -138,24 +138,24 @@ func ResponseTimeHistory(c *fiber.Ctx) error {
 	case "24h":
 		from = time.Now().Truncate(time.Hour).Add(-24 * time.Hour)
 	default:
-		return c.Status(400).SendString("Durations supported: 30d, 7d, 24h")
+		return c.String(400, "Durations supported: 30d, 7d, 24h")
 	}
-	endpointKey, err := url.QueryUnescape(c.Params("key"))
+	endpointKey, err := url.QueryUnescape(c.Param("key"))
 	if err != nil {
-		return c.Status(400).SendString("invalid key encoding")
+		return c.String(400, "invalid key encoding")
 	}
 	hourlyAverageResponseTime, err := store.Get().GetHourlyAverageResponseTimeByKey(endpointKey, from, time.Now())
 	if err != nil {
 		if errors.Is(err, common.ErrEndpointNotFound) {
-			return c.Status(404).SendString(err.Error())
+			return c.String(404, err.Error())
 		}
 		if errors.Is(err, common.ErrInvalidTimeRange) {
-			return c.Status(400).SendString(err.Error())
+			return c.String(400, err.Error())
 		}
-		return c.Status(500).SendString(err.Error())
+		return c.String(500, err.Error())
 	}
 	if len(hourlyAverageResponseTime) == 0 {
-		return c.Status(200).JSON(map[string]interface{}{
+		return writeJSON(c, 200, map[string]interface{}{
 			"timestamps": []int64{},
 			"values":     []int{},
 		})
@@ -181,7 +181,7 @@ func ResponseTimeHistory(c *fiber.Ctx) error {
 		timestamps = append(timestamps, timestamp*1000)
 		values = append(values, averageResponseTime)
 	}
-	return c.Status(http.StatusOK).JSON(map[string]interface{}{
+	return writeJSON(c, http.StatusOK, map[string]interface{}{
 		"timestamps": timestamps,
 		"values":     values,
 	})

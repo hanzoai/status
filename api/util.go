@@ -3,7 +3,8 @@ package api
 import (
 	"strconv"
 
-	"github.com/gofiber/fiber/v2"
+	fiber "github.com/zap-proto/fiber/v3"
+	"github.com/zap-proto/zip"
 )
 
 const (
@@ -14,7 +15,15 @@ const (
 	DefaultPageSize = 50
 )
 
-func extractPageAndPageSizeFromRequest(c *fiber.Ctx, maximumNumberOfResults int) (page, pageSize int) {
+// writeJSON is the one way this API answers with JSON. zip.Ctx.JSON would tag
+// the body "application/json; charset=utf-8"; every published response has
+// always carried bare "application/json", and clients match on it exactly.
+func writeJSON(c *zip.Ctx, statusCode int, value any) error {
+	c.Status(statusCode)
+	return c.Fiber().JSON(value, fiber.MIMEApplicationJSON)
+}
+
+func extractPageAndPageSizeFromRequest(c *zip.Ctx, maximumNumberOfResults int) (page, pageSize int) {
 	var err error
 	if pageParameter := c.Query("page"); len(pageParameter) == 0 {
 		page = DefaultPage

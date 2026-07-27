@@ -14,7 +14,7 @@ import (
 	"github.com/hanzoai/status/storage/store"
 	"github.com/hanzoai/status/storage/store/common"
 	"github.com/hanzoai/status/storage/store/common/paging"
-	"github.com/gofiber/fiber/v2"
+	"github.com/zap-proto/zip"
 )
 
 const (
@@ -39,8 +39,8 @@ var (
 // UptimeBadge handles the automatic generation of badge based on the group name and endpoint name passed.
 //
 // Valid values for :duration -> 30d, 7d, 24h, 1h
-func UptimeBadge(c *fiber.Ctx) error {
-	duration := c.Params("duration")
+func UptimeBadge(c *zip.Ctx) error {
+	duration := c.Param("duration")
 	var from time.Time
 	switch duration {
 	case "30d":
@@ -52,33 +52,33 @@ func UptimeBadge(c *fiber.Ctx) error {
 	case "1h":
 		from = time.Now().Add(-2 * time.Hour) // Because uptime metrics are stored by hour, we have to cheat a little
 	default:
-		return c.Status(400).SendString("Durations supported: 30d, 7d, 24h, 1h")
+		return c.String(400, "Durations supported: 30d, 7d, 24h, 1h")
 	}
-	key, err := url.QueryUnescape(c.Params("key"))
+	key, err := url.QueryUnescape(c.Param("key"))
 	if err != nil {
-		return c.Status(400).SendString("invalid key encoding")
+		return c.String(400, "invalid key encoding")
 	}
 	uptime, err := store.Get().GetUptimeByKey(key, from, time.Now())
 	if err != nil {
 		if errors.Is(err, common.ErrEndpointNotFound) {
-			return c.Status(404).SendString(err.Error())
+			return c.String(404, err.Error())
 		} else if errors.Is(err, common.ErrInvalidTimeRange) {
-			return c.Status(400).SendString(err.Error())
+			return c.String(400, err.Error())
 		}
-		return c.Status(500).SendString(err.Error())
+		return c.String(500, err.Error())
 	}
-	c.Set("Content-Type", "image/svg+xml")
-	c.Set("Cache-Control", "no-cache, no-store, must-revalidate")
-	c.Set("Expires", "0")
-	return c.Status(200).Send(generateUptimeBadgeSVG(duration, uptime))
+	c.SetHeader("Content-Type", "image/svg+xml")
+	c.SetHeader("Cache-Control", "no-cache, no-store, must-revalidate")
+	c.SetHeader("Expires", "0")
+	return c.Bytes(200, generateUptimeBadgeSVG(duration, uptime))
 }
 
 // ResponseTimeBadge handles the automatic generation of badge based on the group name and endpoint name passed.
 //
 // Valid values for :duration -> 30d, 7d, 24h, 1h
-func ResponseTimeBadge(cfg *config.Config) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		duration := c.Params("duration")
+func ResponseTimeBadge(cfg *config.Config) zip.Handler {
+	return func(c *zip.Ctx) error {
+		duration := c.Param("duration")
 		var from time.Time
 		switch duration {
 		case "30d":
@@ -90,43 +90,43 @@ func ResponseTimeBadge(cfg *config.Config) fiber.Handler {
 		case "1h":
 			from = time.Now().Add(-2 * time.Hour) // Because response time metrics are stored by hour, we have to cheat a little
 		default:
-			return c.Status(400).SendString("Durations supported: 30d, 7d, 24h, 1h")
+			return c.String(400, "Durations supported: 30d, 7d, 24h, 1h")
 		}
-		key, err := url.QueryUnescape(c.Params("key"))
+		key, err := url.QueryUnescape(c.Param("key"))
 		if err != nil {
-			return c.Status(400).SendString("invalid key encoding")
+			return c.String(400, "invalid key encoding")
 		}
 		averageResponseTime, err := store.Get().GetAverageResponseTimeByKey(key, from, time.Now())
 		if err != nil {
 			if errors.Is(err, common.ErrEndpointNotFound) {
-				return c.Status(404).SendString(err.Error())
+				return c.String(404, err.Error())
 			} else if errors.Is(err, common.ErrInvalidTimeRange) {
-				return c.Status(400).SendString(err.Error())
+				return c.String(400, err.Error())
 			}
-			return c.Status(500).SendString(err.Error())
+			return c.String(500, err.Error())
 		}
-		c.Set("Content-Type", "image/svg+xml")
-		c.Set("Cache-Control", "no-cache, no-store, must-revalidate")
-		c.Set("Expires", "0")
-		return c.Status(200).Send(generateResponseTimeBadgeSVG(duration, averageResponseTime, key, cfg))
+		c.SetHeader("Content-Type", "image/svg+xml")
+		c.SetHeader("Cache-Control", "no-cache, no-store, must-revalidate")
+		c.SetHeader("Expires", "0")
+		return c.Bytes(200, generateResponseTimeBadgeSVG(duration, averageResponseTime, key, cfg))
 	}
 }
 
 // HealthBadge handles the automatic generation of badge based on the group name and endpoint name passed.
-func HealthBadge(c *fiber.Ctx) error {
-	key, err := url.QueryUnescape(c.Params("key"))
+func HealthBadge(c *zip.Ctx) error {
+	key, err := url.QueryUnescape(c.Param("key"))
 	if err != nil {
-		return c.Status(400).SendString("invalid key encoding")
+		return c.String(400, "invalid key encoding")
 	}
 	pagingConfig := paging.NewEndpointStatusParams()
 	status, err := store.Get().GetEndpointStatusByKey(key, pagingConfig.WithResults(1, 1))
 	if err != nil {
 		if errors.Is(err, common.ErrEndpointNotFound) {
-			return c.Status(404).SendString(err.Error())
+			return c.String(404, err.Error())
 		} else if errors.Is(err, common.ErrInvalidTimeRange) {
-			return c.Status(400).SendString(err.Error())
+			return c.String(400, err.Error())
 		}
-		return c.Status(500).SendString(err.Error())
+		return c.String(500, err.Error())
 	}
 	healthStatus := HealthStatusUnknown
 	if len(status.Results) > 0 {
@@ -136,26 +136,26 @@ func HealthBadge(c *fiber.Ctx) error {
 			healthStatus = HealthStatusDown
 		}
 	}
-	c.Set("Content-Type", "image/svg+xml")
-	c.Set("Cache-Control", "no-cache, no-store, must-revalidate")
-	c.Set("Expires", "0")
-	return c.Status(200).Send(generateHealthBadgeSVG(healthStatus))
+	c.SetHeader("Content-Type", "image/svg+xml")
+	c.SetHeader("Cache-Control", "no-cache, no-store, must-revalidate")
+	c.SetHeader("Expires", "0")
+	return c.Bytes(200, generateHealthBadgeSVG(healthStatus))
 }
 
-func HealthBadgeShields(c *fiber.Ctx) error {
-	key, err := url.QueryUnescape(c.Params("key"))
+func HealthBadgeShields(c *zip.Ctx) error {
+	key, err := url.QueryUnescape(c.Param("key"))
 	if err != nil {
-		return c.Status(400).SendString("invalid key encoding")
+		return c.String(400, "invalid key encoding")
 	}
 	pagingConfig := paging.NewEndpointStatusParams()
 	status, err := store.Get().GetEndpointStatusByKey(key, pagingConfig.WithResults(1, 1))
 	if err != nil {
 		if errors.Is(err, common.ErrEndpointNotFound) {
-			return c.Status(404).SendString(err.Error())
+			return c.String(404, err.Error())
 		} else if errors.Is(err, common.ErrInvalidTimeRange) {
-			return c.Status(400).SendString(err.Error())
+			return c.String(400, err.Error())
 		}
-		return c.Status(500).SendString(err.Error())
+		return c.String(500, err.Error())
 	}
 	healthStatus := HealthStatusUnknown
 	if len(status.Results) > 0 {
@@ -165,14 +165,14 @@ func HealthBadgeShields(c *fiber.Ctx) error {
 			healthStatus = HealthStatusDown
 		}
 	}
-	c.Set("Content-Type", "application/json")
-	c.Set("Cache-Control", "no-cache, no-store, must-revalidate")
-	c.Set("Expires", "0")
+	c.SetHeader("Content-Type", "application/json")
+	c.SetHeader("Cache-Control", "no-cache, no-store, must-revalidate")
+	c.SetHeader("Expires", "0")
 	jsonData, err := generateHealthBadgeShields(healthStatus)
 	if err != nil {
-		return c.Status(500).SendString(err.Error())
+		return c.String(500, err.Error())
 	}
-	return c.Status(200).Send(jsonData)
+	return c.Bytes(200, jsonData)
 }
 
 func generateUptimeBadgeSVG(duration string, uptime float64) []byte {

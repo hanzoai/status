@@ -6,7 +6,7 @@ import (
 
 	"github.com/hanzoai/status/config"
 	"github.com/hanzoai/status/security"
-	"github.com/gofiber/fiber/v2"
+	"github.com/zap-proto/zip"
 )
 
 type ConfigHandler struct {
@@ -14,7 +14,7 @@ type ConfigHandler struct {
 	config         *config.Config
 }
 
-func (handler ConfigHandler) GetConfig(c *fiber.Ctx) error {
+func (handler ConfigHandler) GetConfig(c *zip.Ctx) error {
 	hasOIDC := false
 	isAuthenticated := true // Default to true if no security config is set
 	if handler.securityConfig != nil {
@@ -35,10 +35,10 @@ func (handler ConfigHandler) GetConfig(c *fiber.Ctx) error {
 	}
 
 	// Return the config as JSON
-	c.Set("Content-Type", "application/json")
+	c.SetHeader("Content-Type", "application/json")
 	responseBytes, err := json.Marshal(response)
 	if err != nil {
-		return c.Status(500).SendString(fmt.Sprintf(`{"error":"Failed to marshal response: %s"}`, err.Error()))
+		return c.String(500, fmt.Sprintf(`{"error":"Failed to marshal response: %s"}`, err.Error()))
 	}
-	return c.Status(200).Send(responseBytes)
+	return c.Bytes(200, responseBytes)
 }
