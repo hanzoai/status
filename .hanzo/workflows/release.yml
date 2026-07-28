@@ -105,8 +105,23 @@ jobs:
           done
           echo "::error::image ${v} not pullable after push — refusing to tag git (prevents ImagePullBackOff)"; exit 1
       - name: Tag the release (image ⇔ tag invariant)
+        # The tag goes to GITHUB, not `origin`. Inside a job here `origin` is
+        # git.hanzo.ai, and this repo is a PULL MIRROR there, so the push is
+        # refused:
+        #   remote: mirror repository is read-only
+        #   fatal: unable to access 'http://hanzo-git.hanzo.svc/hanzoai/status/':
+        #          The requested URL returned error: 403
+        # The image had already built and been verified pullable by then — the run
+        # went red at the very last line, after all the real work succeeded.
+        #
+        # github.com/hanzoai/status is the writable side that this mirror pulls
+        # FROM, so tagging there is what makes the tag reach both. GH_PAT is
+        # already used earlier in this workflow.
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           set -euo pipefail
-          git tag "${{ steps.ver.outputs.version_v }}"
-          git push origin "${{ steps.ver.outputs.version_v }}"
+          v="${{ steps.ver.outputs.version_v }}"
+          git tag "${v}"
+          git push "https://x-access-token:${GH_PAT}@github.com/hanzoai/status.git" "${v}"
           echo "Pushed image + tag ${{ steps.ver.outputs.version_v }} — bump the operator/k8s manifests to deploy."
