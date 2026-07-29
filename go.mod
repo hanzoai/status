@@ -1,6 +1,6 @@
 module github.com/hanzoai/status
 
-go 1.26.4
+go 1.26.5
 
 require (
 	code.gitea.io/sdk/gitea v0.24.1
