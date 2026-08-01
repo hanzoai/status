@@ -73,13 +73,31 @@ endpoints:
   # AI — inference, agents, retrieval
   # ═══════════════════════════════════════════════
 
-  # /v1/models is the served catalog — a 200 here means the Zen + Enso model
-  # families are being served through the router. Chat completions itself is
-  # POST-only (GET/HEAD 404 by design), so serving health is measured here and
-  # at the in-cluster engine below, not by probing /v1/chat/completions.
+  # TWO ADDRESSES, TWO SERVICES, TWO ROWS. This was ONE row against
+  # api.hanzo.ai/v1/models asserting 200, and it measured neither the router nor
+  # inference: /v1/models* was path-carved off api.hanzo.ai to the catalog
+  # worker, so the row was a health check on a Cloudflare KV cache and stayed
+  # green with the cluster down. The carve is gone (hanzoai/universe
+  # infra/k8s/ingress/routes.yaml) and each address says what it is.
+  #
+  # The API's own /v1/models is authenticated — an anonymous 401 is the route
+  # ANSWERING, and a 404 is the front door having lost it, which is the failure
+  # this row now catches. Chat completions is POST-only (GET/HEAD 404 by design),
+  # so serving health is the in-cluster engine below.
   - name: "Models & Inference"
     group: "AI"
     url: "https://api.hanzo.ai/v1/models"
+    interval: 60s
+    conditions:
+      - "[STATUS] == any(200, 401)"
+      - "[RESPONSE_TIME] < 3000"
+
+  # The public, tokenless model catalog: its own host, edge-cached, refreshed
+  # daily from pricing.hanzo.ai. This is what marketing, the extension picker and
+  # pre-login browsing actually read, so it is checked where it is served.
+  - name: "Model Catalog"
+    group: "AI"
+    url: "https://catalog.hanzo.ai/v1/models"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
