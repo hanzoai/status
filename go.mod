@@ -1,6 +1,6 @@
 module github.com/hanzoai/status
 
-go 1.26.4
+go 1.26.5
 
 require (
 	code.gitea.io/sdk/gitea v0.24.1
@@ -26,7 +26,7 @@ require (
 	github.com/registrobr/rdap v1.1.8
 	github.com/wcharczuk/go-chart/v2 v2.1.2
 	github.com/zap-proto/fiber/v3 v3.2.1
-	github.com/zap-proto/zip v1.10.0
+	github.com/zap-proto/zip v1.20.0
 	golang.org/x/crypto v0.52.0
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/sync v0.20.0
@@ -58,7 +58,7 @@ require (
 	github.com/tinylib/msgp v1.6.4 // indirect
 	github.com/valyala/fasthttp v1.70.0 // indirect
 	github.com/zap-proto/go v1.3.0 // indirect
-	github.com/zap-proto/http v0.3.0 // indirect
+	github.com/zap-proto/http v0.3.1 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	modernc.org/sqlite v1.51.0 // indirect
 )
