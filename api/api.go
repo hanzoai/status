@@ -107,7 +107,7 @@ func (a *API) createRouter(cfg *config.Config) *zip.App {
 	if err != nil {
 		panic(err)
 	}
-	app.Use(func(c *zip.Ctx) error {
+	app.Use(zip.H(func(c *zip.Ctx) error {
 		// Static assets have no filename hashing, so ensure browsers revalidate
 		path := c.Path()
 		if len(path) > 3 {
@@ -120,7 +120,7 @@ func (a *API) createRouter(cfg *config.Config) *zip.App {
 			c.SetHeader("Cache-Control", "no-cache")
 		}
 		return c.Next()
-	})
+	}))
 	app.Use(zipx.Wrap(fiberstatic.New("", fiberstatic.Config{
 		FS:         staticFileSystem,
 		IndexNames: []string{"index.html"},

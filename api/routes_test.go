@@ -44,8 +44,22 @@ func newTestAPI() *API {
 }
 
 func TestRouteTable(t *testing.T) {
+	routes := newTestAPI().Router().Fiber().GetRoutes(true)
+	served := make(map[string]bool, len(routes))
+	for _, route := range routes {
+		served[route.Method+" "+route.Path] = true
+	}
 	var actual []string
-	for _, route := range newTestAPI().Router().Fiber().GetRoutes(true) {
+	for _, route := range routes {
+		// The HEAD mirror of a GET is generated, not authored, so it is not part
+		// of the declared surface — TestRouteTable_HeadMirrorsGet owns it. zip
+		// materialises the mirrors into the route table at build; fiber used to
+		// create them lazily, on the first HEAD request, so they were served
+		// then too and simply did not show up here. A HEAD with no GET behind it
+		// is not a mirror and still has to be declared.
+		if route.Method == http.MethodHead && served[http.MethodGet+" "+route.Path] {
+			continue
+		}
 		actual = append(actual, fmt.Sprintf("%-7s %s", route.Method, route.Path))
 	}
 	sort.Strings(actual)
@@ -79,7 +93,8 @@ func TestRouteTable_EveryRouteResolves(t *testing.T) {
 }
 
 // TestRouteTable_HeadMirrorsGet pins the auto-generated HEAD mirror of every
-// GET route, which fiber creates lazily rather than at registration.
+// GET route. It is answered either way: zip materialises the mirrors into the
+// route table at build, and fiber created them lazily before that.
 func TestRouteTable_HeadMirrorsGet(t *testing.T) {
 	api := newTestAPI()
 	for _, path := range []string{"/", "/health", "/css/custom.css", "/v1/status/config"} {

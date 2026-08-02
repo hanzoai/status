@@ -23,8 +23,11 @@ const (
 // Router is the slice of zip's routing surface this package needs. Both
 // *zip.App and zip.Router (a Group) satisfy it, so RegisterHandlers can take
 // the app while ApplySecurityMiddleware takes a sub-router.
+//
+// Use takes Components — middleware, or another App — because that is the one
+// composition verb zip has; the route methods still take Handlers.
 type Router interface {
-	Use(handlers ...zip.Handler) zip.Router
+	Use(cs ...zip.Component) zip.Router
 	All(path string, handlers ...zip.Handler) zip.Router
 }
 
@@ -48,7 +51,7 @@ func (c *Config) RegisterHandlers(router Router) error {
 			return err
 		}
 		router.All("/oidc/login", c.OIDC.loginHandler)
-		router.All("/authorization-code/callback", zip.AdaptNetHTTPFunc(c.OIDC.callbackHandler))
+		router.All("/authorization-code/callback", zip.AdaptNetHTTP(http.HandlerFunc(c.OIDC.callbackHandler)))
 	}
 	return nil
 }
