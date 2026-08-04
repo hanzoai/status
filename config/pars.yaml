@@ -43,7 +43,7 @@ endpoints:
 
   - name: "RPC (Pars Chain)"
     group: "Mainnet"
-    url: "https://api.lux.network/mainnet/ext/bc/2pUskxqaL5Bpx7uRUGG1fDjPckjxQ4UKX4sLKeaS1NdSVBJd3F/rpc"
+    url: "https://api.lux.network/mainnet/v1/bc/2pUskxqaL5Bpx7uRUGG1fDjPckjxQ4UKX4sLKeaS1NdSVBJd3F/rpc"
     method: POST
     body: '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
     headers:
