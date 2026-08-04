@@ -33,7 +33,7 @@ export function SuiteCard({ suite, maxResults = 50, onNavigate, onTooltip }: Sui
           <div className="min-w-0 flex-1 overflow-hidden">
             <button
               onClick={() => onNavigate(suite.key)}
-              className="block truncate text-left text-sm font-medium text-foreground transition-colors hover:text-brand sm:text-[15px]"
+              className="block w-full truncate py-3 -my-3 text-left text-sm font-medium text-foreground transition-colors hover:text-brand sm:text-[15px]"
               title={suite.name}
             >
               {suite.name}

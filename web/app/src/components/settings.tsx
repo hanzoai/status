@@ -74,7 +74,10 @@ export function Settings({ onRefresh }: SettingsProps) {
   }
 
   return (
-    <div ref={settingsRef} className="fixed bottom-4 left-4 z-50">
+    <div
+      ref={settingsRef}
+      className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-[max(1rem,env(safe-area-inset-left))] z-50"
+    >
       <div className="flex items-center gap-0.5 rounded-full border border-border bg-card/95 p-1 shadow-lg backdrop-blur-sm">
         <Button
           size="$2"

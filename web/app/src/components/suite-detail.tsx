@@ -67,7 +67,7 @@ export function SuiteDetail({ suiteKey, navigate }: SuiteDetailProps) {
       <Header />
       <main className="relative">
         <div className="container mx-auto max-w-7xl px-4 py-8">
-          <button onClick={() => navigate('/')} className="mb-4 inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent">
+          <button onClick={() => navigate('/')} className="mb-4 inline-flex min-h-11 items-center gap-2 rounded-md px-3 text-sm transition-colors hover:bg-accent">
             <ArrowLeft className="h-4 w-4" />Back to Dashboard
           </button>
 
@@ -95,16 +95,16 @@ export function SuiteDetail({ suiteKey, navigate }: SuiteDetailProps) {
               <div className="rounded-lg border border-border bg-card">
                 <div className="flex items-center justify-between px-6 pt-6">
                   <h2 className="text-lg font-semibold">Recent Checks</h2>
-                  <button onClick={fetchData} disabled={isRefreshing} title="Refresh data" className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent transition-colors">
+                  <button onClick={fetchData} disabled={isRefreshing} title="Refresh data" className="inline-flex h-11 w-11 items-center justify-center rounded-md hover:bg-accent transition-colors">
                     <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                   </button>
                 </div>
                 <div className="p-6">
                   {adaptedResults.length > 0 && <HealthBar results={adaptedResults} maxResults={PAGE_SIZE} onTooltip={handleTooltip} />}
                   <div className="mt-4 flex items-center justify-center gap-2 border-t border-border pt-4">
-                    <button disabled={currentPage <= 1} onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border disabled:opacity-50 hover:bg-accent"><ChevronLeft className="h-4 w-4" /></button>
+                    <button disabled={currentPage <= 1} onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border disabled:opacity-50 hover:bg-accent"><ChevronLeft className="h-4 w-4" /></button>
                     <span className="text-sm text-muted-foreground">Page {currentPage}</span>
-                    <button disabled={!suite.results?.length || suite.results.length < PAGE_SIZE} onClick={() => setCurrentPage((p) => p + 1)} className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border disabled:opacity-50 hover:bg-accent"><ChevronRight className="h-4 w-4" /></button>
+                    <button disabled={!suite.results?.length || suite.results.length < PAGE_SIZE} onClick={() => setCurrentPage((p) => p + 1)} className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border disabled:opacity-50 hover:bg-accent"><ChevronRight className="h-4 w-4" /></button>
                   </div>
                 </div>
               </div>

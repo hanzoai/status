@@ -140,7 +140,7 @@ export function EndpointDetail({ endpointKey, navigate }: EndpointDetailProps) {
       <Header />
       <main className="relative">
         <div className="container mx-auto max-w-7xl px-4 py-8">
-          <button onClick={() => navigate('/')} className="mb-4 inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent">
+          <button onClick={() => navigate('/')} className="mb-4 inline-flex min-h-11 items-center gap-2 rounded-md px-3 text-sm transition-colors hover:bg-accent">
             <ArrowLeft className="h-4 w-4" />Back to Dashboard
           </button>
 
@@ -176,10 +176,10 @@ export function EndpointDetail({ endpointKey, navigate }: EndpointDetailProps) {
                 <div className="flex items-center justify-between px-6 pt-6">
                   <h2 className="text-lg font-semibold">Recent Checks</h2>
                   <div className="flex items-center gap-2">
-                    <button onClick={toggleResponseTimeDisplay} title={showAvgResponseTime ? 'Show min-max response time' : 'Show average response time'} className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent transition-colors">
+                    <button onClick={toggleResponseTimeDisplay} title={showAvgResponseTime ? 'Show min-max response time' : 'Show average response time'} className="inline-flex h-11 w-11 items-center justify-center rounded-md hover:bg-accent transition-colors">
                       {showAvgResponseTime ? <Activity className="h-5 w-5" /> : <Timer className="h-5 w-5" />}
                     </button>
-                    <button onClick={fetchData} disabled={isRefreshing} title="Refresh data" className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent transition-colors">
+                    <button onClick={fetchData} disabled={isRefreshing} title="Refresh data" className="inline-flex h-11 w-11 items-center justify-center rounded-md hover:bg-accent transition-colors">
                       <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                     </button>
                   </div>
@@ -187,9 +187,9 @@ export function EndpointDetail({ endpointKey, navigate }: EndpointDetailProps) {
                 <div className="p-6">
                   {endpoint.results?.length > 0 && <HealthBar results={endpoint.results} maxResults={PAGE_SIZE} onTooltip={handleTooltip} />}
                   <div className="mt-4 flex items-center justify-center gap-2 border-t border-border pt-4">
-                    <button disabled={currentPage <= 1} onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border disabled:opacity-50 hover:bg-accent"><ChevronLeft className="h-4 w-4" /></button>
+                    <button disabled={currentPage <= 1} onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border disabled:opacity-50 hover:bg-accent"><ChevronLeft className="h-4 w-4" /></button>
                     <span className="text-sm text-muted-foreground">Page {currentPage}</span>
-                    <button disabled={!endpoint.results?.length || endpoint.results.length < PAGE_SIZE} onClick={() => setCurrentPage((p) => p + 1)} className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border disabled:opacity-50 hover:bg-accent"><ChevronRight className="h-4 w-4" /></button>
+                    <button disabled={!endpoint.results?.length || endpoint.results.length < PAGE_SIZE} onClick={() => setCurrentPage((p) => p + 1)} className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border disabled:opacity-50 hover:bg-accent"><ChevronRight className="h-4 w-4" /></button>
                   </div>
                 </div>
               </div>
@@ -199,7 +199,7 @@ export function EndpointDetail({ endpointKey, navigate }: EndpointDetailProps) {
                   <div className="rounded-lg border border-border bg-card">
                     <div className="flex items-center justify-between px-6 pt-6">
                       <h2 className="text-lg font-semibold">Response Time Trend</h2>
-                      <select value={chartDuration} onChange={(e) => setChartDuration(e.target.value)} className="rounded-md border border-border bg-background px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                      <select value={chartDuration} onChange={(e) => setChartDuration(e.target.value)} className="h-11 rounded-md border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-ring">
                         <option value="24h">24 hours</option>
                         <option value="7d">7 days</option>
                         <option value="30d">30 days</option>

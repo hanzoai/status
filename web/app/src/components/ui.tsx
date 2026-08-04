@@ -55,9 +55,10 @@ export function Button({
       {...rest}
       onClick={onPress}
       className={cn(
-        'inline-flex items-center justify-center text-sm transition-colors',
+        // min-h/min-w 44px: every button is a real touch target (iOS HIG).
+        'inline-flex min-h-11 items-center justify-center text-sm transition-colors',
         !chromeless && 'rounded-md border border-border bg-card hover:bg-accent',
-        circular && 'rounded-full',
+        circular && 'min-w-11 rounded-full',
         className,
       )}
     >
@@ -94,7 +95,9 @@ export function Input({ onChangeText, size: _size, className, ...rest }: InputPr
   return (
     <input
       className={cn(
-        'h-10 rounded-md border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring',
+        // 44px tall (touch target) and 16px text — below 16px iOS zooms the
+        // page on focus.
+        'h-11 rounded-md border border-border bg-card px-3 text-base text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring',
         className,
       )}
       onChange={(e) => onChangeText?.(e.target.value)}

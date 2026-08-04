@@ -80,7 +80,7 @@ export function SearchBar({ onSearch, onFilterChange, onSortChange }: SearchBarP
           <select
             value={filter}
             onChange={(e) => handleFilterChange(e.target.value)}
-            className="flex-1 rounded-md border border-border bg-card px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:w-[120px]"
+            className="h-11 flex-1 rounded-md border border-border bg-card px-3 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:w-[120px]"
           >
             {filterOptions.map((o) => (
               <option key={o.value} value={o.value}>
@@ -96,7 +96,7 @@ export function SearchBar({ onSearch, onFilterChange, onSortChange }: SearchBarP
           <select
             value={sort}
             onChange={(e) => handleSortChange(e.target.value)}
-            className="flex-1 rounded-md border border-border bg-card px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:w-[100px]"
+            className="h-11 flex-1 rounded-md border border-border bg-card px-3 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:w-[100px]"
           >
             {sortOptions.map((o) => (
               <option key={o.value} value={o.value}>
