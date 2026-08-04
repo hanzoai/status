@@ -49,13 +49,13 @@ export function EndpointCard({
   }, [results, showAverageResponseTime])
 
   return (
-    <Card className="group flex h-full flex-col transition-all duration-200 hover:opacity-90" bordered padded={false}>
+    <Card className="flex h-full flex-col transition-all duration-200 hover:opacity-90" bordered padded={false}>
       <div className="space-y-0 px-4 pb-2 pt-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1 overflow-hidden">
             <button
               onClick={() => onNavigate(endpoint.key)}
-              className="block truncate text-left text-sm font-medium text-foreground transition-colors hover:text-brand sm:text-[15px]"
+              className="block w-full truncate py-3 -my-3 text-left text-sm font-medium text-foreground transition-colors hover:text-brand sm:text-[15px]"
               title={endpoint.name}
             >
               {endpoint.name}

@@ -16,6 +16,20 @@ export function ResponseTimeChart({ endpointKey, duration }: ResponseTimeChartPr
   const [timestamps, setTimestamps] = useState<number[]>([])
   const [values, setValues] = useState<number[]>([])
   const [hoverIndex, setHoverIndex] = useState<number | null>(null)
+  const [containerW, setContainerW] = useState(0)
+
+  // Redraw when the container resizes (rotation, window resize). The canvas
+  // gets absolute pixel dimensions at draw time, so without this it keeps its
+  // old width and overflows the viewport after a resize.
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const ro = new ResizeObserver((entries) => {
+      setContainerW(Math.round(entries[0].contentRect.width))
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -161,7 +175,7 @@ export function ResponseTimeChart({ endpointKey, duration }: ResponseTimeChartPr
       ctx.fillStyle = isDark ? '#9ca3af' : '#6b7280'
       ctx.fillText(time, boxX + 8, boxY + 28)
     }
-  }, [values, timestamps, hoverIndex, duration])
+  }, [values, timestamps, hoverIndex, duration, containerW])
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {

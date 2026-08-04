@@ -25,7 +25,7 @@ export function Footer() {
   const securityUrl = link ? `${link.replace(/\/$/, '')}/security` : null
 
   return (
-    <footer className="mt-auto border-t border-border">
+    <footer className="mt-auto border-t border-border pb-[env(safe-area-inset-bottom)]">
       <div className="container mx-auto max-w-7xl px-4 py-8">
         <div className="flex flex-col items-center gap-4">
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[13px] text-muted-foreground">
@@ -48,7 +48,7 @@ export function Footer() {
               own repo — instead of twice, once wrongly. */}
           <div className="flex items-center gap-3 text-xs text-muted-foreground/50">
             {link ? (
-              <a href={link} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-muted-foreground">
+              <a href={link} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center transition-colors hover:text-muted-foreground">
                 &copy; {year} {orgName}
               </a>
             ) : (
@@ -63,7 +63,12 @@ export function Footer() {
 
 function FooterLink({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground">
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex min-h-11 min-w-11 items-center justify-center px-2 -mx-2 transition-colors hover:text-foreground"
+    >
       {children}
     </a>
   )

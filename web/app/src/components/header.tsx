@@ -28,13 +28,13 @@ export function Header() {
   const ctaLabel = orgName && orgName !== 'Status' ? `Try ${orgName}` : null
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 border-b border-border bg-background/80 pt-[env(safe-area-inset-top)] backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto max-w-7xl px-4">
         <div className="flex h-14 items-center justify-between">
           <div className="flex items-center gap-3">
             <Wrapper
               {...wrapperProps}
-              className={`flex items-center gap-2.5 ${link ? 'transition-opacity hover:opacity-80' : ''}`}
+              className={`flex min-h-11 items-center gap-2.5 ${link ? 'transition-opacity hover:opacity-80' : ''}`}
             >
               <div className="flex items-center justify-center">
                 {logo ? (
@@ -62,7 +62,7 @@ export function Header() {
                     href={btn.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-md px-3 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    className="flex min-h-11 items-center rounded-md px-3 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {btn.name}
                   </a>
@@ -75,7 +75,7 @@ export function Header() {
                 href={link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-2 hidden items-center gap-1.5 rounded-md bg-brand px-3.5 py-1.5 text-[13px] font-medium text-white transition-all hover:opacity-90 md:inline-flex"
+                className="ml-2 hidden min-h-11 items-center gap-1.5 rounded-md bg-brand px-3.5 text-[13px] font-medium text-white transition-all hover:opacity-90 md:inline-flex"
               >
                 {ctaLabel}
                 <ExternalLink className="h-3 w-3" />
@@ -105,7 +105,7 @@ export function Header() {
                   href={btn.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  className="flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                   onClick={() => setMobileOpen(false)}
                 >
                   {btn.name}
@@ -116,7 +116,7 @@ export function Header() {
                   href={link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 flex items-center gap-1.5 rounded-md bg-brand px-3 py-2 text-sm font-medium text-white"
+                  className="mt-2 flex min-h-11 items-center gap-1.5 rounded-md bg-brand px-3 text-sm font-medium text-white"
                   onClick={() => setMobileOpen(false)}
                 >
                   {ctaLabel}
