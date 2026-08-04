@@ -23,9 +23,22 @@ Module: `github.com/hanzoai/status`
   `web/static/` is committed AND rebuilt in the Docker frontend stage.
   - NOTE: `@hanzo/gui` was REMOVED (v1.1.5). `@hanzo/[email protected]` shipped an inconsistent
     tree (provider on `@hanzogui/core@4.4.0`, components on `@hanzogui/*@3.0.x`) → split theme
-    React-context → uncaught `Missing theme.` → BLANK page. No good pin exists (4.7.3 leaks
+    React-context → uncaught `Missing theme.` → BLANK page. No good pin existed then (4.7.3 leaks
     `workspace:*` and is uninstallable; 7.x drops `getDefaultGuiConfig`). Its 7 primitives now
-    live as a tiny plain-React+Tailwind shim in `src/components/ui.tsx`. Do not re-add `@hanzo/gui`.
+    live as a tiny plain-React+Tailwind shim in `src/components/ui.tsx`.
+  - `@hanzo/gui@8.0.1` FIXES that blocker — verified in a clean Vite 8 + React 19 spike:
+    the whole tree is `@hanzogui/*@8.0.x` on ONE `core@8.0.1`, `GuiProvider` + `createGui(defaultConfig)`
+    (from `@hanzogui/config/v4`) mounts with no `Missing theme.`, themed dark values apply, Button
+    is 44px with a real border-style. So the standard-stack migration (@hanzo/ui 8 on @hanzo/gui 8,
+    Tailwind deleted) is UNBLOCKED. It is still a full rewrite of all 19 `src/components/*` files
+    (className → style props) + `@hanzogui/vite-plugin` extraction; copy the integration recipe from
+    `~/work/hanzo/hanzo.one` (vite knobs, `.npmrc` `public-hoist-pattern[]=@hanzogui/*`, `outputCSS`
+    + `disableInjectCSS`, @hanzo/design tokens bound over the v4 preset — the raw preset renders
+    Button text black on dark). Do it in ONE landing, never half-on-Tailwind.
+  - Mobile is first-class: every interactive target ≥44px (`min-h-11`, icon buttons `h-11 w-11`,
+    card-name buttons `py-3 -my-3`), form fields ≥16px text (iOS zoom), `viewport-fit=cover` +
+    `env(safe-area-inset-*)` on body/header/footer/refresh chip, chart canvas redraws via
+    ResizeObserver. Keep these invariants across any restyle.
 - `config/` — brand configs (`hanzo.yaml`, `lux.yaml`, …) in Gatus format
   (`web:`/`storage:`/`ui:`/`endpoints:`). Validated by `config.LoadConfiguration`.
 
