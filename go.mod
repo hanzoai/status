@@ -22,14 +22,14 @@ require (
 	github.com/ishidawataru/sctp v0.0.0-20251114114122-19ddcbc6aae2
 	github.com/lib/pq v1.12.1
 	github.com/miekg/dns v1.1.72
-	github.com/prometheus-community/pro-bing v0.8.0
+	github.com/prometheus-community/pro-bing v0.9.1
 	github.com/registrobr/rdap v1.1.8
 	github.com/wcharczuk/go-chart/v2 v2.1.2
 	github.com/zap-proto/fiber/v3 v3.2.1
 	github.com/zap-proto/zip v1.24.2
-	golang.org/x/crypto v0.52.0
+	golang.org/x/crypto v0.53.0
 	golang.org/x/oauth2 v0.36.0
-	golang.org/x/sync v0.20.0
+	golang.org/x/sync v0.21.0
 	google.golang.org/api v0.273.1
 	google.golang.org/grpc v1.80.0
 	gopkg.in/mail.v2 v2.3.1
@@ -103,9 +103,9 @@ require (
 	go.opentelemetry.io/otel/trace v1.42.0 // indirect
 	golang.org/x/image v0.38.0 // indirect
 	golang.org/x/mod v0.36.0 // indirect
-	golang.org/x/net v0.55.0 // indirect
-	golang.org/x/sys v0.45.0 // indirect
-	golang.org/x/text v0.37.0 // indirect
+	golang.org/x/net v0.56.0 // indirect
+	golang.org/x/sys v0.46.0 // indirect
+	golang.org/x/text v0.38.0 // indirect
 	golang.org/x/tools v0.45.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260401024825-9d38bb4040a9 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
