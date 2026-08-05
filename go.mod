@@ -45,15 +45,17 @@ require (
 	github.com/grandcat/zeroconf v1.0.0 // indirect
 	github.com/hanzoai/csqlite v0.1.0 // indirect
 	github.com/luxfi/accel v1.2.4 // indirect
-	github.com/luxfi/crypto v1.19.26 // indirect
+	github.com/luxfi/crypto v1.20.2 // indirect
 	github.com/luxfi/log v1.4.3 // indirect
 	github.com/luxfi/mdns v0.1.1 // indirect
-	github.com/luxfi/zap v0.7.2 // indirect
+	github.com/luxfi/zap v1.2.6 // indirect
 	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/tinylib/msgp v1.6.4 // indirect
 	github.com/valyala/fasthttp v1.70.0 // indirect
 	github.com/zap-proto/go v1.3.0 // indirect
 	github.com/zap-proto/http v0.3.1 // indirect
+	go.opentelemetry.io/otel/sdk v1.44.0 // indirect
+	go.opentelemetry.io/otel/sdk/metric v1.44.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	modernc.org/sqlite v1.51.0 // indirect
 )
@@ -90,7 +92,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.21.0 // indirect
 	github.com/hashicorp/go-version v1.9.0 // indirect
 	github.com/klauspost/compress v1.18.6 // indirect
-	github.com/luxfi/metric v1.8.0
+	github.com/luxfi/metric v1.9.1
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.21 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
@@ -98,9 +100,9 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.67.0 // indirect
-	go.opentelemetry.io/otel v1.42.0 // indirect
-	go.opentelemetry.io/otel/metric v1.42.0 // indirect
-	go.opentelemetry.io/otel/trace v1.42.0 // indirect
+	go.opentelemetry.io/otel v1.44.0 // indirect
+	go.opentelemetry.io/otel/metric v1.44.0 // indirect
+	go.opentelemetry.io/otel/trace v1.44.0 // indirect
 	golang.org/x/image v0.38.0 // indirect
 	golang.org/x/mod v0.36.0 // indirect
 	golang.org/x/net v0.55.0 // indirect
