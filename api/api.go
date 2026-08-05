@@ -88,6 +88,10 @@ func (a *API) createRouter(cfg *config.Config) *zip.App {
 	app.Get("/", SinglePageApplication(cfg.UI))
 	app.Get("/endpoints/:key", SinglePageApplication(cfg.UI))
 	app.Get("/suites/:key", SinglePageApplication(cfg.UI))
+	// The brand's marks, and the manifest that names them. Registered before the
+	// static middleware so they answer the bare root paths a browser guesses at.
+	RegisterBrandIcons(app, cfg.UI)
+	app.Get("/manifest.json", Manifest(cfg.UI))
 	// Health endpoint
 	healthHandler := health.Handler().WithJSON(true)
 	app.Get("/health", func(c *zip.Ctx) error {

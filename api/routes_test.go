@@ -18,9 +18,17 @@ import (
 // deliberate edit here — never a side effect of a refactor or a framework move.
 var declaredRoutes = []string{
 	"GET     /",
+	"GET     /apple-touch-icon.png",
 	"GET     /css/custom.css",
 	"GET     /endpoints/:key",
+	"GET     /favicon-16x16.png",
+	"GET     /favicon-32x32.png",
+	"GET     /favicon.ico",
+	"GET     /favicon.svg",
 	"GET     /health",
+	"GET     /logo-192x192.png",
+	"GET     /logo-512x512.png",
+	"GET     /manifest.json",
 	"GET     /metrics",
 	"GET     /suites/:key",
 	"GET     /v1/status/config",
@@ -39,8 +47,19 @@ var declaredRoutes = []string{
 	"POST    /v1/status/endpoints/:key/external",
 }
 
+// newTestUIConfig builds the UI the way a deployment does — with a brand named —
+// so the routes that serve that brand's marks are part of the surface under test
+// instead of quietly absent.
+func newTestUIConfig() *ui.Config {
+	uiConfig := &ui.Config{Brand: "hanzo"}
+	if err := uiConfig.ValidateAndSetDefaults(); err != nil {
+		panic(err) // config/ui's TestEveryBrandIsComplete proves this cannot happen
+	}
+	return uiConfig
+}
+
 func newTestAPI() *API {
-	return New(&config.Config{Metrics: true, UI: &ui.Config{}})
+	return New(&config.Config{Metrics: true, UI: newTestUIConfig()})
 }
 
 func TestRouteTable(t *testing.T) {

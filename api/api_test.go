@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/config/ui"
 	"github.com/hanzoai/status/security"
 	fiber "github.com/zap-proto/fiber/v3"
 )
@@ -47,6 +46,16 @@ func TestNew(t *testing.T) {
 			ExpectedCode: fiber.StatusOK,
 		},
 		{
+			Name:         "apple-touch-icon",
+			Path:         "/apple-touch-icon.png",
+			ExpectedCode: fiber.StatusOK,
+		},
+		{
+			Name:         "manifest",
+			Path:         "/manifest.json",
+			ExpectedCode: fiber.StatusOK,
+		},
+		{
 			Name:         "index",
 			Path:         "/",
 			ExpectedCode: fiber.StatusOK,
@@ -83,7 +92,7 @@ func TestNew(t *testing.T) {
 	}
 	for _, scenario := range scenarios {
 		t.Run(scenario.Name, func(t *testing.T) {
-			cfg := &config.Config{Metrics: true, UI: &ui.Config{}}
+			cfg := &config.Config{Metrics: true, UI: newTestUIConfig()}
 			if scenario.WithSecurity {
 				cfg.Security = &security.Config{
 					Basic: &security.BasicConfig{
