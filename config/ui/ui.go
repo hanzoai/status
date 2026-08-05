@@ -3,6 +3,7 @@ package ui
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"html/template"
 
 	"github.com/hanzoai/status/storage"
@@ -10,19 +11,24 @@ import (
 )
 
 const (
-	defaultTitle                = "Status"
-	defaultDescription          = "Automated status page for monitoring endpoints"
-	defaultHeader               = "Status"
-	defaultDashboardHeading     = ""
-	defaultDashboardSubheading  = ""
-	defaultLogo                 = ""
-	defaultLink                 = ""
-	defaultFavicon              = "/favicon.ico"
-	defaultFavicon16            = "/favicon-16x16.png"
-	defaultFavicon32            = "/favicon-32x32.png"
-	defaultCustomCSS            = ""
-	defaultSortBy               = "name"
-	defaultFilterBy             = "none"
+	defaultTitle               = "Status"
+	defaultDescription         = "Automated status page for monitoring endpoints"
+	defaultHeader              = "Status"
+	defaultDashboardHeading    = ""
+	defaultDashboardSubheading = ""
+	defaultLink                = ""
+	defaultCustomCSS           = ""
+	defaultSortBy              = "name"
+	defaultFilterBy            = "none"
+
+	// brandRoot is where artwork lives, and the only place it lives.
+	brandRoot = "/brands/"
+
+	// The two colours the app paints (web/app/src/index.css --color-background:
+	// hsl(0 0% 100%) and hsl(222.2 84% 4.9%)). The browser chrome and the PWA
+	// splash read them from here so the first pixel and the second one match.
+	backgroundLight = "#ffffff"
+	backgroundDark  = "#020817"
 )
 
 var (
@@ -31,6 +37,7 @@ var (
 	ErrButtonValidationFailed = errors.New("invalid button configuration: missing required name or link")
 	ErrInvalidDefaultSortBy   = errors.New("invalid default-sort-by value: must be 'name', 'group', or 'health'")
 	ErrInvalidDefaultFilterBy = errors.New("invalid default-filter-by value: must be 'none', 'failing', or 'unstable'")
+	ErrBrandAssetMissing      = errors.New("invalid brand: the named brand is missing an asset")
 )
 
 // Config is the configuration for the status page UI
@@ -40,9 +47,8 @@ type Config struct {
 	DashboardHeading        string   `yaml:"dashboard-heading,omitempty"`      // Dashboard Title between header and endpoints
 	DashboardSubheading     string   `yaml:"dashboard-subheading,omitempty"`   // Dashboard Description between header and endpoints
 	Header                  string   `yaml:"header,omitempty"`                 // Header is the text at the top of the page
-	Logo                    string   `yaml:"logo,omitempty"`                   // Logo to display on the page
+	Brand                   string   `yaml:"brand,omitempty"`                  // Brand is the directory under /brands whose mark this page wears
 	Link                    string   `yaml:"link,omitempty"`                   // Link to open when clicking on the logo
-	Favicon                 Favicon  `yaml:"favicon,omitempty"`                // Favourite icon to display in web browser tab or address bar
 	Buttons                 []Button `yaml:"buttons,omitempty"`                // Buttons to display below the header
 	CustomCSS               string   `yaml:"custom-css,omitempty"`             // Custom CSS to include in the page
 	DarkMode                *bool    `yaml:"dark-mode,omitempty"`              // DarkMode is a flag to enable dark mode by default
@@ -51,7 +57,9 @@ type Config struct {
 	//////////////////////////////////////////////
 	// Non-configurable - used for UI rendering //
 	//////////////////////////////////////////////
-	MaximumNumberOfResults int `yaml:"-"` // MaximumNumberOfResults to display on the page, it's not configurable because we're passing it from the storage config
+	MaximumNumberOfResults int        `yaml:"-"` // MaximumNumberOfResults to display on the page, it's not configurable because we're passing it from the storage config
+	Icons                  Icons      `yaml:"-"` // Icons are derived from Brand by ValidateAndSetDefaults
+	Background             Background `yaml:"-"` // Background is the colour pair the app paints, not a choice a deployment makes
 }
 
 func (cfg *Config) IsDarkMode() bool {
@@ -75,10 +83,75 @@ func (btn *Button) Validate() error {
 	return nil
 }
 
-type Favicon struct {
-	Default   string `yaml:"default,omitempty"`   // URL or path to default favourite icon.
-	Size16x16 string `yaml:"size16x16,omitempty"` // URL or path to favourite icon for 16x16 size.
-	Size32x32 string `yaml:"size32x32,omitempty"` // URL or path to favourite icon for 32x32 size.
+// Icons are every mark the page wears: the tab, the home screen, the installed
+// app, and the header logo. They are derived from Brand rather than configured
+// one by one, because one binary serves every brand we run and the marks used to
+// be listed per-deployment. List them and a deployment can name Hanzo in its
+// title and still hand out Lux's icon; derive them and it cannot.
+type Icons struct {
+	SVG      string // tab icon, and the one browsers prefer
+	ICO      string // tab icon for browsers that ask for /favicon.ico and nothing else
+	PNG16    string
+	PNG32    string
+	Touch180 string // iOS home screen
+	PNG192   string // PWA install
+	PNG512   string // PWA splash
+	Logo     string // the wordmark in the page header
+}
+
+// iconsFor resolves every mark from the one brand directory. An unnamed brand
+// gets empty strings and the page then renders with no mark at all, which is the
+// honest answer for a deployment that never said who it is — and a better one
+// than quietly wearing whichever brand's files happened to sit at the web root.
+func iconsFor(brand string) Icons {
+	if len(brand) == 0 {
+		return Icons{}
+	}
+	dir := brandRoot + brand + "/"
+	return Icons{
+		SVG:      dir + "favicon.svg",
+		ICO:      dir + "favicon.ico",
+		PNG16:    dir + "favicon-16.png",
+		PNG32:    dir + "favicon-32.png",
+		Touch180: dir + "icon-180.png",
+		PNG192:   dir + "icon-192.png",
+		PNG512:   dir + "icon-512.png",
+		Logo:     dir + "logo.svg",
+	}
+}
+
+// validate proves every mark this brand promises is actually in the binary. A
+// misspelled brand is otherwise invisible until someone notices the tab icon is
+// missing — or worse, does not notice that it is another company's.
+func (icons Icons) validate() error {
+	if len(icons.SVG) == 0 { // no brand named, so there is nothing to prove
+		return nil
+	}
+	for _, asset := range []string{icons.SVG, icons.ICO, icons.PNG16, icons.PNG32, icons.Touch180, icons.PNG192, icons.PNG512, icons.Logo} {
+		file, err := static.FileSystem.Open(static.RootPath + asset)
+		if err != nil {
+			return fmt.Errorf("%w: %s", ErrBrandAssetMissing, asset)
+		}
+		_ = file.Close()
+	}
+	return nil
+}
+
+// Background is the pair of colours the app actually paints, mirrored from
+// web/app/src/index.css. The browser chrome reads both (it switches on
+// prefers-color-scheme like the page does) and the PWA splash reads one.
+type Background struct {
+	Dark  string
+	Light string
+}
+
+// BackgroundColor is the single colour a PWA splash gets, since a manifest can
+// only hold one: whichever of the pair this deployment defaults to.
+func (cfg *Config) BackgroundColor() string {
+	if cfg.IsDarkMode() {
+		return cfg.Background.Dark
+	}
+	return cfg.Background.Light
 }
 
 // GetDefaultConfig returns a Config struct with the default values
@@ -89,18 +162,13 @@ func GetDefaultConfig() *Config {
 		DashboardHeading:       defaultDashboardHeading,
 		DashboardSubheading:    defaultDashboardSubheading,
 		Header:                 defaultHeader,
-		Logo:                   defaultLogo,
 		Link:                   defaultLink,
 		CustomCSS:              defaultCustomCSS,
 		DarkMode:               &defaultDarkMode,
 		DefaultSortBy:          defaultSortBy,
 		DefaultFilterBy:        defaultFilterBy,
 		MaximumNumberOfResults: storage.DefaultMaximumNumberOfResults,
-		Favicon: Favicon{
-			Default:   defaultFavicon,
-			Size16x16: defaultFavicon16,
-			Size32x32: defaultFavicon32,
-		},
+		Background:             Background{Dark: backgroundDark, Light: backgroundLight},
 	}
 }
 
@@ -121,9 +189,6 @@ func (cfg *Config) ValidateAndSetDefaults() error {
 	if len(cfg.Header) == 0 {
 		cfg.Header = defaultHeader
 	}
-	if len(cfg.Logo) == 0 {
-		cfg.Logo = defaultLogo
-	}
 	if len(cfg.Link) == 0 {
 		cfg.Link = defaultLink
 	}
@@ -143,15 +208,11 @@ func (cfg *Config) ValidateAndSetDefaults() error {
 	} else if cfg.DefaultFilterBy != "none" && cfg.DefaultFilterBy != "failing" && cfg.DefaultFilterBy != "unstable" {
 		return ErrInvalidDefaultFilterBy
 	}
-	if len(cfg.Favicon.Default) == 0 {
-		cfg.Favicon.Default = defaultFavicon
+	cfg.Icons = iconsFor(cfg.Brand)
+	if err := cfg.Icons.validate(); err != nil {
+		return err
 	}
-	if len(cfg.Favicon.Size16x16) == 0 {
-		cfg.Favicon.Size16x16 = defaultFavicon16
-	}
-	if len(cfg.Favicon.Size32x32) == 0 {
-		cfg.Favicon.Size32x32 = defaultFavicon32
-	}
+	cfg.Background = Background{Dark: backgroundDark, Light: backgroundLight}
 	for _, btn := range cfg.Buttons {
 		if err := btn.Validate(); err != nil {
 			return err

@@ -9,13 +9,9 @@ ui:
   title: "Pars Status"
   description: "Real-time network health and performance"
   header: "Status"
-  logo: "/brands/pars/logo.svg"
+  brand: pars
   link: "https://pars.network"
   dark-mode: true
-  favicon:
-    default: "/brands/pars/favicon.svg"
-    size16x16: "/brands/pars/favicon-16.png"
-    size32x32: "/brands/pars/favicon-32.png"
   buttons:
     - name: "PIPs"
       link: "https://github.com/parsnet/pips"

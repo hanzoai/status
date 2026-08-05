@@ -7,15 +7,11 @@ storage:
 
 ui:
   title: "Hanzo Status"
-  description: "Real-time health of the Hanzo cloud — every product served by the one unified cloud binary at api.hanzo.ai"
+  description: "Real-time health of the Hanzo cloud — every product on api.hanzo.ai"
   header: "Status"
-  logo: "/brands/hanzo/logo.svg"
+  brand: hanzo
   link: "https://hanzo.ai"
   dark-mode: true
-  favicon:
-    default: "/brands/hanzo/favicon.svg"
-    size16x16: "/brands/hanzo/favicon-16.png"
-    size32x32: "/brands/hanzo/favicon-32.png"
   buttons:
     - name: "Docs"
       link: "https://docs.hanzo.ai"

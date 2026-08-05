@@ -14,7 +14,6 @@ func TestConfig_ValidateAndSetDefaults(t *testing.T) {
 			DashboardHeading:    "",
 			DashboardSubheading: "",
 			Header:              "",
-			Logo:                "",
 			Link:                "",
 		}
 		if err := cfg.ValidateAndSetDefaults(); err != nil {
@@ -41,14 +40,8 @@ func TestConfig_ValidateAndSetDefaults(t *testing.T) {
 		if cfg.DefaultFilterBy != defaultFilterBy {
 			t.Errorf("expected defaultFilterBy to be %s, got %s", defaultFilterBy, cfg.DefaultFilterBy)
 		}
-		if cfg.Favicon.Default != defaultFavicon {
-			t.Errorf("expected favicon to be %s, got %s", defaultFavicon, cfg.Favicon.Default)
-		}
-		if cfg.Favicon.Size16x16 != defaultFavicon16 {
-			t.Errorf("expected favicon to be %s, got %s", defaultFavicon16, cfg.Favicon.Size16x16)
-		}
-		if cfg.Favicon.Size32x32 != defaultFavicon32 {
-			t.Errorf("expected favicon to be %s, got %s", defaultFavicon32, cfg.Favicon.Size32x32)
+		if cfg.Icons != (Icons{}) {
+			t.Errorf("a config that names no brand should wear no mark, got %+v", cfg.Icons)
 		}
 	})
 	t.Run("custom-values", func(t *testing.T) {
@@ -58,7 +51,7 @@ func TestConfig_ValidateAndSetDefaults(t *testing.T) {
 			DashboardHeading:    "Production Status",
 			DashboardSubheading: "Monitor all production endpoints",
 			Header:              "My Company",
-			Logo:                "https://example.com/logo.png",
+			Brand:               "hanzo",
 			Link:                "https://example.com",
 			DefaultSortBy:       "health",
 			DefaultFilterBy:     "failing",
@@ -81,8 +74,8 @@ func TestConfig_ValidateAndSetDefaults(t *testing.T) {
 		if cfg.Header != "My Company" {
 			t.Errorf("expected header to be preserved, got %s", cfg.Header)
 		}
-		if cfg.Logo != "https://example.com/logo.png" {
-			t.Errorf("expected logo to be preserved, got %s", cfg.Logo)
+		if cfg.Icons.Logo != "/brands/hanzo/logo.svg" {
+			t.Errorf("expected the logo to be derived from the brand, got %s", cfg.Icons.Logo)
 		}
 		if cfg.Link != "https://example.com" {
 			t.Errorf("expected link to be preserved, got %s", cfg.Link)
@@ -172,8 +165,8 @@ func TestGetDefaultConfig(t *testing.T) {
 	if defaultConfig.DashboardSubheading != defaultDashboardSubheading {
 		t.Error("expected GetDefaultConfig() to return defaultDashboardSubheading, got", defaultConfig.DashboardSubheading)
 	}
-	if defaultConfig.Logo != defaultLogo {
-		t.Error("expected GetDefaultConfig() to return defaultLogo, got", defaultConfig.Logo)
+	if defaultConfig.Background.Dark != backgroundDark {
+		t.Error("expected GetDefaultConfig() to return backgroundDark, got", defaultConfig.Background.Dark)
 	}
 	if defaultConfig.DefaultSortBy != defaultSortBy {
 		t.Error("expected GetDefaultConfig() to return defaultSortBy, got", defaultConfig.DefaultSortBy)

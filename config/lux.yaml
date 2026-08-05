@@ -9,13 +9,9 @@ ui:
   title: "Lux Status"
   description: "Real-time network health and performance"
   header: "Status"
-  logo: "/brands/lux/logo.svg"
+  brand: lux
   link: "https://lux.network"
   dark-mode: true
-  favicon:
-    default: "/brands/lux/favicon.svg"
-    size16x16: "/brands/lux/favicon-16.png"
-    size32x32: "/brands/lux/favicon-32.png"
   buttons:
     - name: "LIPs"
       link: "https://github.com/luxfi/lips"

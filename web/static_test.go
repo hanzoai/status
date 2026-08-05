@@ -18,9 +18,15 @@ func TestEmbed(t *testing.T) {
 			expectedContainString: "</body>",
 		},
 		{
-			path:                  "favicon.ico",
+			path:                  "brands/hanzo/favicon.ico",
 			shouldExist:           true,
 			expectedContainString: "", // not checking because it's an image
+		},
+		{
+			// Artwork has one home. A file here would be a second copy, and a
+			// second copy served to whichever brand did not put it there.
+			path:        "favicon.ico",
+			shouldExist: false,
 		},
 		{
 			path:        "file-that-does-not-exist.html",
