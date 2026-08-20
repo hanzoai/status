@@ -51,9 +51,11 @@ jobs:
           platforms: linux/amd64
           push: true
           provenance: false
+          # No `secrets:`. The Go stage mounts caches and no secret, so nothing
+          # ever read this. It resolves github.com/hanzoai/sqlite and its
+          # indirect csqlite from proxy.golang.org with a bare `go mod download`
+          # — which is the evidence that they are public, not the assumption.
           tags: ghcr.io/hanzoai/status:${{ steps.meta.outputs.tag }}
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.GH_PAT }}
 
       # build-push-action can exit 0 before the manifest resolves, so a green run
       # could still mean a future ImagePullBackOff. Prove it pulls.
