@@ -42,6 +42,9 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 FROM alpine:3.21
 RUN apk add --no-cache ca-certificates
 COPY --from=backend /status /usr/local/bin/status
+# The image distributes the compiled work, so the attribution travels with it
+# rather than living only in the source tree (Apache-2.0 §4(c)).
+COPY LICENSE NOTICE /usr/share/doc/status/
 VOLUME ["/config", "/data"]
 EXPOSE 8080
 ENTRYPOINT ["/usr/local/bin/status"]
