@@ -5,10 +5,7 @@ name: Release
 # Builds on the git.hanzo.ai native runner (git-runner). ghcr auth via GH_PAT / user
 # hanzo-dev.
 #
-# ADDITIVE MIGRATION NOTE: the legacy .github lane (deploy.yml) does NOT cut v-tags —
-# it only REACTS to `tags: ['v*']` to build+deploy. So this native lane is the sole
-# tag-cutter, no competing bump, no version runaway. paths-ignore below keeps this
-# native release from re-firing on .github/** or doc-only edits.
+# The only lane that cuts v-tags; paths-ignore below keeps it off doc-only edits.
 on:
   push:
     branches: [main]
@@ -111,8 +108,6 @@ jobs:
         #   remote: mirror repository is read-only
         #   fatal: unable to access 'http://hanzo-git.hanzo.svc/hanzoai/status/':
         #          The requested URL returned error: 403
-        # The image had already built and been verified pullable by then — the run
-        # went red at the very last line, after all the real work succeeded.
         #
         # github.com/hanzoai/status is the writable side that this mirror pulls
         # FROM, so tagging there is what makes the tag reach both. GH_PAT is

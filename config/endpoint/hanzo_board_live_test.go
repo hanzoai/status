@@ -12,18 +12,16 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// The Hanzo status board asserted only status codes: 41 conditions across 45
-// rows, zero of them about the body. api.hanzo.ai serves the embedded console
-// SPA on any path the binary does not route, and an SPA answers 200 — so the
-// board stayed green through a full cloud outage, including on its own
-// top-line "api.hanzo.ai" row, which probed /health (unrouted, SPA, always
-// 200).
+// api.hanzo.ai serves the embedded console SPA on any path the binary does not
+// route, so an unrouted path answers 200 and a status-code-only condition
+// cannot distinguish a served route from the SPA catch-all. Every row therefore
+// asserts on the BODY.
 //
-// Body assertions were added to every row. This test evaluates the board's
-// REAL conditions against the LIVE responses using the same evaluator the
-// status binary runs, so "the conditions are correct" is measured rather than
-// argued — a typo'd JSONPath or an unsupported function turns the whole board
-// red in production, and that is not something to discover from the board.
+// This test evaluates the board's REAL conditions against the LIVE responses
+// using the same evaluator the status binary runs, so "the conditions are
+// correct" is measured rather than argued — a typo'd JSONPath or an unsupported
+// function turns the whole board red in production, and that is not something
+// to discover from the board.
 //
 //	HANZO_BOARD=/path/to/configmap-hanzo.yaml go test ./config/endpoint -run TestHanzoBoard -v
 //

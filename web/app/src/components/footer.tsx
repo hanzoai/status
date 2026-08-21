@@ -38,14 +38,7 @@ export function Footer() {
 
           <Separator className="w-16" />
 
-          {/* One brand line, derived from config — never a hardcoded vendor.
-              "Powered by Hanzo Status" was fixed text, so every white-label
-              deployment printed the Hanzo name on its own surface (Zoo's footer
-              read "Powered by Hanzo Status · © 2026 Zoo"), which the white-label
-              rule forbids. The upstream link it carried also duplicated the
-              config-driven "Source Code" link already rendered above, so the
-              attribution is carried there — where each brand points it at its
-              own repo — instead of twice, once wrongly. */}
+          {/* One brand line, derived from config — never a hardcoded vendor. */}
           <div className="flex items-center gap-3 text-xs text-muted-foreground/50">
             {link ? (
               <a href={link} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center transition-colors hover:text-muted-foreground">
