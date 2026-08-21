@@ -359,7 +359,7 @@ endpoints:
   # Container registry ships as its own host; /v2/ answers 401 (token auth) = UP.
   - name: "Registry"
     group: "Platform"
-    url: "https://registry.hanzo.ai/v2/"
+    url: "https://oci.hanzo.ai/v2/"
     interval: 60s
     conditions:
       - "[STATUS] == any(200, 401)"
