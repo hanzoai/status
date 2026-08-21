@@ -11,7 +11,7 @@ the response time, the certificate expiration, the body and many others. The ici
 checks can be paired with alerting via Slack, Teams, PagerDuty, Discord, Twilio and many more.
 
 I personally deploy it in my Kubernetes cluster and let it monitor the status of my
-core applications: https://status.twin.sh/
+core applications: https://status.hanzo.ai/
 
 _Looking for a managed solution? Check out [Gatus.io](https://gatus.io)._
 
@@ -29,11 +29,10 @@ docker run -p 8080:8080 --name gatus ghcr.io/hanzoai/status:latest
 For more details, see [Usage](#usage)
 </details>
 
-> ❤ Like this project? Please consider [sponsoring me](https://github.com/sponsors/TwiN).
 
 ![Gatus dashboard](.github/assets/dashboard-dark.jpg)
 
-Have any feedback or questions? [Create a discussion](https://github.com/TwiN/gatus/discussions/new).
+Have any feedback or questions? Open an issue on [hanzoai/status](https://github.com/hanzoai/status/issues/new).
 
 
 ## Table of Contents
@@ -182,7 +181,7 @@ The main features of Gatus are:
 - **Alerting**: While having a pretty visual dashboard is useful to keep track of the state of your application(s), you probably don't want to stare at it all day. Thus, notifications via Slack, Mattermost, Messagebird, PagerDuty, Twilio, Google chat and Teams are supported out of the box with the ability to configure a custom alerting provider for any needs you might have, whether it be a different provider or a custom application that manages automated rollbacks.
 - **Metrics**
 - **Low resource consumption**: As with most Go applications, the resource footprint that this application requires is negligibly small.
-- **[Badges](#badges)**: ![Uptime 7d](https://status.twin.sh/api/v1/endpoints/core_blog-external/uptimes/7d/badge.svg) ![Response time 24h](https://status.twin.sh/api/v1/endpoints/core_blog-external/response-times/24h/badge.svg)
+- **[Badges](#badges)**: ![Uptime 7d](https://status.hanzo.ai/v1/endpoints/core_blog-external/uptimes/7d/badge.svg) ![Response time 24h](https://status.hanzo.ai/v1/endpoints/core_blog-external/response-times/24h/badge.svg)
 - **Dark mode**
 
 ![Gatus dashboard conditions](.github/assets/dashboard-conditions.jpg)
@@ -204,7 +203,7 @@ Here's a simple example:
 ```yaml
 endpoints:
   - name: website                 # Name of your endpoint, can be anything
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m                  # Duration to wait between every status check (default: 60s)
     conditions:
       - "[STATUS] == 200"         # Status must be 200
@@ -348,7 +347,7 @@ external-endpoints:
         send-on-resolved: true
 ```
 
-To push the status of an external endpoint, you can use [gatus-cli](https://github.com/TwiN/gatus-cli):
+To push the status of an external endpoint, you can use the upstream [gatus-cli](https://github.com/TwiN/gatus-cli):
 ```
 gatus-cli external-endpoint push --url https://status.example.org --key "core_ext-ep-test" --token "potato" --success
 ```
@@ -673,7 +672,7 @@ Here's an example with the client configuration under `endpoints[]`:
 ```yaml
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     client:
       insecure: false
       ignore-redirect: false
@@ -902,7 +901,7 @@ alerting:
 endpoints:
   - name: website
     interval: 30s
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     conditions:
       - "[STATUS] == 200"
       - "[BODY].status == UP"
@@ -962,7 +961,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -1011,7 +1010,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -1040,7 +1039,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -1088,7 +1087,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -1136,7 +1135,7 @@ alerting:
 
 endpoints:
   - name: example
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -1174,7 +1173,7 @@ alerting:
 
 endpoints:
   - name: example
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -1216,7 +1215,7 @@ alerting:
 
 endpoints:
   - name: example
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -1251,7 +1250,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -1282,7 +1281,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -1397,7 +1396,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -1438,7 +1437,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 30s
     conditions:
       - "[STATUS] == 200"
@@ -1473,7 +1472,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 30s
     conditions:
       - "[STATUS] == 200"
@@ -1511,7 +1510,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -1543,7 +1542,7 @@ alerting:
 endpoints:
   - name: website
     interval: 5m
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     conditions:
       - "[STATUS] == 200"
       - "[BODY].status == UP"
@@ -1576,7 +1575,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -1613,7 +1612,7 @@ alerting:
 endpoints:
   - name: website
     interval: 5m
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     conditions:
       - "[STATUS] == 200"
       - "[BODY].status == UP"
@@ -1747,7 +1746,7 @@ alerting:
 endpoints:
   - name: website
     interval: 5m
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     conditions:
       - "[STATUS] == 200"
       - "[BODY].status == UP"
@@ -1819,7 +1818,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 30s
     conditions:
       - "[STATUS] == 200"
@@ -1877,7 +1876,7 @@ alerting:
 endpoints:
   - name: website
     interval: 30s
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     conditions:
       - "[STATUS] == 200"
       - "[BODY].status == UP"
@@ -1912,7 +1911,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 30s
     conditions:
       - "[STATUS] == 200"
@@ -1949,7 +1948,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -1983,7 +1982,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -2019,7 +2018,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -2049,7 +2048,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -2077,7 +2076,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 30s
     conditions:
       - "[STATUS] == 200"
@@ -2122,7 +2121,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -2152,7 +2151,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -2193,7 +2192,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 30s
     conditions:
       - "[STATUS] == 200"
@@ -2249,7 +2248,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 30s
     conditions:
       - "[STATUS] == 200"
@@ -2301,7 +2300,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 30s
     conditions:
       - "[STATUS] == 200"
@@ -2348,7 +2347,7 @@ alerting:
 endpoints:
   - name: website
     interval: 30s
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     conditions:
       - "[STATUS] == 200"
       - "[BODY].status == UP"
@@ -2419,7 +2418,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -2449,7 +2448,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -2481,7 +2480,7 @@ alerting:
 
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -2540,7 +2539,7 @@ alerting:
       }
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 30s
     conditions:
       - "[STATUS] == 200"
@@ -2756,7 +2755,7 @@ security:
     #session-ttl: 8h
 ```
 
-Confused? Read [Securing Gatus with OIDC using Auth0](https://twin.sh/articles/56/securing-gatus-with-oidc-using-auth0).
+Confused? Read the upstream write-up [Securing Gatus with OIDC using Auth0](https://twin.sh/articles/56/securing-gatus-with-oidc-using-auth0).
 
 
 ### TLS Encryption
@@ -2796,7 +2795,7 @@ You can add custom labels to your endpoints’ Prometheus metrics by defining ke
 endpoints:
   - name: front-end
     group: core
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
@@ -3424,7 +3423,7 @@ endpoints:
 
   - name: anchor-example-3
     <<: *defaults
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     conditions:                # This will override the conditions defined in &defaults
       - "[STATUS] == 200"
       - "[BODY].status == UP"
@@ -3438,7 +3437,7 @@ You can configure a proxy for the client to use by setting the `proxy-url` param
 ```yaml
 endpoints:
   - name: website
-    url: "https://twin.sh/health"
+    url: "https://hanzo.ai/health"
     client:
       proxy-url: http://proxy.example.com:8080
     conditions:
@@ -3458,10 +3457,10 @@ web:
 
 ### Badges
 #### Uptime
-![Uptime 1h](https://status.twin.sh/api/v1/endpoints/core_blog-external/uptimes/1h/badge.svg)
-![Uptime 24h](https://status.twin.sh/api/v1/endpoints/core_blog-external/uptimes/24h/badge.svg)
-![Uptime 7d](https://status.twin.sh/api/v1/endpoints/core_blog-external/uptimes/7d/badge.svg)
-![Uptime 30d](https://status.twin.sh/api/v1/endpoints/core_blog-external/uptimes/30d/badge.svg)
+![Uptime 1h](https://status.hanzo.ai/v1/endpoints/core_blog-external/uptimes/1h/badge.svg)
+![Uptime 24h](https://status.hanzo.ai/v1/endpoints/core_blog-external/uptimes/24h/badge.svg)
+![Uptime 7d](https://status.hanzo.ai/v1/endpoints/core_blog-external/uptimes/7d/badge.svg)
+![Uptime 30d](https://status.hanzo.ai/v1/endpoints/core_blog-external/uptimes/30d/badge.svg)
 
 Gatus can automatically generate an SVG badge for one of your monitored endpoints.
 This allows you to put badges in your individual applications' README or even create your own status page if you
@@ -3486,13 +3485,13 @@ https://example.com/api/v1/endpoints/_frontend/uptimes/7d/badge.svg
 ```
 Example:
 ```
-![Uptime 24h](https://status.twin.sh/api/v1/endpoints/core_blog-external/uptimes/24h/badge.svg)
+![Uptime 24h](https://status.hanzo.ai/v1/endpoints/core_blog-external/uptimes/24h/badge.svg)
 ```
 If you'd like to see a visual example of each badge available, you can simply navigate to the endpoint's detail page.
 
 
 #### Health
-![Health](https://status.twin.sh/api/v1/endpoints/core_blog-external/health/badge.svg)
+![Health](https://status.hanzo.ai/v1/endpoints/core_blog-external/health/badge.svg)
 
 The path to generate a badge is the following:
 ```
@@ -3509,7 +3508,7 @@ https://example.com/api/v1/endpoints/core_frontend/health/badge.svg
 
 
 #### Health (Shields.io)
-![Health](https://img.shields.io/endpoint?url=https%3A%2F%2Fstatus.twin.sh%2Fapi%2Fv1%2Fendpoints%2Fcore_blog-external%2Fhealth%2Fbadge.shields)
+![Health](https://img.shields.io/endpoint?url=https%3A%2F%2Fstatus.hanzo.ai%2Fv1%2Fendpoints%2Fcore_blog-external%2Fhealth%2Fbadge.shields)
 
 The path to generate a badge is the following:
 ```
@@ -3528,10 +3527,10 @@ See more information about the Shields.io badge endpoint [here](https://shields.
 
 
 #### Response time
-![Response time 1h](https://status.twin.sh/api/v1/endpoints/core_blog-external/response-times/1h/badge.svg)
-![Response time 24h](https://status.twin.sh/api/v1/endpoints/core_blog-external/response-times/24h/badge.svg)
-![Response time 7d](https://status.twin.sh/api/v1/endpoints/core_blog-external/response-times/7d/badge.svg)
-![Response time 30d](https://status.twin.sh/api/v1/endpoints/core_blog-external/response-times/30d/badge.svg)
+![Response time 1h](https://status.hanzo.ai/v1/endpoints/core_blog-external/response-times/1h/badge.svg)
+![Response time 24h](https://status.hanzo.ai/v1/endpoints/core_blog-external/response-times/24h/badge.svg)
+![Response time 7d](https://status.hanzo.ai/v1/endpoints/core_blog-external/response-times/7d/badge.svg)
+![Response time 30d](https://status.hanzo.ai/v1/endpoints/core_blog-external/response-times/30d/badge.svg)
 
 The endpoint to generate a badge is the following:
 ```
@@ -3542,9 +3541,9 @@ Where:
 - `{key}` has the pattern `<GROUP_NAME>_<ENDPOINT_NAME>` in which both variables have ` `, `/`, `_`, `,`, `.`, `#`, `+` and `&` replaced by `-`.
 
 #### Response time (chart)
-![Response time 24h](https://status.twin.sh/api/v1/endpoints/core_blog-external/response-times/24h/chart.svg)
-![Response time 7d](https://status.twin.sh/api/v1/endpoints/core_blog-external/response-times/7d/chart.svg)
-![Response time 30d](https://status.twin.sh/api/v1/endpoints/core_blog-external/response-times/30d/chart.svg)
+![Response time 24h](https://status.hanzo.ai/v1/endpoints/core_blog-external/response-times/24h/chart.svg)
+![Response time 7d](https://status.hanzo.ai/v1/endpoints/core_blog-external/response-times/7d/chart.svg)
+![Response time 30d](https://status.hanzo.ai/v1/endpoints/core_blog-external/response-times/30d/chart.svg)
 
 The endpoint to generate a response time chart is the following:
 ```
@@ -3581,7 +3580,7 @@ All endpoints are available via a GET request to the following endpoint:
 ```
 /api/v1/endpoints/statuses
 ````
-Example: https://status.twin.sh/api/v1/endpoints/statuses
+Example: https://status.hanzo.ai/v1/endpoints/statuses
 
 Specific endpoints can also be queried by using the following pattern:
 ```
