@@ -68,16 +68,30 @@ Module: `github.com/hanzoai/status`
   one escape from the zip surface, because `zip.Listen` carries no TLS or dual-stack knob.
 
 ## Build & deploy — ONE way
-- **Build**: tag `vX.Y.Z` → GHCR `ghcr.io/hanzoai/status:X.Y.Z` (multi-arch) via
-  `.github/workflows/deploy.yml` (reusable `hanzoai/.github docker-build.yml@main`).
+- **Build**: two native lanes in `.hanzo/workflows/`, both fired by a push to `main`,
+  both `linux/amd64` on the `hanzo-build-linux-amd64` git-runner. A code push to `main`
+  therefore builds twice and cuts a patch release.
+  - `deploy.yml` → `ghcr.io/hanzoai/status:sha-<short7>`, then proves the manifest
+    resolves (build-push-action can exit 0 before it does).
+  - `release.yml` → next patch on the **1.1.x** line, taken as the max of git tags AND
+    already-pushed GHCR tags so a number that has an image is never reused →
+    `…:v<X.Y.Z>` → verify pullable → `git tag`. The tag is pushed to **github.com**,
+    not `origin`: inside the job `origin` is git.hanzo.ai, where this repo is a
+    read-only pull mirror (403). `paths-ignore` keeps `.github/**` and `**.md` from
+    cutting a release.
+    There is no `.github/workflows/` — CI is native only.
   Build-only; do NOT add per-brand `kubectl` deploy back (it pinned an arm64-only image
-  and dropped the tuned Deployment). If Actions doesn't fire, build in-cluster with buildkit
-  (see below).
-- **Deploy**: GitOps via `hanzoai/universe/infra/k8s/status/` (`deployment.yaml` image pin +
-  `configmap-hanzo.yaml`) and the hanzo operator (`infra/k8s/operator/crs/status*.yaml`).
-  Roll with `kubectl set image deployment/status status=…:X.Y.Z -n hanzo` (preserves the
-  `hostAliases` that route *.hanzo.ai to the internal ingress for probing). `status` + `status-lux`
-  both live in ns `hanzo` on `do-sfo3-hanzo-k8s`.
+  and dropped the tuned Deployment). If the native lane is unavailable, build in-cluster
+  with buildkit (see below).
+- **Deploy**: GitOps from `hanzoai/universe`, with the two halves reconciled by DIFFERENT
+  Applications — the reason a bump can land while the config beside it does not.
+  - **Image pin** — `charts/app/values/hanzo/status.yaml` (`image.repository`/`tag`/`digest`),
+    reconciled by the `fleet` ApplicationSet with `cd.automated: true`. This is the one that
+    deploys, so bump the pin here; a manual `kubectl set image` is reverted by selfHeal.
+  - **Board config** — `infra/k8s/status/configmap-hanzo.yaml`, reconciled by the `universe`
+    Application, which carries no `syncPolicy.automated` and so enforces nothing.
+  `status` + `status-lux` both run in ns `hanzo` on `do-sfo3-hanzo-k8s`; the Lux board's
+  config lives in `luxfi/universe` `k8s/status/`.
 
 ### Dockerfile gotcha — pnpm
 The frontend stage MUST pin pnpm via the `packageManager` field in

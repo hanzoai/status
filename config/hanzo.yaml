@@ -69,16 +69,13 @@ endpoints:
   # AI — inference, agents, retrieval
   # ═══════════════════════════════════════════════
 
-  # TWO ADDRESSES, TWO SERVICES, TWO ROWS. This was ONE row against
-  # api.hanzo.ai/v1/models asserting 200, and it measured neither the router nor
-  # inference: /v1/models* was path-carved off api.hanzo.ai to the catalog
-  # worker, so the row was a health check on a Cloudflare KV cache and stayed
-  # green with the cluster down. The carve is gone (hanzoai/universe
-  # infra/k8s/ingress/routes.yaml) and each address says what it is.
+  # TWO ADDRESSES, TWO SERVICES, TWO ROWS — one row per thing measured. A single
+  # row against a shared path measures whichever component answers it, not the
+  # one it is named after.
   #
   # The API's own /v1/models is authenticated — an anonymous 401 is the route
   # ANSWERING, and a 404 is the front door having lost it, which is the failure
-  # this row now catches. Chat completions is POST-only (GET/HEAD 404 by design),
+  # this row catches. Chat completions is POST-only (GET/HEAD 404 by design),
   # so serving health is the in-cluster engine below.
   - name: "Models & Inference"
     group: "AI"
