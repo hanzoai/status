@@ -26,7 +26,7 @@ require (
 	github.com/registrobr/rdap v1.1.8
 	github.com/wcharczuk/go-chart/v2 v2.1.2
 	github.com/zap-proto/fiber/v3 v3.2.1
-	github.com/zap-proto/zip v1.34.1
+	github.com/zap-proto/zip v1.34.2
 	golang.org/x/crypto v0.52.0
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/sync v0.20.0
