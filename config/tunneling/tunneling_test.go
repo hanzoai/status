@@ -3,7 +3,7 @@ package tunneling
 import (
 	"testing"
 
-	"github.com/hanzoai/status/config/tunneling/sshtunnel"
+	"hanzo.ai/status/config/tunneling/sshtunnel"
 )
 
 func TestConfig_ValidateAndSetDefaults(t *testing.T) {

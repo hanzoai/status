@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/config/ui"
-	static "github.com/hanzoai/status/web"
+	"hanzo.ai/status/config"
+	"hanzo.ai/status/config/ui"
+	static "hanzo.ai/status/web"
 )
 
 // TestRootIconsServeTheNamedBrand walks the paths a browser reaches for without

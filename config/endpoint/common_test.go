@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/hanzoai/status/alerting/alert"
+	"hanzo.ai/status/alerting/alert"
 )
 
 func TestValidateEndpointNameGroupAndAlerts(t *testing.T) {

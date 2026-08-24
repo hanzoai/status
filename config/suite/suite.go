@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/config/gontext"
-	"github.com/hanzoai/status/config/key"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/config/gontext"
+	"hanzo.ai/status/config/key"
 )
 
 var (

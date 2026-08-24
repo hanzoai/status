@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/storage"
-	"github.com/hanzoai/status/storage/store"
-	"github.com/hanzoai/status/watchdog"
+	"hanzo.ai/status/config"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/storage"
+	"hanzo.ai/status/storage/store"
+	"hanzo.ai/status/watchdog"
 )
 
 var (

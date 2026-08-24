@@ -7,9 +7,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/config/web"
+	"hanzo.ai/status/config"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/config/web"
 	"github.com/zap-proto/zip"
 )
 

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hanzoai/status/config/gontext"
-	"github.com/hanzoai/status/pattern"
+	"hanzo.ai/status/config/gontext"
+	"hanzo.ai/status/pattern"
 )
 
 const (

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/security"
+	"hanzo.ai/status/config"
+	"hanzo.ai/status/security"
 	"github.com/zap-proto/zip"
 )
 

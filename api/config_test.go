@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/hanzoai/status/security"
+	"hanzo.ai/status/security"
 	"github.com/zap-proto/zip"
 )
 

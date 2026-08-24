@@ -4,13 +4,13 @@ import (
 	"context"
 	"time"
 
-	"github.com/hanzoai/status/alerting/alert"
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/config/suite"
-	"github.com/hanzoai/status/storage"
-	"github.com/hanzoai/status/storage/store/common/paging"
-	"github.com/hanzoai/status/storage/store/memory"
-	"github.com/hanzoai/status/storage/store/sql"
+	"hanzo.ai/status/alerting/alert"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/config/suite"
+	"hanzo.ai/status/storage"
+	"hanzo.ai/status/storage/store/common/paging"
+	"hanzo.ai/status/storage/store/memory"
+	"hanzo.ai/status/storage/store/sql"
 	"github.com/TwiN/logr"
 )
 

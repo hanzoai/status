@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"code.gitea.io/sdk/gitea"
-	"github.com/hanzoai/status/alerting/alert"
-	"github.com/hanzoai/status/client"
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/test"
+	"hanzo.ai/status/alerting/alert"
+	"hanzo.ai/status/client"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/test"
 )
 
 // isIgnorableTestError checks if an error is expected during testing when making API calls with dummy credentials

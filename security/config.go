@@ -6,7 +6,7 @@ import (
 
 	g8 "github.com/TwiN/g8/v2"
 	"github.com/TwiN/logr"
-	"github.com/hanzoai/status/zipx"
+	"hanzo.ai/status/zipx"
 	fiber "github.com/zap-proto/fiber/v3"
 	"github.com/zap-proto/fiber/v3/middleware/adaptor"
 	"github.com/zap-proto/fiber/v3/middleware/basicauth"

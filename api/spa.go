@@ -5,8 +5,8 @@ import (
 	"html/template"
 
 	"github.com/TwiN/logr"
-	"github.com/hanzoai/status/config/ui"
-	static "github.com/hanzoai/status/web"
+	"hanzo.ai/status/config/ui"
+	static "hanzo.ai/status/web"
 	"github.com/zap-proto/zip"
 )
 

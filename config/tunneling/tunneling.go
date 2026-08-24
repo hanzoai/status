@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/hanzoai/status/config/tunneling/sshtunnel"
+	"hanzo.ai/status/config/tunneling/sshtunnel"
 )
 
 // Config represents the tunneling configuration

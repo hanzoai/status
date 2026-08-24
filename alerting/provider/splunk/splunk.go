@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/hanzoai/status/alerting/alert"
-	"github.com/hanzoai/status/client"
-	"github.com/hanzoai/status/config/endpoint"
+	"hanzo.ai/status/alerting/alert"
+	"hanzo.ai/status/client"
+	"hanzo.ai/status/config/endpoint"
 	"gopkg.in/yaml.v3"
 )
 

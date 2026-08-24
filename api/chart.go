@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/TwiN/logr"
-	"github.com/hanzoai/status/storage/store"
-	"github.com/hanzoai/status/storage/store/common"
+	"hanzo.ai/status/storage/store"
+	"hanzo.ai/status/storage/store/common"
 	"github.com/wcharczuk/go-chart/v2"
 	"github.com/wcharczuk/go-chart/v2/drawing"
 	"github.com/zap-proto/zip"

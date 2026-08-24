@@ -3,9 +3,9 @@ package memory
 import (
 	"testing"
 
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/storage"
-	"github.com/hanzoai/status/storage/store/common/paging"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/storage"
+	"hanzo.ai/status/storage/store/common/paging"
 )
 
 func BenchmarkShallowCopyEndpointStatus(b *testing.B) {

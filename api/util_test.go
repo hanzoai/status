@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hanzoai/status/storage"
+	"hanzo.ai/status/storage"
 	"github.com/zap-proto/zip"
 )
 

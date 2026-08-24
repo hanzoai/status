@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/hanzoai/status/alerting/alert"
-	"github.com/hanzoai/status/client"
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/test"
+	"hanzo.ai/status/alerting/alert"
+	"hanzo.ai/status/client"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/test"
 )
 
 func TestTwilioAlertProvider_IsValid(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/hanzoai/status/config"
+	"hanzo.ai/status/config"
 	"golang.org/x/sync/semaphore"
 )
 

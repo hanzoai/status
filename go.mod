@@ -1,4 +1,4 @@
-module github.com/hanzoai/status
+module hanzo.ai/status
 
 go 1.26.5
 

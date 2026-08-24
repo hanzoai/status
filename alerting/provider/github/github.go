@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hanzoai/status/alerting/alert"
-	"github.com/hanzoai/status/config/endpoint"
+	"hanzo.ai/status/alerting/alert"
+	"hanzo.ai/status/config/endpoint"
 	"github.com/google/go-github/v48/github"
 	"golang.org/x/oauth2"
 	"gopkg.in/yaml.v3"

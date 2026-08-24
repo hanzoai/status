@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/hanzoai/status/alerting/alert"
+	"hanzo.ai/status/alerting/alert"
 )
 
 var (

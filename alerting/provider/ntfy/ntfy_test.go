@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/hanzoai/status/alerting/alert"
-	"github.com/hanzoai/status/config/endpoint"
+	"hanzo.ai/status/alerting/alert"
+	"hanzo.ai/status/config/endpoint"
 )
 
 func TestAlertProvider_Validate(t *testing.T) {

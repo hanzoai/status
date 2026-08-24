@@ -3,7 +3,7 @@
 Gatus-shaped uptime monitor (fork). One Go binary serves BOTH the JSON API and
 the embedded SPA. Multi-brand (Hanzo, Lux, Pars, Zoo, Adnexus) via per-brand config.
 
-Module: `github.com/hanzoai/status`
+Module: `hanzo.ai/status`
 
 ## Architecture
 - `main.go` — boots config → storage → `controller.Handle` (HTTP) + `watchdog.Monitor` (probes).

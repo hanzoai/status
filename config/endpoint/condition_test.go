@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanzoai/status/config/gontext"
+	"hanzo.ai/status/config/gontext"
 )
 
 func TestCondition_Validate(t *testing.T) {

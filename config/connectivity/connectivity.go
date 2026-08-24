@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hanzoai/status/client"
+	"hanzo.ai/status/client"
 )
 
 var (

@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/storage"
-	"github.com/hanzoai/status/storage/store/common"
-	"github.com/hanzoai/status/storage/store/common/paging"
-	"github.com/hanzoai/status/storage/store/memory"
-	"github.com/hanzoai/status/storage/store/sql"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/storage"
+	"hanzo.ai/status/storage/store/common"
+	"hanzo.ai/status/storage/store/common/paging"
+	"hanzo.ai/status/storage/store/memory"
+	"hanzo.ai/status/storage/store/sql"
 )
 
 var (

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/config/ui"
+	"hanzo.ai/status/config"
+	"hanzo.ai/status/config/ui"
 )
 
 // declaredRoutes is the published HTTP surface of this service, pinned exactly.

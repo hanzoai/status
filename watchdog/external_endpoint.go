@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/metrics"
-	"github.com/hanzoai/status/storage/store"
+	"hanzo.ai/status/config"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/metrics"
+	"hanzo.ai/status/storage/store"
 	"github.com/TwiN/logr"
 )
 

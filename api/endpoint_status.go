@@ -7,13 +7,13 @@ import (
 	"net/url"
 
 	"github.com/TwiN/logr"
-	"github.com/hanzoai/status/client"
-	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/config/remote"
-	"github.com/hanzoai/status/storage/store"
-	"github.com/hanzoai/status/storage/store/common"
-	"github.com/hanzoai/status/storage/store/common/paging"
+	"hanzo.ai/status/client"
+	"hanzo.ai/status/config"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/config/remote"
+	"hanzo.ai/status/storage/store"
+	"hanzo.ai/status/storage/store/common"
+	"hanzo.ai/status/storage/store/common/paging"
 	"github.com/zap-proto/zip"
 )
 

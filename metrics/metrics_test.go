@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/config/endpoint/dns"
-	"github.com/hanzoai/status/config/suite"
+	"hanzo.ai/status/config"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/config/endpoint/dns"
+	"hanzo.ai/status/config/suite"
 	metric "github.com/luxfi/metric"
 )
 

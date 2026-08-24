@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanzoai/status/alerting/alert"
+	"hanzo.ai/status/alerting/alert"
 )
 
 func TestParseWithDefaultAlert(t *testing.T) {

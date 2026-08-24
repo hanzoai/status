@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/hanzoai/status/storage/store"
-	"github.com/hanzoai/status/storage/store/common"
+	"hanzo.ai/status/storage/store"
+	"hanzo.ai/status/storage/store/common"
 	"github.com/zap-proto/zip"
 )
 

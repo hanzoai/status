@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanzoai/status/config/endpoint"
+	"hanzo.ai/status/config/endpoint"
 )
 
 func BenchmarkProcessUptimeAfterResult(b *testing.B) {

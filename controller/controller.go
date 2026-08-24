@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/TwiN/logr"
-	"github.com/hanzoai/status/api"
-	"github.com/hanzoai/status/config"
+	"hanzo.ai/status/api"
+	"hanzo.ai/status/config"
 	fiber "github.com/zap-proto/fiber/v3"
 	"github.com/zap-proto/zip"
 )

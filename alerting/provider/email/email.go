@@ -7,9 +7,9 @@ import (
 	"math"
 	"strings"
 
-	"github.com/hanzoai/status/alerting/alert"
-	"github.com/hanzoai/status/client"
-	"github.com/hanzoai/status/config/endpoint"
+	"hanzo.ai/status/alerting/alert"
+	"hanzo.ai/status/client"
+	"hanzo.ai/status/config/endpoint"
 	gomail "gopkg.in/mail.v2"
 	"gopkg.in/yaml.v3"
 )

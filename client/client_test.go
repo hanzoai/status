@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanzoai/status/config/endpoint/dns"
-	"github.com/hanzoai/status/pattern"
-	"github.com/hanzoai/status/test"
+	"hanzo.ai/status/config/endpoint/dns"
+	"hanzo.ai/status/pattern"
+	"hanzo.ai/status/test"
 )
 
 func TestGetHTTPClient(t *testing.T) {

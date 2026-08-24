@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hanzoai/status/alerting/alert"
-	"github.com/hanzoai/status/config/endpoint"
+	"hanzo.ai/status/alerting/alert"
+	"hanzo.ai/status/config/endpoint"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"

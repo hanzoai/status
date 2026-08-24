@@ -6,7 +6,7 @@ import (
 	"io/fs"
 	"testing"
 
-	static "github.com/hanzoai/status/web"
+	static "hanzo.ai/status/web"
 )
 
 // brandsInBinary lists the brand directories actually shipped, so adding a brand

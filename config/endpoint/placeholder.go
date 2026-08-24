@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hanzoai/status/config/gontext"
-	"github.com/hanzoai/status/jsonpath"
+	"hanzo.ai/status/config/gontext"
+	"hanzo.ai/status/jsonpath"
 )
 
 // Placeholders

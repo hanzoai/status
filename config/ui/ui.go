@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"html/template"
 
-	"github.com/hanzoai/status/storage"
-	static "github.com/hanzoai/status/web"
+	"hanzo.ai/status/storage"
+	static "hanzo.ai/status/web"
 )
 
 const (

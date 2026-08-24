@@ -3,9 +3,9 @@ package metrics
 import (
 	"strconv"
 
-	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/config/suite"
+	"hanzo.ai/status/config"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/config/suite"
 	metric "github.com/luxfi/metric"
 )
 

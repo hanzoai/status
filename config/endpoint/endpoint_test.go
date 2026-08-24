@@ -11,14 +11,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanzoai/status/alerting/alert"
-	"github.com/hanzoai/status/client"
-	"github.com/hanzoai/status/config/endpoint/dns"
-	"github.com/hanzoai/status/config/endpoint/ssh"
-	"github.com/hanzoai/status/config/endpoint/ui"
-	"github.com/hanzoai/status/config/gontext"
-	"github.com/hanzoai/status/config/maintenance"
-	"github.com/hanzoai/status/test"
+	"hanzo.ai/status/alerting/alert"
+	"hanzo.ai/status/client"
+	"hanzo.ai/status/config/endpoint/dns"
+	"hanzo.ai/status/config/endpoint/ssh"
+	"hanzo.ai/status/config/endpoint/ui"
+	"hanzo.ai/status/config/gontext"
+	"hanzo.ai/status/config/maintenance"
+	"hanzo.ai/status/test"
 )
 
 func TestHasHeader(t *testing.T) {

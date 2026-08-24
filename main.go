@@ -7,11 +7,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/controller"
-	"github.com/hanzoai/status/metrics"
-	"github.com/hanzoai/status/storage/store"
-	"github.com/hanzoai/status/watchdog"
+	"hanzo.ai/status/config"
+	"hanzo.ai/status/controller"
+	"hanzo.ai/status/metrics"
+	"hanzo.ai/status/storage/store"
+	"hanzo.ai/status/watchdog"
 	"github.com/TwiN/logr"
 )
 

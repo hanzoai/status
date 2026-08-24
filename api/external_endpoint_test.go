@@ -5,14 +5,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/hanzoai/status/alerting"
-	"github.com/hanzoai/status/alerting/alert"
-	"github.com/hanzoai/status/alerting/provider/discord"
-	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/config/maintenance"
-	"github.com/hanzoai/status/storage/store"
-	"github.com/hanzoai/status/storage/store/common/paging"
+	"hanzo.ai/status/alerting"
+	"hanzo.ai/status/alerting/alert"
+	"hanzo.ai/status/alerting/provider/discord"
+	"hanzo.ai/status/config"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/config/maintenance"
+	"hanzo.ai/status/storage/store"
+	"hanzo.ai/status/storage/store/common/paging"
 )
 
 func TestCreateExternalEndpointResult(t *testing.T) {

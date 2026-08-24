@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hanzoai/status/alerting/alert"
-	"github.com/hanzoai/status/config/endpoint"
+	"hanzo.ai/status/alerting/alert"
+	"hanzo.ai/status/config/endpoint"
 )
 
 // generateDeduplicationKey generates a unique deduplication_key for incident.io

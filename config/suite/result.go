@@ -3,7 +3,7 @@ package suite
 import (
 	"time"
 
-	"github.com/hanzoai/status/config/endpoint"
+	"hanzo.ai/status/config/endpoint"
 )
 
 // Result represents the result of a suite execution

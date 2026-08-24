@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/TwiN/logr"
-	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/metrics"
-	"github.com/hanzoai/status/storage/store"
-	"github.com/hanzoai/status/storage/store/common"
-	"github.com/hanzoai/status/watchdog"
+	"hanzo.ai/status/config"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/metrics"
+	"hanzo.ai/status/storage/store"
+	"hanzo.ai/status/storage/store/common"
+	"hanzo.ai/status/watchdog"
 	"github.com/zap-proto/zip"
 )
 

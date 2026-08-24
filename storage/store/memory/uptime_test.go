@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/storage"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/storage"
 )
 
 func TestProcessUptimeAfterResult(t *testing.T) {

@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanzoai/status/alerting/alert"
-	"github.com/hanzoai/status/config/endpoint/heartbeat"
-	"github.com/hanzoai/status/config/maintenance"
+	"hanzo.ai/status/alerting/alert"
+	"hanzo.ai/status/config/endpoint/heartbeat"
+	"hanzo.ai/status/config/maintenance"
 )
 
 func TestExternalEndpoint_ValidateAndSetDefaults(t *testing.T) {

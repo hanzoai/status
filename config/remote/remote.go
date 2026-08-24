@@ -1,7 +1,7 @@
 package remote
 
 import (
-	"github.com/hanzoai/status/client"
+	"hanzo.ai/status/client"
 	"github.com/TwiN/logr"
 )
 

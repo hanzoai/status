@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanzoai/status/config/endpoint"
-	"github.com/hanzoai/status/config/gontext"
+	"hanzo.ai/status/config/endpoint"
+	"hanzo.ai/status/config/gontext"
 )
 
 func TestSuite_ValidateAndSetDefaults(t *testing.T) {

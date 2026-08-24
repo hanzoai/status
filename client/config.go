@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hanzoai/status/config/tunneling/sshtunnel"
+	"hanzo.ai/status/config/tunneling/sshtunnel"
 	"github.com/TwiN/logr"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"

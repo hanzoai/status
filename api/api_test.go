@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/hanzoai/status/config"
-	"github.com/hanzoai/status/security"
+	"hanzo.ai/status/config"
+	"hanzo.ai/status/security"
 	fiber "github.com/zap-proto/fiber/v3"
 )
 
