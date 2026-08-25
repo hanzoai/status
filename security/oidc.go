@@ -84,9 +84,13 @@ func (c *OIDCConfig) callbackHandler(w http.ResponseWriter, r *http.Request) { /
 		http.Error(w, r.URL.Query().Get("error")+": "+r.URL.Query().Get("error_description"), http.StatusBadRequest)
 		return
 	}
-	// Ensure that the state has the expected value
+	// Ensure that the state has the expected value. An EMPTY state is not one:
+	// "" equals "", so a state cookie planted empty — any host under the site's
+	// domain can write one, HttpOnly being no defence against writing — would
+	// turn this comparison into a no-op and let a login be completed on someone
+	// else's behalf. Having nothing must never satisfy the check.
 	state, err := r.Cookie(cookieNameState)
-	if err != nil {
+	if err != nil || len(state.Value) == 0 {
 		http.Error(w, "state not found", http.StatusBadRequest)
 		return
 	}
@@ -110,9 +114,12 @@ func (c *OIDCConfig) callbackHandler(w http.ResponseWriter, r *http.Request) { /
 		http.Error(w, "Failed to verify id_token: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// Validate nonce
+	// Validate nonce. Same reasoning as state, and the consequence is worse: an
+	// id_token carrying no nonce claim would match an empty nonce cookie, so
+	// any token of the right audience — not one minted for this login — would
+	// mint a session.
 	nonce, err := r.Cookie(cookieNameNonce)
-	if err != nil {
+	if err != nil || len(nonce.Value) == 0 {
 		http.Error(w, "nonce not found", http.StatusBadRequest)
 		return
 	}
