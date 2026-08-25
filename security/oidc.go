@@ -78,81 +78,87 @@ func (c *OIDCConfig) loginHandler(ctx *zip.Ctx) error {
 	return ctx.Redirect(http.StatusFound, c.oauth2Config.AuthCodeURL(state, oidc.Nonce(nonce)))
 }
 
-func (c *OIDCConfig) callbackHandler(w http.ResponseWriter, r *http.Request) { // TODO: Migrate to a native fiber handler
-	// Check if there's an error
-	if len(r.URL.Query().Get("error")) > 0 {
-		http.Error(w, r.URL.Query().Get("error")+": "+r.URL.Query().Get("error_description"), http.StatusBadRequest)
-		return
+// callbackHandler finishes the login. It answers three questions in order —
+// did this browser start the login (state), was the id_token minted for that
+// same login (nonce), and is this subject allowed here — and only then hands
+// out a session.
+//
+// State and nonce are each compared against a cookie, so an EMPTY value must
+// never satisfy the comparison: "" equals "", and a cookie planted empty would
+// turn both checks into no-ops. Any host under the site's domain can write a
+// cookie the browser will then send here, HttpOnly being no defence against
+// writing one, so the length check is what keeps state a CSRF check and nonce
+// a binding to this browser's own login rather than to any token of the right
+// audience.
+func (c *OIDCConfig) callbackHandler(ctx *zip.Ctx) error {
+	if failure := ctx.Query("error"); len(failure) > 0 {
+		return refuse(ctx, http.StatusBadRequest, failure+": "+ctx.Query("error_description"))
 	}
-	// Ensure that the state has the expected value. An EMPTY state is not one:
-	// "" equals "", so a state cookie planted empty — any host under the site's
-	// domain can write one, HttpOnly being no defence against writing — would
-	// turn this comparison into a no-op and let a login be completed on someone
-	// else's behalf. Having nothing must never satisfy the check.
-	state, err := r.Cookie(cookieNameState)
-	if err != nil || len(state.Value) == 0 {
-		http.Error(w, "state not found", http.StatusBadRequest)
-		return
+	state := ctx.Fiber().Cookies(cookieNameState)
+	if len(state) == 0 {
+		return refuse(ctx, http.StatusBadRequest, "state not found")
 	}
-	if r.URL.Query().Get("state") != state.Value {
-		http.Error(w, "state did not match", http.StatusBadRequest)
-		return
+	if ctx.Query("state") != state {
+		return refuse(ctx, http.StatusBadRequest, "state did not match")
 	}
-	// Validate token
-	oauth2Token, err := c.oauth2Config.Exchange(r.Context(), r.URL.Query().Get("code"))
+	oauth2Token, err := c.oauth2Config.Exchange(ctx.Context(), ctx.Query("code"))
 	if err != nil {
-		http.Error(w, "Error exchanging token: "+err.Error(), http.StatusInternalServerError)
-		return
+		return refuse(ctx, http.StatusInternalServerError, "Error exchanging token: "+err.Error())
 	}
 	rawIDToken, ok := oauth2Token.Extra("id_token").(string)
 	if !ok {
-		http.Error(w, "Missing 'id_token' in oauth2 token", http.StatusInternalServerError)
-		return
+		return refuse(ctx, http.StatusInternalServerError, "Missing 'id_token' in oauth2 token")
 	}
-	idToken, err := c.verifier.Verify(r.Context(), rawIDToken)
+	idToken, err := c.verifier.Verify(ctx.Context(), rawIDToken)
 	if err != nil {
-		http.Error(w, "Failed to verify id_token: "+err.Error(), http.StatusInternalServerError)
-		return
+		return refuse(ctx, http.StatusInternalServerError, "Failed to verify id_token: "+err.Error())
 	}
-	// Validate nonce. Same reasoning as state, and the consequence is worse: an
-	// id_token carrying no nonce claim would match an empty nonce cookie, so
-	// any token of the right audience — not one minted for this login — would
-	// mint a session.
-	nonce, err := r.Cookie(cookieNameNonce)
-	if err != nil || len(nonce.Value) == 0 {
-		http.Error(w, "nonce not found", http.StatusBadRequest)
-		return
+	nonce := ctx.Fiber().Cookies(cookieNameNonce)
+	if len(nonce) == 0 {
+		return refuse(ctx, http.StatusBadRequest, "nonce not found")
 	}
-	if idToken.Nonce != nonce.Value {
-		http.Error(w, "nonce did not match", http.StatusBadRequest)
-		return
+	if idToken.Nonce != nonce {
+		return refuse(ctx, http.StatusBadRequest, "nonce did not match")
 	}
-	if len(c.AllowedSubjects) == 0 {
-		// If there's no allowed subjects, all subjects are allowed.
-		c.setSessionCookie(w, idToken)
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
+	if !c.allows(idToken.Subject) {
+		logr.Debugf("[security.callbackHandler] Subject %s is not in the list of allowed subjects", idToken.Subject)
+		return ctx.Redirect(http.StatusFound, "/?error=access_denied")
 	}
-	for _, subject := range c.AllowedSubjects {
-		if strings.ToLower(subject) == strings.ToLower(idToken.Subject) {
-			c.setSessionCookie(w, idToken)
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
-		}
-	}
-	logr.Debugf("[security.callbackHandler] Subject %s is not in the list of allowed subjects", idToken.Subject)
-	http.Redirect(w, r, "/?error=access_denied", http.StatusFound)
+	c.setSessionCookie(ctx, idToken)
+	return ctx.Redirect(http.StatusFound, "/")
 }
 
-func (c *OIDCConfig) setSessionCookie(w http.ResponseWriter, idToken *oidc.IDToken) {
+// allows reports whether subject may sign in. An empty list allows everyone.
+func (c *OIDCConfig) allows(subject string) bool {
+	if len(c.AllowedSubjects) == 0 {
+		return true
+	}
+	for _, allowed := range c.AllowedSubjects {
+		if strings.EqualFold(allowed, subject) {
+			return true
+		}
+	}
+	return false
+}
+
+// refuse answers with the reason on its own line, typed as text and marked so
+// that no browser sniffs something executable out of a message that quotes
+// values the caller supplied.
+func refuse(ctx *zip.Ctx, code int, reason string) error {
+	ctx.SetHeader(fiber.HeaderContentType, "text/plain; charset=utf-8")
+	ctx.SetHeader(fiber.HeaderXContentTypeOptions, "nosniff")
+	return ctx.String(code, reason+"\n")
+}
+
+func (c *OIDCConfig) setSessionCookie(ctx *zip.Ctx, idToken *oidc.IDToken) {
 	// At this point, the user has been confirmed. All that's left to do is create a session.
 	sessionID := uuid.NewString()
 	sessions.SetWithTTL(sessionID, idToken.Subject, c.SessionTTL)
-	http.SetCookie(w, &http.Cookie{
+	ctx.Fiber().Cookie(&fiber.Cookie{
 		Name:     cookieNameSession,
 		Value:    sessionID,
 		Path:     "/",
 		MaxAge:   int(c.SessionTTL.Seconds()),
-		SameSite: http.SameSiteStrictMode,
+		SameSite: fiber.CookieSameSiteStrictMode,
 	})
 }

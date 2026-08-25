@@ -163,7 +163,7 @@ func (p *idp) config(allowed ...string) *OIDCConfig {
 // does. This one line is the transport under test; the table below never moves.
 func callbackApp(c *OIDCConfig) *zip.App {
 	app := zip.New(zip.Config{})
-	app.All("/authorization-code/callback", zip.AdaptNetHTTP(http.HandlerFunc(c.callbackHandler)))
+	app.All("/authorization-code/callback", c.callbackHandler)
 	return app
 }
 
@@ -396,16 +396,21 @@ func TestCallbackWire_SignedIn(t *testing.T) {
 		}
 	}
 
+	// A redirect here is Location and status and nothing else — the same answer
+	// the login half of this flow has always given (see TestLoginAndCallback-
+	// RedirectAlike). It does not carry the short HTML anchor net/http writes
+	// for a GET, which no browser renders and which made the two halves of one
+	// login answer differently. What the browser acts on — status, Location and
+	// Set-Cookie — is unchanged, and the method no longer changes the answer.
 	t.Run("no allowed subjects means every subject is allowed", func(t *testing.T) {
 		c := p.config()
 		p.token = p.sign(t, claims("anyone@example.com"))
 		resp, body := ask(t, callbackApp(c), "GET", callback+"?state=s&code=c", state, nonce)
 		wire{
-			status:      http.StatusFound,
-			contentType: "text/html; charset=utf-8",
-			body:        "<a href=\"/\">Found</a>.\n\n",
-			location:    "/",
-			cookie:      cookieNameSession,
+			status:   http.StatusFound,
+			body:     "",
+			location: "/",
+			cookie:   cookieNameSession,
 		}.check(t, resp, body)
 	})
 
@@ -414,11 +419,10 @@ func TestCallbackWire_SignedIn(t *testing.T) {
 		p.token = p.sign(t, claims("user1@example.com"))
 		resp, body := ask(t, callbackApp(c), "GET", callback+"?state=s&code=c", state, nonce)
 		wire{
-			status:      http.StatusFound,
-			contentType: "text/html; charset=utf-8",
-			body:        "<a href=\"/\">Found</a>.\n\n",
-			location:    "/",
-			cookie:      cookieNameSession,
+			status:   http.StatusFound,
+			body:     "",
+			location: "/",
+			cookie:   cookieNameSession,
 		}.check(t, resp, body)
 	})
 
@@ -427,28 +431,60 @@ func TestCallbackWire_SignedIn(t *testing.T) {
 		p.token = p.sign(t, claims("intruder@example.com"))
 		resp, body := ask(t, callbackApp(c), "GET", callback+"?state=s&code=c", state, nonce)
 		wire{
-			status:      http.StatusFound,
-			contentType: "text/html; charset=utf-8",
-			body:        "<a href=\"/?error=access_denied\">Found</a>.\n\n",
-			location:    "/?error=access_denied",
+			status:   http.StatusFound,
+			body:     "",
+			location: "/?error=access_denied",
 		}.check(t, resp, body)
 	})
 
-	// The route is All, so form_post callbacks arrive as POST. The redirect and
-	// the cookie are the same; the courtesy body is not written for a POST, and
-	// the content type is the transport's default for a bodyless answer.
-	t.Run("POST is redirected without the courtesy body", func(t *testing.T) {
+	// form_post callbacks arrive as POST, and must be answered the same way.
+	t.Run("POST is redirected the same way", func(t *testing.T) {
 		c := p.config()
 		p.token = p.sign(t, claims("anyone@example.com"))
 		resp, body := ask(t, callbackApp(c), "POST", callback+"?state=s&code=c", state, nonce)
 		wire{
-			status:      http.StatusFound,
-			contentType: "text/plain; charset=utf-8",
-			body:        "",
-			location:    "/",
-			cookie:      cookieNameSession,
+			status:   http.StatusFound,
+			body:     "",
+			location: "/",
+			cookie:   cookieNameSession,
 		}.check(t, resp, body)
 	})
+}
+
+// The two halves of one login now answer a redirect identically. This is the
+// measurement behind dropping net/http's HTML courtesy body from the callback:
+// loginHandler has always redirected with Location alone, so the callback
+// carrying an anchor was the two halves disagreeing, not a contract.
+func TestLoginAndCallbackRedirectAlike(t *testing.T) {
+	p := newIDP(t)
+	c := p.config()
+	p.token = p.sign(t, map[string]any{
+		"iss": p.issuer, "aud": p.clientID, "sub": "anyone@example.com",
+		"exp": time.Now().Add(time.Hour).Unix(), "iat": time.Now().Unix(), "nonce": "n",
+	})
+
+	login := zip.New(zip.Config{})
+	login.All("/oidc/login", c.loginHandler)
+	loginResp, loginBody := ask(t, login, "GET", "/oidc/login")
+
+	callbackResp, callbackBody := ask(t, callbackApp(c), "GET", callback+"?state=s&code=c",
+		&http.Cookie{Name: cookieNameState, Value: "s"},
+		&http.Cookie{Name: cookieNameNonce, Value: "n"})
+
+	if loginResp.StatusCode != callbackResp.StatusCode {
+		t.Errorf("status: login %d, callback %d", loginResp.StatusCode, callbackResp.StatusCode)
+	}
+	if loginBody != "" || callbackBody != "" {
+		t.Errorf("body: login %q, callback %q; want both empty", loginBody, callbackBody)
+	}
+	lct, cct := loginResp.Header.Get("Content-Type"), callbackResp.Header.Get("Content-Type")
+	if lct != cct {
+		t.Errorf("Content-Type: login %q, callback %q", lct, cct)
+	}
+	// Both name where to go next; only the destinations differ.
+	if loginResp.Header.Get("Location") == "" || callbackResp.Header.Get("Location") == "" {
+		t.Error("a redirect with no Location")
+	}
 }
 
 // The session cookie is the credential this whole exchange exists to hand out.

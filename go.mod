@@ -5,7 +5,6 @@ go 1.26.5
 require (
 	code.gitea.io/sdk/gitea v0.24.1
 	github.com/TwiN/deepmerge v0.2.2
-	github.com/TwiN/g8/v2 v2.0.0
 	github.com/TwiN/gocache/v2 v2.4.0
 	github.com/TwiN/health v1.6.0
 	github.com/TwiN/logr v0.3.1

@@ -4,20 +4,21 @@ import (
 	"encoding/base64"
 	"net/http"
 
-	g8 "github.com/TwiN/g8/v2"
-	"github.com/TwiN/logr"
-	"hanzo.ai/status/zipx"
 	fiber "github.com/zap-proto/fiber/v3"
-	"github.com/zap-proto/fiber/v3/middleware/adaptor"
 	"github.com/zap-proto/fiber/v3/middleware/basicauth"
 	"github.com/zap-proto/zip"
 	"golang.org/x/crypto/bcrypt"
+	"hanzo.ai/status/zipx"
 )
 
 const (
 	cookieNameState   = "gatus_state"
 	cookieNameNonce   = "gatus_nonce"
 	cookieNameSession = "gatus_session"
+
+	// unauthorized is the body this surface has always answered a request
+	// without a session with. Pinned in protect_wire_test.go.
+	unauthorized = "token is missing or invalid"
 )
 
 // Router is the slice of zip's routing surface this package needs. Both
@@ -36,7 +37,10 @@ type Config struct {
 	Basic *BasicConfig `yaml:"basic,omitempty"`
 	OIDC  *OIDCConfig  `yaml:"oidc,omitempty"`
 
-	gate *g8.Gate
+	// session records that this config protects the surface with OIDC
+	// sessions, set when the middleware is applied. Basic auth carries no
+	// session, so IsAuthenticated answers for it in the negative.
+	session bool
 }
 
 // ValidateAndSetDefaults returns whether the security configuration is valid or not and sets default values.
@@ -51,7 +55,7 @@ func (c *Config) RegisterHandlers(router Router) error {
 			return err
 		}
 		router.All("/oidc/login", c.OIDC.loginHandler)
-		router.All("/authorization-code/callback", zip.AdaptNetHTTP(http.HandlerFunc(c.OIDC.callbackHandler)))
+		router.All("/authorization-code/callback", c.OIDC.callbackHandler)
 	}
 	return nil
 }
@@ -60,24 +64,13 @@ func (c *Config) RegisterHandlers(router Router) error {
 // The router passed should be a sub-router in charge of handlers that require authentication.
 func (c *Config) ApplySecurityMiddleware(router Router) error {
 	if c.OIDC != nil {
-		// We're going to use g8 for session handling
-		clientProvider := g8.NewClientProvider(func(token string) *g8.Client {
-			if _, exists := sessions.Get(token); exists {
-				return g8.NewClient(token)
+		c.session = true
+		router.Use(zip.Handler(func(ctx *zip.Ctx) error {
+			if !live(ctx) {
+				return ctx.String(http.StatusUnauthorized, unauthorized)
 			}
-			return nil
-		})
-		customTokenExtractorFunc := func(request *http.Request) string {
-			sessionCookie, err := request.Cookie(cookieNameSession)
-			if err != nil {
-				return ""
-			}
-			return sessionCookie.Value
-		}
-		// TODO: g8: Add a way to update cookie after? would need the writer
-		authorizationService := g8.NewAuthorizationService().WithClientProvider(clientProvider)
-		c.gate = g8.New().WithAuthorizationService(authorizationService).WithCustomTokenExtractor(customTokenExtractorFunc)
-		router.Use(zip.AdaptNetHTTPMiddleware(c.gate.Protect))
+			return ctx.Next()
+		}))
 	} else if c.Basic != nil {
 		var decodedBcryptHash []byte
 		if len(c.Basic.PasswordBcryptHashBase64Encoded) > 0 {
@@ -105,19 +98,17 @@ func (c *Config) ApplySecurityMiddleware(router Router) error {
 	return nil
 }
 
+// live reports whether the request carries a session the server still holds.
+// It is the ONE predicate: the middleware admits on it and IsAuthenticated
+// reports it, so what a browser is told about itself can never disagree with
+// what it is actually allowed to read.
+func live(ctx *zip.Ctx) bool {
+	_, held := sessions.Get(ctx.Fiber().Cookies(cookieNameSession))
+	return held
+}
+
 // IsAuthenticated checks whether the user is authenticated
 // If the Config does not warrant authentication, it will always return true.
 func (c *Config) IsAuthenticated(ctx *zip.Ctx) bool {
-	if c.gate != nil {
-		// TODO: Update g8 to support fasthttp natively? (see g8's fasthttp branch)
-		request, err := adaptor.ConvertRequest(ctx.Fiber(), false)
-		if err != nil {
-			logr.Errorf("[security.IsAuthenticated] Unexpected error converting request: %v", err)
-			return false
-		}
-		token := c.gate.ExtractTokenFromRequest(request)
-		_, hasSession := sessions.Get(token)
-		return hasSession
-	}
-	return false
+	return c.session && live(ctx)
 }
