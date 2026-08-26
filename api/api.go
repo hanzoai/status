@@ -62,10 +62,7 @@ func (a *API) createRouter(cfg *config.Config) *zip.App {
 	app.Use(zipx.Wrap(compress.New()))
 	// Define metrics handler, if necessary
 	if cfg.Metrics {
-		metricsHandler := metric.InstrumentMetricHandler(metric.DefaultRegisterer, metric.NewHTTPHandler(metric.DefaultGatherer, metric.HandlerOpts{
-			DisableCompression: true,
-		}))
-		app.Get("/metrics", zip.AdaptNetHTTP(metricsHandler))
+		app.Get("/metrics", scrape(metric.DefaultRegisterer))
 	}
 	// Define main router
 	apiRouter := app.Group("/v1/status")
@@ -148,4 +145,24 @@ func (a *API) createRouter(cfg *config.Config) *zip.App {
 	protectedAPIRouter.Get("/suites/statuses", SuiteStatuses(cfg))
 	protectedAPIRouter.Get("/suites/:key/statuses", SuiteStatus(cfg))
 	return app
+}
+
+// scrape answers a Prometheus scrape from the default gatherer, and counts the
+// scrapes it serves on reg under the names promhttp publishes. metric renders
+// the exposition as a value — status, headers, body — and this writes those
+// three fields the way zip writes a response. The deadline the scraper asked
+// for comes off the request's own headers.
+func scrape(reg metric.Registerer) zip.Handler {
+	served := reg.NewCounter("promhttp_metric_handler_requests_total", "Total number of scrapes served.")
+	inFlight := reg.NewGauge("promhttp_metric_handler_requests_in_flight", "Current number of scrapes being served.")
+	return func(c *zip.Ctx) error {
+		inFlight.Inc()
+		defer inFlight.Dec()
+		served.Inc()
+		e := metric.Scrape(c.Context(), metric.DefaultGatherer, metric.HandlerOpts{DisableCompression: true}, metric.ScrapeTimeout(c.Header))
+		for name, value := range e.Header {
+			c.SetHeader(name, value)
+		}
+		return c.Bytes(e.Status, e.Body)
+	}
 }
