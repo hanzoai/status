@@ -17,6 +17,7 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/crypto/ssh"
 	"hanzo.ai/status/alerting/alert"
 	"hanzo.ai/status/client"
 	"hanzo.ai/status/config/endpoint/dns"
@@ -25,7 +26,6 @@ import (
 	"hanzo.ai/status/config/gontext"
 	"hanzo.ai/status/config/key"
 	"hanzo.ai/status/config/maintenance"
-	"golang.org/x/crypto/ssh"
 )
 
 type Type string
@@ -51,7 +51,7 @@ const (
 	TypeSTARTTLS Type = "STARTTLS"
 	TypeTLS      Type = "TLS"
 	TypeHTTP     Type = "HTTP"
-	TypeGRPC     Type = "GRPC"
+	TypeZAP      Type = "ZAP"
 	TypeWS       Type = "WEBSOCKET"
 	TypeSSH      Type = "SSH"
 	TypeUNKNOWN  Type = "UNKNOWN"
@@ -179,8 +179,8 @@ func (e *Endpoint) Type() Type {
 		return TypeTLS
 	case strings.HasPrefix(e.URL, "http://") || strings.HasPrefix(e.URL, "https://"):
 		return TypeHTTP
-	case strings.HasPrefix(e.URL, "grpc://") || strings.HasPrefix(e.URL, "grpcs://"):
-		return TypeGRPC
+	case strings.HasPrefix(e.URL, "zap://"):
+		return TypeZAP
 	case strings.HasPrefix(e.URL, "ws://") || strings.HasPrefix(e.URL, "wss://"):
 		return TypeWS
 	case strings.HasPrefix(e.URL, "ssh://"):
@@ -530,10 +530,8 @@ func (e *Endpoint) call(result *Result) {
 			result.Body = output
 		}
 		result.Duration = time.Since(startTime)
-	} else if endpointType == TypeGRPC {
-		useTLS := strings.HasPrefix(e.URL, "grpcs://")
-		address := strings.TrimPrefix(strings.TrimPrefix(e.URL, "grpcs://"), "grpc://")
-		connected, status, err, duration := client.PerformGRPCHealthCheck(address, useTLS, e.ClientConfig)
+	} else if endpointType == TypeZAP {
+		connected, status, err, duration := client.PerformZAPCheck(e.URL, e.ClientConfig)
 		if err != nil {
 			result.AddError(err.Error())
 			return

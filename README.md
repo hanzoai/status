@@ -120,7 +120,7 @@ Have any feedback or questions? Open an issue on [hanzoai/status](https://github
   - [Monitoring a UDP endpoint](#monitoring-a-udp-endpoint)
   - [Monitoring a SCTP endpoint](#monitoring-a-sctp-endpoint)
   - [Monitoring a WebSocket endpoint](#monitoring-a-websocket-endpoint)
-  - [Monitoring an endpoint using gRPC](#monitoring-an-endpoint-using-grpc)
+  - [Monitoring a ZAP peer](#monitoring-a-zap-peer)
   - [Monitoring an endpoint using ICMP](#monitoring-an-endpoint-using-icmp)
   - [Monitoring an endpoint using DNS queries](#monitoring-an-endpoint-using-dns-queries)
   - [Monitoring an endpoint using SSH](#monitoring-an-endpoint-using-ssh)
@@ -3056,38 +3056,31 @@ shows whether the connection was successfully established. You can use Go templa
 syntax.
 
 
-### Monitoring an endpoint using gRPC
-You can monitor gRPC services by prefixing `endpoints[].url` with `grpc://` or `grpcs://`.
-Gatus executes the standard `grpc.health.v1.Health/Check` RPC against the target.
+### Monitoring a ZAP peer
+Prefix `endpoints[].url` with `zap://` to ask whether a ZAP peer is there. The
+address is whatever ZAP dials — a unix socket path or a `host:port`.
 
 ```yaml
 endpoints:
-  - name: my-grpc
-    url: grpc://localhost:50051
+  - name: commerce
+    url: zap:///run/hanzo/commerce.sock
     interval: 30s
     conditions:
       - "[CONNECTED] == true"
-      - "[BODY].status == SERVING"  # BODY is read only when referenced
     client:
       timeout: 5s
 ```
 
-For TLS-enabled servers, use `grpcs://` and configure client TLS if necessary:
+**A refusal is an answer.** The probe asks for an op no peer implements, so a
+peer that is running refuses it — and that refusal completed a round trip, which
+means the dial, the handshake and the framing all worked. That is what this
+check reports. Only a transport failure reads as unreachable.
 
-```yaml
-endpoints:
-  - name: my-grpcs
-    url: grpcs://example.com:443
-    conditions:
-      - "[CONNECTED] == true"
-      - "[BODY].status == SERVING"
-    client:
-      timeout: 5s
-      insecure: false          # set true to skip cert verification (not recommended)
-      tls:
-        certificate-file: /path/to/cert.pem      # optional mTLS client cert
-        private-key-file: /path/to/key.pem       # optional mTLS client key
-```
+**For `/healthz`, use an HTTP endpoint.** A service's health surface is HTTP on
+its ops listener, on purpose: a ZAP socket reads bytes as frames, so `GET ` on
+one arrives as a frame of size 1195725856. The two questions are different —
+"is the peer there" is the one only ZAP can answer, and "is it healthy" is
+already an `http://` endpoint away.
 
 Notes:
 - The health check targets the default service (`service: ""`). Support for a custom service name can be added later if needed.
