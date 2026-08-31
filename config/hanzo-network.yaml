@@ -37,7 +37,7 @@ endpoints:
 
   - name: "RPC (Hanzo Chain)"
     group: "Mainnet"
-    url: "https://api.lux.network/mainnet/v1/bc/2GiQb73CeJESjc4omFv2YtQHZrRgJf25NXPzAr5J6UNHRcDV2F/rpc"
+    url: "https://api.lux.network/mainnet/v1/chain/2GiQb73CeJESjc4omFv2YtQHZrRgJf25NXPzAr5J6UNHRcDV2F/rpc"
     method: POST
     body: '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
     headers:
@@ -54,7 +54,7 @@ endpoints:
 
   - name: "RPC (Hanzo Testnet)"
     group: "Testnet"
-    url: "https://api.lux.network/testnet/v1/bc/2wbYEFh7ELuovqXhyYeCLvweZrcEgNUoZVJUAtw145qTVAUJxE/rpc"
+    url: "https://api.lux.network/testnet/v1/chain/2wbYEFh7ELuovqXhyYeCLvweZrcEgNUoZVJUAtw145qTVAUJxE/rpc"
     method: POST
     body: '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
     headers:
