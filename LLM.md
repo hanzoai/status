@@ -112,3 +112,7 @@ Public `status.lux.network` resolves to a **Cloudflare Pages / OpenNext** deploy
 healthy but shadowed by DNS. `status.hanzo.ai` correctly points at the cluster ingress-lb
 (`129.212.164.5`). To make Lux serve live data from the cluster, repoint `status.lux.network`
 DNS to the ingress-lb (white-label: Lux branding only, never Hanzo).
+
+## Image
+
+`FROM scratch`: the static binary, `/config` and `/data`, the CA bundle and zoneinfo, running as 65532. Nothing else is present to run.

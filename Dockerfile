@@ -39,12 +39,19 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /status .
 
 # Stage 3: Runtime
-FROM alpine:3.21
-RUN apk add --no-cache ca-certificates
+
+# One directory in an empty image: the static binary and the files it reads;
+# nothing else is present to run, so nothing else can be run.
+FROM alpine:3.22 AS root
+RUN apk add --no-cache ca-certificates tzdata && mkdir -p /config /data && chown -R 65532:65532 /config /data
+
+FROM scratch
+COPY --from=root /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=root /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=root --chown=65532:65532 /config /config
+COPY --from=root --chown=65532:65532 /data /data
 COPY --from=backend /status /usr/local/bin/status
-# The image distributes the compiled work, so the attribution travels with it
-# rather than living only in the source tree (Apache-2.0 §4(c)).
-COPY LICENSE NOTICE /usr/share/doc/status/
 VOLUME ["/config", "/data"]
+USER 65532:65532
 EXPOSE 8080
 ENTRYPOINT ["/usr/local/bin/status"]
