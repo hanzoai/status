@@ -21,14 +21,7 @@ const (
 	unauthorized = "token is missing or invalid"
 )
 
-// Router is what this package installs on: a zip group.
-//
-// It used to be a two-method interface over zip's routing surface, so that both
-// the app and a sub-router could satisfy it. Restating a surface is what made
-// the two able to disagree — the methods it named no longer exist — and zip's
-// verbs are methods on a concrete group now, so there is nothing left for an
-// interface to abstract over. The app spells itself as a group with
-// app.Group(""), which registers at exactly the paths and ids the app does.
+// Router is the group this package installs on.
 type Router = *zip.Group
 
 // Config is the security configuration for Gatus
