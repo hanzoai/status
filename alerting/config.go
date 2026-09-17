@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/TwiN/logr"
 	"hanzo.ai/status/alerting/alert"
 	"hanzo.ai/status/alerting/provider"
 	"hanzo.ai/status/alerting/provider/awsses"
@@ -47,7 +48,6 @@ import (
 	"hanzo.ai/status/alerting/provider/webex"
 	"hanzo.ai/status/alerting/provider/zapier"
 	"hanzo.ai/status/alerting/provider/zulip"
-	"github.com/TwiN/logr"
 )
 
 // Config is the configuration for alerting providers

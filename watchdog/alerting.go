@@ -6,10 +6,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/TwiN/logr"
 	"hanzo.ai/status/alerting"
 	"hanzo.ai/status/config/endpoint"
 	"hanzo.ai/status/storage/store"
-	"github.com/TwiN/logr"
 )
 
 // HandleAlerting takes care of alerts to resolve and alerts to trigger based on result success or failure

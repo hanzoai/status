@@ -3,10 +3,10 @@ package metrics
 import (
 	"strconv"
 
+	metric "github.com/luxfi/metric"
 	"hanzo.ai/status/config"
 	"hanzo.ai/status/config/endpoint"
 	"hanzo.ai/status/config/suite"
-	metric "github.com/luxfi/metric"
 )
 
 const namespace = "gatus" // The prefix of the metrics

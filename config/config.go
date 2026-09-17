@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"github.com/TwiN/deepmerge"
+	"github.com/TwiN/logr"
+	"gopkg.in/yaml.v3"
 	"hanzo.ai/status/alerting"
 	"hanzo.ai/status/alerting/alert"
 	"hanzo.ai/status/alerting/provider"
@@ -28,8 +30,6 @@ import (
 	"hanzo.ai/status/config/web"
 	"hanzo.ai/status/security"
 	"hanzo.ai/status/storage"
-	"github.com/TwiN/logr"
-	"gopkg.in/yaml.v3"
 )
 
 const (

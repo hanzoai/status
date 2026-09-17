@@ -11,11 +11,11 @@ import (
 	"strconv"
 	"time"
 
-	"hanzo.ai/status/config/tunneling/sshtunnel"
 	"github.com/TwiN/logr"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 	"google.golang.org/api/idtoken"
+	"hanzo.ai/status/config/tunneling/sshtunnel"
 )
 
 const (

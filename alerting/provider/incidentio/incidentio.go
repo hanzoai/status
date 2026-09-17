@@ -11,11 +11,11 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/TwiN/logr"
+	"gopkg.in/yaml.v3"
 	"hanzo.ai/status/alerting/alert"
 	"hanzo.ai/status/client"
 	"hanzo.ai/status/config/endpoint"
-	"github.com/TwiN/logr"
-	"gopkg.in/yaml.v3"
 )
 
 const (

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"testing"
 
-	"hanzo.ai/status/security"
 	"github.com/zap-proto/zip"
+	"hanzo.ai/status/security"
 )
 
 func TestConfigHandler_ServeHTTP(t *testing.T) {
@@ -21,8 +21,8 @@ func TestConfigHandler_ServeHTTP(t *testing.T) {
 	handler := ConfigHandler{securityConfig: securityConfig}
 	// Create a fake router. We're doing this because I need the gate to be initialized.
 	app := zip.New(zip.Config{})
-	app.Get("/v1/status/config", handler.GetConfig)
-	err := securityConfig.ApplySecurityMiddleware(app)
+	app.Raw(http.MethodGet, "/v1/status/config", handler.GetConfig)
+	err := securityConfig.ApplySecurityMiddleware(app.Group(""))
 	if err != nil {
 		t.Error("expected err to be nil, but was", err)
 	}

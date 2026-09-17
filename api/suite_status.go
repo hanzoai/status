@@ -3,11 +3,11 @@ package api
 import (
 	"fmt"
 
+	"github.com/zap-proto/zip"
 	"hanzo.ai/status/config"
 	"hanzo.ai/status/config/suite"
 	"hanzo.ai/status/storage/store"
 	"hanzo.ai/status/storage/store/common/paging"
-	"github.com/zap-proto/zip"
 )
 
 // SuiteStatuses handles requests to retrieve all suite statuses

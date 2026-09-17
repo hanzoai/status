@@ -7,10 +7,10 @@ import (
 	"os"
 	"testing"
 
+	"github.com/zap-proto/zip"
 	"hanzo.ai/status/config"
 	"hanzo.ai/status/config/endpoint"
 	"hanzo.ai/status/config/web"
-	"github.com/zap-proto/zip"
 )
 
 func TestHandle(t *testing.T) {

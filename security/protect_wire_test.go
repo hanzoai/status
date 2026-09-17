@@ -20,11 +20,11 @@ func protectedApp(t *testing.T, c *Config) *zip.App {
 	t.Helper()
 	app := zip.New(zip.Config{})
 	// Registered before the middleware: the unprotected half of the surface.
-	app.Get("/public", func(c *zip.Ctx) error { return c.String(http.StatusOK, "public") })
-	if err := c.ApplySecurityMiddleware(app); err != nil {
+	app.Raw(http.MethodGet, "/public", func(c *zip.Ctx) error { return c.String(http.StatusOK, "public") })
+	if err := c.ApplySecurityMiddleware(app.Group("").Group("")); err != nil {
 		t.Fatalf("ApplySecurityMiddleware: %v", err)
 	}
-	app.Get("/private", func(c *zip.Ctx) error { return c.String(http.StatusOK, "private") })
+	app.Raw(http.MethodGet, "/private", func(c *zip.Ctx) error { return c.String(http.StatusOK, "private") })
 	return app
 }
 

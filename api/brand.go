@@ -2,12 +2,13 @@ package api
 
 import (
 	"encoding/json"
+	"net/http"
 	"path"
 
 	"github.com/TwiN/logr"
+	"github.com/zap-proto/zip"
 	"hanzo.ai/status/config/ui"
 	static "hanzo.ai/status/web"
-	"github.com/zap-proto/zip"
 )
 
 // rootIcons are the paths a browser reaches for on its own, without being told:
@@ -46,7 +47,7 @@ func RegisterBrandIcons(app *zip.App, uiConfig *ui.Config) {
 			continue
 		}
 		contentType := iconContentType(brandPath)
-		app.Get(rootPath, func(c *zip.Ctx) error {
+		app.Raw(http.MethodGet, rootPath, func(c *zip.Ctx) error {
 			c.SetHeader("Content-Type", contentType)
 			c.SetHeader("Cache-Control", "public, max-age=3600")
 			return c.Bytes(200, body)

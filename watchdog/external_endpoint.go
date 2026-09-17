@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
+	"github.com/TwiN/logr"
 	"hanzo.ai/status/config"
 	"hanzo.ai/status/config/endpoint"
 	"hanzo.ai/status/metrics"
 	"hanzo.ai/status/storage/store"
-	"github.com/TwiN/logr"
 )
 
 func monitorExternalEndpointHeartbeat(ee *endpoint.ExternalEndpoint, cfg *config.Config, extraLabels []string, ctx context.Context) {

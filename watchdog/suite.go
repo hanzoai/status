@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
+	"github.com/TwiN/logr"
 	"hanzo.ai/status/config"
 	"hanzo.ai/status/config/suite"
 	"hanzo.ai/status/metrics"
 	"hanzo.ai/status/storage/store"
-	"github.com/TwiN/logr"
 )
 
 // monitorSuite monitors a suite by executing it at regular intervals

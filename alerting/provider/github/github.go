@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"hanzo.ai/status/alerting/alert"
-	"hanzo.ai/status/config/endpoint"
 	"github.com/google/go-github/v48/github"
 	"golang.org/x/oauth2"
 	"gopkg.in/yaml.v3"
+	"hanzo.ai/status/alerting/alert"
+	"hanzo.ai/status/config/endpoint"
 )
 
 var (

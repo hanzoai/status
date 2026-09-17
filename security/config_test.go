@@ -30,10 +30,10 @@ func TestConfig_ApplySecurityMiddleware(t *testing.T) {
 			PasswordBcryptHashBase64Encoded: "JDJhJDA4JDFoRnpPY1hnaFl1OC9ISlFsa21VS09wOGlPU1ZOTDlHZG1qeTFvb3dIckRBUnlHUmNIRWlT",
 		}}
 		app := zip.New(zip.Config{})
-		if err := c.ApplySecurityMiddleware(app); err != nil {
+		if err := c.ApplySecurityMiddleware(app.Group("").Group("").Group("")); err != nil {
 			t.Error("expected no error, got", err)
 		}
-		app.Get("/test", func(c *zip.Ctx) error {
+		app.Raw(http.MethodGet, "/test", func(c *zip.Ctx) error {
 			return c.NoContent(200)
 		})
 		// Try to access the route without basic auth
@@ -70,10 +70,10 @@ func TestConfig_ApplySecurityMiddleware(t *testing.T) {
 			verifier:        nil,
 		}}
 		app := zip.New(zip.Config{})
-		if err := c.ApplySecurityMiddleware(app); err != nil {
+		if err := c.ApplySecurityMiddleware(app.Group("").Group("").Group("")); err != nil {
 			t.Error("expected no error, got", err)
 		}
-		app.Get("/test", func(c *zip.Ctx) error {
+		app.Raw(http.MethodGet, "/test", func(c *zip.Ctx) error {
 			return c.NoContent(200)
 		})
 		// Try without any session cookie
@@ -101,7 +101,7 @@ func TestConfig_ApplySecurityMiddleware(t *testing.T) {
 func TestConfig_RegisterHandlers(t *testing.T) {
 	c := &Config{}
 	app := zip.New(zip.Config{})
-	c.RegisterHandlers(app)
+	c.RegisterHandlers(app.Group("").Group(""))
 	// Try to access the OIDC handler. This should fail, because the security config doesn't have OIDC
 	request := httptest.NewRequest("GET", "/oidc/login", http.NoBody)
 	response, err := app.Fiber().Test(request)
@@ -113,7 +113,7 @@ func TestConfig_RegisterHandlers(t *testing.T) {
 	}
 	// Set an empty OIDC config. This should fail, because the IssuerURL is required.
 	c.OIDC = &OIDCConfig{}
-	if err := c.RegisterHandlers(app); err == nil {
+	if err := c.RegisterHandlers(app.Group("").Group("")); err == nil {
 		t.Fatal("expected an error, but got none")
 	}
 	// Set the OIDC config and try again
@@ -123,7 +123,7 @@ func TestConfig_RegisterHandlers(t *testing.T) {
 		Scopes:          []string{"openid"},
 		AllowedSubjects: []string{"user1@example.com"},
 	}
-	if err := c.RegisterHandlers(app); err != nil {
+	if err := c.RegisterHandlers(app.Group("").Group("")); err != nil {
 		t.Fatal("expected no error, but got", err)
 	}
 	request = httptest.NewRequest("GET", "/oidc/login", http.NoBody)

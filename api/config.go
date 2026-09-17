@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/zap-proto/zip"
 	"hanzo.ai/status/config"
 	"hanzo.ai/status/security"
-	"github.com/zap-proto/zip"
 )
 
 type ConfigHandler struct {

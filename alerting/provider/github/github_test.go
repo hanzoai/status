@@ -5,11 +5,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/go-github/v48/github"
 	"hanzo.ai/status/alerting/alert"
 	"hanzo.ai/status/client"
 	"hanzo.ai/status/config/endpoint"
 	"hanzo.ai/status/test"
-	"github.com/google/go-github/v48/github"
 )
 
 func TestAlertProvider_Validate(t *testing.T) {

@@ -26,7 +26,7 @@ func TestPerformZAPCheck(t *testing.T) {
 	// A peer serving ONE op, deliberately not probeOp — the shape every real
 	// peer has, since nothing in the fleet implements status.probe.
 	app := zip.New(zip.Config{})
-	zip.Post(app, "/v1/noop", func(_ context.Context, _ *struct{}) (*struct{}, error) {
+	app.Post("/v1/noop", func(_ context.Context, _ *struct{}) (*struct{}, error) {
 		return nil, nil
 	}, zip.WithOperationID("noop"))
 	go func() { _ = app.Listen(sock) }()

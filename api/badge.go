@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/zap-proto/zip"
 	"hanzo.ai/status/config"
 	"hanzo.ai/status/config/endpoint/ui"
 	"hanzo.ai/status/storage/store"
 	"hanzo.ai/status/storage/store/common"
 	"hanzo.ai/status/storage/store/common/paging"
-	"github.com/zap-proto/zip"
 )
 
 const (

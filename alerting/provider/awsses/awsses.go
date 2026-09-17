@@ -6,14 +6,14 @@ import (
 	"fmt"
 	"strings"
 
-	"hanzo.ai/status/alerting/alert"
-	"hanzo.ai/status/config/endpoint"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 	"github.com/aws/aws-sdk-go-v2/service/ses/types"
 	"gopkg.in/yaml.v3"
+	"hanzo.ai/status/alerting/alert"
+	"hanzo.ai/status/config/endpoint"
 )
 
 const (

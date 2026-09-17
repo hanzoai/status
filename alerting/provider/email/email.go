@@ -7,11 +7,11 @@ import (
 	"math"
 	"strings"
 
+	gomail "gopkg.in/mail.v2"
+	"gopkg.in/yaml.v3"
 	"hanzo.ai/status/alerting/alert"
 	"hanzo.ai/status/client"
 	"hanzo.ai/status/config/endpoint"
-	gomail "gopkg.in/mail.v2"
-	"gopkg.in/yaml.v3"
 )
 
 var (

@@ -9,11 +9,11 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/google/uuid"
+	"gopkg.in/yaml.v3"
 	"hanzo.ai/status/alerting/alert"
 	"hanzo.ai/status/client"
 	"hanzo.ai/status/config/endpoint"
-	"github.com/google/uuid"
-	"gopkg.in/yaml.v3"
 )
 
 const (

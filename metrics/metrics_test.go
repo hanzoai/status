@@ -5,11 +5,12 @@ import (
 	"testing"
 	"time"
 
+	metric "github.com/luxfi/metric"
 	"hanzo.ai/status/config"
 	"hanzo.ai/status/config/endpoint"
 	"hanzo.ai/status/config/endpoint/dns"
 	"hanzo.ai/status/config/suite"
-	metric "github.com/luxfi/metric"
+	"k8s.io/component-base/metrics/testutil"
 )
 
 // TestInitializePrometheusMetrics tests metrics initialization with extraLabels.

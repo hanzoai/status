@@ -5,9 +5,9 @@ import (
 	"html/template"
 
 	"github.com/TwiN/logr"
+	"github.com/zap-proto/zip"
 	"hanzo.ai/status/config/ui"
 	static "hanzo.ai/status/web"
-	"github.com/zap-proto/zip"
 )
 
 func SinglePageApplication(uiConfig *ui.Config) zip.Handler {

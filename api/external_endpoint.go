@@ -6,13 +6,13 @@ import (
 	"time"
 
 	"github.com/TwiN/logr"
+	"github.com/zap-proto/zip"
 	"hanzo.ai/status/config"
 	"hanzo.ai/status/config/endpoint"
 	"hanzo.ai/status/metrics"
 	"hanzo.ai/status/storage/store"
 	"hanzo.ai/status/storage/store/common"
 	"hanzo.ai/status/watchdog"
-	"github.com/zap-proto/zip"
 )
 
 func CreateExternalEndpointResult(cfg *config.Config) zip.Handler {

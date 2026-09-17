@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"gopkg.in/yaml.v3"
 	"hanzo.ai/status/alerting"
 	"hanzo.ai/status/alerting/alert"
 	"hanzo.ai/status/alerting/provider"
@@ -59,7 +60,6 @@ import (
 	"hanzo.ai/status/config/tunneling/sshtunnel"
 	"hanzo.ai/status/config/web"
 	"hanzo.ai/status/storage"
-	"gopkg.in/yaml.v3"
 )
 
 func TestLoadConfiguration(t *testing.T) {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/TwiN/logr"
 	"hanzo.ai/status/alerting/alert"
 	"hanzo.ai/status/config/endpoint"
 	"hanzo.ai/status/config/suite"
@@ -11,7 +12,6 @@ import (
 	"hanzo.ai/status/storage/store/common/paging"
 	"hanzo.ai/status/storage/store/memory"
 	"hanzo.ai/status/storage/store/sql"
-	"github.com/TwiN/logr"
 )
 
 // Store is the interface that each store should implement

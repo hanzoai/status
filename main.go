@@ -7,12 +7,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/TwiN/logr"
 	"hanzo.ai/status/config"
 	"hanzo.ai/status/controller"
 	"hanzo.ai/status/metrics"
 	"hanzo.ai/status/storage/store"
 	"hanzo.ai/status/watchdog"
-	"github.com/TwiN/logr"
 )
 
 const (

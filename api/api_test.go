@@ -5,9 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	fiber "github.com/zap-proto/fiber/v3"
 	"hanzo.ai/status/config"
 	"hanzo.ai/status/security"
-	fiber "github.com/zap-proto/fiber/v3"
 )
 
 func TestNew(t *testing.T) {

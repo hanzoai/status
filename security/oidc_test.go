@@ -63,7 +63,7 @@ func TestOIDCConfig_callbackHandler(t *testing.T) {
 func sessionCookieOf(t *testing.T, c *OIDCConfig, subject string) *http.Cookie {
 	t.Helper()
 	app := zip.New(zip.Config{})
-	app.Get("/session", func(ctx *zip.Ctx) error {
+	app.Raw(http.MethodGet, "/session", func(ctx *zip.Ctx) error {
 		c.setSessionCookie(ctx, &oidc.IDToken{Subject: subject})
 		return ctx.NoContent(http.StatusOK)
 	})

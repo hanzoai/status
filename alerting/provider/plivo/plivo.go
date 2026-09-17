@@ -9,10 +9,10 @@ import (
 	"io"
 	"net/http"
 
+	"gopkg.in/yaml.v3"
 	"hanzo.ai/status/alerting/alert"
 	"hanzo.ai/status/client"
 	"hanzo.ai/status/config/endpoint"
-	"gopkg.in/yaml.v3"
 )
 
 var (

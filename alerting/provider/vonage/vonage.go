@@ -9,10 +9,10 @@ import (
 	"net/url"
 	"strings"
 
+	"gopkg.in/yaml.v3"
 	"hanzo.ai/status/alerting/alert"
 	"hanzo.ai/status/client"
 	"hanzo.ai/status/config/endpoint"
-	"gopkg.in/yaml.v3"
 )
 
 const ApiURL = "https://rest.nexmo.com/sms/json"

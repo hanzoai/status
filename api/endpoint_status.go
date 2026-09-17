@@ -7,6 +7,7 @@ import (
 	"net/url"
 
 	"github.com/TwiN/logr"
+	"github.com/zap-proto/zip"
 	"hanzo.ai/status/client"
 	"hanzo.ai/status/config"
 	"hanzo.ai/status/config/endpoint"
@@ -14,7 +15,6 @@ import (
 	"hanzo.ai/status/storage/store"
 	"hanzo.ai/status/storage/store/common"
 	"hanzo.ai/status/storage/store/common/paging"
-	"github.com/zap-proto/zip"
 )
 
 // EndpointStatuses handles requests to retrieve all EndpointStatus

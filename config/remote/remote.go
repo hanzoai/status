@@ -1,8 +1,8 @@
 package remote
 
 import (
-	"hanzo.ai/status/client"
 	"github.com/TwiN/logr"
+	"hanzo.ai/status/client"
 )
 
 // NOTICE: This is an experimental alpha feature and may be updated/removed in future versions.

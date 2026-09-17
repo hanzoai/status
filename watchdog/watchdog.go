@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"hanzo.ai/status/config"
 	"golang.org/x/sync/semaphore"
+	"hanzo.ai/status/config"
 )
 
 const (

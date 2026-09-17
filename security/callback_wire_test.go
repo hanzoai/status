@@ -163,7 +163,7 @@ func (p *idp) config(allowed ...string) *OIDCConfig {
 // does. This one line is the transport under test; the table below never moves.
 func callbackApp(c *OIDCConfig) *zip.App {
 	app := zip.New(zip.Config{})
-	app.All("/authorization-code/callback", c.callbackHandler)
+	app.Raw(zip.MethodAll, "/authorization-code/callback", c.callbackHandler)
 	return app
 }
 
@@ -464,7 +464,7 @@ func TestLoginAndCallbackRedirectAlike(t *testing.T) {
 	})
 
 	login := zip.New(zip.Config{})
-	login.All("/oidc/login", c.loginHandler)
+	login.Raw(zip.MethodAll, "/oidc/login", c.loginHandler)
 	loginResp, loginBody := ask(t, login, "GET", "/oidc/login")
 
 	callbackResp, callbackBody := ask(t, callbackApp(c), "GET", callback+"?state=s&code=c",

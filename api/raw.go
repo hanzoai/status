@@ -6,9 +6,9 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/zap-proto/zip"
 	"hanzo.ai/status/storage/store"
 	"hanzo.ai/status/storage/store/common"
-	"github.com/zap-proto/zip"
 )
 
 func UptimeRaw(c *zip.Ctx) error {

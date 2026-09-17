@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/TwiN/logr"
-	"hanzo.ai/status/api"
-	"hanzo.ai/status/config"
 	fiber "github.com/zap-proto/fiber/v3"
 	"github.com/zap-proto/zip"
+	"hanzo.ai/status/api"
+	"hanzo.ai/status/config"
 )
 
 var (
