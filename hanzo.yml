@@ -1,0 +1,9 @@
+# Hanzo CI/CD for hanzoai/status: .github/workflows/cicd.yml imports hanzoai/ci,
+# which reads this file. The build door builds each image, one BuildKit Job
+# per platform.
+images:
+  - name: status
+    context: .
+    dockerfile: Dockerfile
+    repo: ghcr.io/hanzoai/status
+    platforms: [linux/amd64]
